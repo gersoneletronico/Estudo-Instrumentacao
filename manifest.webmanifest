@@ -1,11 +1,11 @@
 {
-  "name": "Estudo de Instrumentação Industrial",
+  "name": "G Automation · Estudo de Instrumentação",
   "short_name": "Instrumentação",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#f3f5f8",
-  "theme_color": "#0f2a44",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
   "lang": "pt-BR",
   "icons": [
     {"src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable"},
