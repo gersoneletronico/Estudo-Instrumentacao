@@ -111,6 +111,35 @@ label.lbl{font-size:.78rem;color:var(--muted);display:block;margin-bottom:4px}
 input.mini{padding:6px 8px;width:76px;font-size:.85rem}
 #tp-tab,#rz-tab,#tq-tab,#pr-tab,#vz-tab,#ms-tab{overflow-x:auto}
 optgroup{font-weight:700;color:var(--navy)}
+
+.picker{padding:10px;position:relative}
+.pick-btn{width:100%;display:flex;align-items:center;gap:12px;border:1.5px solid var(--line);background:#fff;border-radius:12px;padding:10px 12px;font:inherit;cursor:pointer;text-align:left;color:var(--ink)}
+.pick-btn:active{background:var(--bg)}
+.pick-txt{flex:1;min-width:0;display:flex;flex-direction:column}
+.pick-txt small{font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;font-weight:600}
+.pick-txt b{font-size:1rem;font-weight:600}
+.chev{width:22px;height:22px;stroke:var(--muted);fill:none;stroke-width:2}
+.badge{flex:none;width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:1rem;color:#fff;background:var(--navy)}
+.b-L{background:#2563a8}.b-F{background:#0aa5c2}.b-T{background:#e07a1e}.b-P{background:#0f2a44}.b-W{background:#1f9d61}.b-mA{background:#6b4fbb}
+.sheet{position:fixed;inset:0;z-index:20;display:flex;align-items:flex-end;justify-content:center}
+.sheet-bg{position:absolute;inset:0;background:rgba(15,42,68,.45)}
+.sheet-box{position:relative;background:#fff;width:100%;max-width:760px;max-height:86vh;overflow-y:auto;border-radius:18px 18px 0 0;padding:6px 14px calc(18px + env(safe-area-inset-bottom));animation:up .2s ease-out}
+@keyframes up{from{transform:translateY(40px);opacity:.4}to{transform:none;opacity:1}}
+.sheet-head{display:flex;justify-content:space-between;align-items:center;padding:12px 2px 6px;position:sticky;top:0;background:#fff;z-index:1}
+.sheet-head b{font-size:1.05rem;color:var(--navy)}
+.sheet-x{border:0;background:var(--bg);width:34px;height:34px;border-radius:50%;font-size:1rem;cursor:pointer;color:var(--muted)}
+.grp{display:flex;align-items:center;gap:10px;margin:14px 2px 6px}
+.grp .badge{width:30px;height:30px;font-size:.8rem;border-radius:8px}
+.grp span{font-weight:700;color:var(--navy);font-size:.92rem}
+.grp span.badge{color:#fff}
+.item{display:block;width:100%;text-align:left;border:1px solid var(--line);background:#fff;border-radius:12px;padding:11px 13px;margin:0 0 7px;font:inherit;cursor:pointer;color:var(--ink)}
+.item b{display:block;font-weight:600;font-size:.95rem}
+.item small{color:var(--muted);font-size:.8rem}
+.item.on{border-color:var(--cyan);background:var(--cyan-soft)}
+.sticky-out{position:sticky;top:var(--hh,0px);z-index:3;background:var(--card);margin:8px -4px 12px;padding:6px 4px;border-radius:12px}
+.sticky-out .stat{background:var(--cyan-soft);transition:background .4s}
+.sticky-out.flash .stat{background:#bfeef7}
+.out.sticky-out{margin-top:8px}
 .hidden{display:none !important}
 
 .center{text-align:center}
@@ -259,33 +288,19 @@ optgroup{font-weight:700;color:var(--navy)}
 
   <!-- CALCULADORA -->
   <section id="v-calc" class="hidden">
-    <div class="card" style="padding:12px 14px">
-      <label class="lbl">Escolha o cálculo</label>
-      <select id="calc-sel" style="font-weight:600">
-        <optgroup label="Sinal">
-          <option value="escala">Escala 4-20 mA (valor ↔ % ↔ mA)</option>
-          <option value="cal">Calibração / ajuste em 5 pontos</option>
-        </optgroup>
-        <optgroup label="Nível">
-          <option value="nivel">Nível por pressão (aberto, perna úmida, selos)</option>
-          <option value="tanque">Volume e massa no tanque</option>
-        </optgroup>
-        <optgroup label="Vazão">
-          <option value="orif">Placa de orifício (ISO 5167)</option>
-          <option value="raiz">Vazão por ΔP — raiz quadrada</option>
-          <option value="vaz">Conversões de vazão, velocidade, Nm³/h</option>
-        </optgroup>
-        <optgroup label="Temperatura">
-          <option value="temp">Pt100 / Pt1000 (Ω ↔ °C)</option>
-        </optgroup>
-        <optgroup label="Pressão">
-          <option value="pres">Conversão, absoluta/manométrica, coluna</option>
-        </optgroup>
-        <optgroup label="Peso e massa">
-          <option value="peso">Célula de carga (mV/V, kg, mA)</option>
-          <option value="massa">Conversão de massa e força</option>
-        </optgroup>
-      </select>
+    <div class="card picker">
+      <button class="pick-btn" id="calc-btn" type="button">
+        <span class="badge" id="calc-badge">mA</span>
+        <span class="pick-txt"><small id="calc-grp">Sinal</small><b id="calc-name">Escala 4-20 mA</b></span>
+        <svg viewBox="0 0 24 24" class="chev"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+    </div>
+    <div class="sheet hidden" id="calc-sheet">
+      <div class="sheet-bg" data-close></div>
+      <div class="sheet-box">
+        <div class="sheet-head"><b>Escolha o cálculo</b><button class="sheet-x" data-close type="button">✕</button></div>
+        <div id="calc-list"></div>
+      </div>
     </div>
 
     <!-- 4-20 mA -->
@@ -317,15 +332,16 @@ optgroup{font-weight:700;color:var(--navy)}
     <div class="cpanel hidden" id="p-orif">
     <div class="card">
       <h2 style="margin-top:0">Placa de orifício (ISO 5167-2)</h2>
+      <div class="out sticky-out" id="or-out"></div>
       <div class="small muted">Placa concêntrica de canto vivo. Coeficiente C por Reader-Harris/Gallagher, com iteração em Reynolds.</div>
       <div class="grid2" style="margin-top:10px">
         <div><label class="lbl">Calcular</label><select id="or-mode"><option value="dp">ΔP (tenho a vazão)</option><option value="q">Vazão (tenho o ΔP)</option><option value="d">Orifício d (tenho vazão e ΔP)</option></select></div>
-        <div><label class="lbl">Fluido</label><select id="or-fl"><option value="g">Gás / vapor</option><option value="l">Líquido</option></select></div>
+        <div><label class="lbl">Fluido</label><select id="or-fl"><option value="s" selected>Vapor d'água (IAPWS-IF97)</option><option value="g">Gás (ρ informado)</option><option value="l">Líquido</option></select></div>
         <div><label class="lbl">Tomadas</label><select id="or-tap"><option value="flange">Flange (1")</option><option value="canto">Canto (corner)</option><option value="dd2">D e D/2</option></select></div>
         <div><label class="lbl">Correção térmica de D e d</label><select id="or-mat"><option value="0">Sem correção (já corrigidos)</option><option value="11.5e-6">Aço carbono (11,5×10⁻⁶/°C)</option><option value="16.5e-6">Inox 304/316 (16,5×10⁻⁶/°C)</option></select></div>
         <div><label class="lbl">D interno do tubo (mm)</label><input id="or-D" inputmode="decimal" value="254,50"></div>
         <div id="or-d-wrap"><label class="lbl">d do orifício (mm)</label><input id="or-d" inputmode="decimal" value="161,20"></div>
-        <div id="or-T-wrap"><label class="lbl">Temperatura do fluido (°C)</label><input id="or-T" inputmode="decimal" value="320"></div>
+        <div id="or-T-wrap"><label class="lbl">Temperatura do fluido (°C)</label><input id="or-T" inputmode="decimal" value="320"><label class="small s-only" style="display:flex;gap:6px;align-items:center;margin-top:6px"><input type="checkbox" id="or-sat" style="width:auto"> Vapor saturado (T = Tsat)</label></div>
         <div><label class="lbl">Massa específica ρ (kg/m³)</label><input id="or-rho" inputmode="decimal" value="8,28"></div>
         <div><label class="lbl">Viscosidade μ (cP)</label><input id="or-mu" inputmode="decimal" value="0,021"></div>
         <div class="g-only"><label class="lbl">Expoente isentrópico κ</label><input id="or-k" inputmode="decimal" value="1,3"></div>
@@ -336,7 +352,8 @@ optgroup{font-weight:700;color:var(--navy)}
         <div class="numwrap"><input id="or-q" inputmode="decimal" value="60"><select id="or-qu" style="width:auto"></select></div></div>
       <div id="or-dp-wrap" class="hidden" style="margin-top:10px"><label class="lbl">ΔP</label>
         <div class="numwrap"><input id="or-dp" inputmode="decimal" value="9565"><select id="or-dpu" style="width:auto"></select></div></div>
-      <details style="margin-top:10px"><summary class="small" style="cursor:pointer;color:var(--navy);font-weight:600">Estimar ρ de gás (gás real: P·M / Z·R·T)</summary>
+      <div class="steps s-only" id="or-steam" style="margin-top:10px"></div>
+      <details class="gas-only" style="margin-top:10px"><summary class="small" style="cursor:pointer;color:var(--navy);font-weight:600">Estimar ρ de gás (gás real: P·M / Z·R·T)</summary>
         <div class="grid2" style="margin-top:8px">
           <div><label class="lbl">Massa molar M (g/mol)</label><input id="or-M" inputmode="decimal" value="18,015"></div>
           <div><label class="lbl">Fator de compressibilidade Z</label><input id="or-Z" inputmode="decimal" value="0,953"></div>
@@ -344,7 +361,6 @@ optgroup{font-weight:700;color:var(--navy)}
         <div class="small muted" style="margin-top:6px">Usa p1 e a temperatura acima. Vapor d'água: M = 18,015. Para vapor, prefira ρ da tabela de vapor (IAPWS-IF97). Ex.: 21 kgf/cm²g e 320 °C ≈ 8,28 kg/m³.</div>
         <button class="btn sec" style="margin-top:8px" id="or-estrho">Estimar e usar ρ</button>
       </details>
-      <div class="out" id="or-out"></div>
       <div class="steps" id="or-steps"></div>
       <div class="warn hidden" id="or-warn"></div>
     </div>
@@ -354,6 +370,7 @@ optgroup{font-weight:700;color:var(--navy)}
     <div class="cpanel hidden" id="p-raiz">
     <div class="card">
       <h2 style="margin-top:0">Vazão por ΔP — raiz quadrada</h2>
+      <div class="out sticky-out" id="rz-res"></div>
       <div class="small muted">Q = Qmáx × √(ΔP / ΔPmáx). Vale para placa de orifício, Venturi, bocal e Annubar.</div>
       <div class="grid2" style="margin-top:10px">
         <div><label class="lbl">ΔP máximo (URV do transmissor)</label><input id="rz-dpmax" inputmode="decimal" value="10000"></div>
@@ -364,7 +381,6 @@ optgroup{font-weight:700;color:var(--navy)}
         <div><label class="lbl">Eu tenho</label><select id="rz-in"><option value="ma">o sinal (mA)</option><option value="dp">o ΔP</option><option value="q">a vazão</option></select></div>
       </div>
       <div style="margin-top:10px"><label class="lbl" id="rz-lbl">Sinal (mA)</label><input id="rz-x" inputmode="decimal" value="12"></div>
-      <div class="out" id="rz-res"></div>
       <div class="steps" id="rz-steps"></div>
       <h3 style="margin-top:14px">Tabela de pontos</h3>
       <div id="rz-tab"></div>
@@ -385,6 +401,7 @@ optgroup{font-weight:700;color:var(--navy)}
     <div class="cpanel hidden" id="p-nivel">
     <div class="card">
       <h2 style="margin-top:0">Nível por pressão hidrostática</h2>
+      <div class="out sticky-out" id="nv-res"></div>
       <div class="small muted">P = ρ·g·h. Calcula LRV/URV do transmissor de pressão ou ΔP, com a cota do transmissor, a perna úmida ou os selos remotos.</div>
       <div style="margin-top:10px"><label class="lbl">Montagem</label>
         <select id="nv-tipo"><option value="aberto">Tanque aberto, ou fechado com perna seca</option><option value="umida">Tanque fechado com perna úmida (lado L)</option><option value="selos">Selos remotos com capilar nos dois lados</option></select></div>
@@ -399,7 +416,6 @@ optgroup{font-weight:700;color:var(--navy)}
         <div><label class="lbl">Nível atual (mm), opcional</label><input id="nv-l" inputmode="decimal" value="1500"></div>
       </div>
       <div class="small muted" style="margin-top:6px">Se o transmissor estiver acima da tomada inferior, use valor negativo.</div>
-      <div class="out" id="nv-res"></div>
       <div class="steps" id="nv-steps"></div>
       <div class="warn" id="nv-note"></div>
     </div>
@@ -456,6 +472,7 @@ optgroup{font-weight:700;color:var(--navy)}
     <div class="cpanel hidden" id="p-temp">
     <div class="card">
       <h2 style="margin-top:0">Pt100 / Pt1000 (IEC 60751)</h2>
+      <div class="out sticky-out" id="tp-res"></div>
       <div class="small muted">Callendar-Van Dusen, α = 0,00385. Útil para simular a entrada do transmissor de temperatura com uma década resistiva ou um calibrador.</div>
       <div class="grid2" style="margin-top:10px">
         <div><label class="lbl">Sensor</label><select id="tp-r0"><option value="100">Pt100</option><option value="1000">Pt1000</option></select></div>
@@ -465,7 +482,6 @@ optgroup{font-weight:700;color:var(--navy)}
         <div><label class="lbl">Range do transmissor: LRV (°C)</label><input id="tp-lrv" inputmode="decimal" value="0"></div>
         <div><label class="lbl">URV (°C)</label><input id="tp-urv" inputmode="decimal" value="200"></div>
       </div>
-      <div class="out" id="tp-res"></div>
       <div id="tp-tab" style="margin-top:10px"></div>
     </div>
     </div>
@@ -512,6 +528,7 @@ optgroup{font-weight:700;color:var(--navy)}
     <div class="cpanel hidden" id="p-tanque">
     <div class="card">
       <h2 style="margin-top:0">Volume e massa no tanque</h2>
+      <div class="out sticky-out" id="tq-res"></div>
       <div class="grid2">
         <div><label class="lbl">Formato</label><select id="tq-f"><option value="v">Cilindro vertical</option><option value="h">Cilindro horizontal</option><option value="r">Retangular</option></select></div>
         <div><label class="lbl">ρ do produto (kg/m³)</label><input id="tq-r" inputmode="decimal" value="1000"></div>
@@ -521,7 +538,6 @@ optgroup{font-weight:700;color:var(--navy)}
         <div><label class="lbl">Altura máxima útil (m)</label><input id="tq-hm" inputmode="decimal" value="4"></div>
         <div><label class="lbl">Nível atual (m)</label><input id="tq-h" inputmode="decimal" value="2"></div>
       </div>
-      <div class="out" id="tq-res"></div>
       <div class="steps" id="tq-steps"></div>
       <div id="tq-tab" style="margin-top:10px"></div>
       <div class="small muted" style="margin-top:6px">No cilindro horizontal o volume não é linear com o nível: use a tabela para linearizar no CLP/DCS (strapping).</div>
@@ -532,6 +548,7 @@ optgroup{font-weight:700;color:var(--navy)}
     <div class="cpanel hidden" id="p-peso">
     <div class="card">
       <h2 style="margin-top:0">Célula de carga</h2>
+      <div class="out sticky-out" id="lc-res"></div>
       <div class="small muted">Saída (mV) = sensibilidade (mV/V) × excitação (V) × carga / capacidade total.</div>
       <div class="grid2" style="margin-top:10px">
         <div><label class="lbl">Capacidade de cada célula (kg)</label><input id="lc-cap" inputmode="decimal" value="5000"></div>
@@ -543,7 +560,6 @@ optgroup{font-weight:700;color:var(--navy)}
         <div><label class="lbl">Range do transmissor: LRV (kg líquido)</label><input id="lc-lrv" inputmode="decimal" value="0"></div>
         <div><label class="lbl">URV (kg líquido)</label><input id="lc-urv" inputmode="decimal" value="12000"></div>
       </div>
-      <div class="out" id="lc-res"></div>
       <div class="steps" id="lc-steps"></div>
       <div class="warn hidden" id="lc-warn"></div>
     </div>
@@ -998,8 +1014,55 @@ function toKgS(q,u,rho){ const [t,f]=FU[u]; return t==='m'?q*f:q*f*rho; }
 function fromKgS(m,u,rho){ const [t,f]=FU[u]; return t==='m'?m/f:m/rho/f; }
 
 // ---------- navegação dos painéis ----------
-function showPanel(k){ document.querySelectorAll('.cpanel').forEach(p=>p.classList.toggle('hidden',p.id!=='p-'+k)); RUN[k]&&RUN[k](); try{localStorage.setItem('instr-calc',k);}catch(e){} }
-$('calc-sel').addEventListener('change',()=>showPanel(V('calc-sel')));
+const CATS=[
+ ['L','Nível',[['nivel','Nível por pressão','Aberto, perna úmida e selos remotos'],['tanque','Volume e massa no tanque','Vertical, horizontal e retangular']]],
+ ['F','Vazão',[['orif','Placa de orifício','ISO 5167 · ΔP, vazão ou diâmetro d'],['raiz','Vazão por ΔP (raiz quadrada)','Linear × extração de raiz · correção de ρ'],['vaz','Conversões de vazão','Mássica, volumétrica, velocidade, Nm³/h']]],
+ ['T','Temperatura',[['temp','Pt100 / Pt1000','Ω ↔ °C e mA do transmissor']]],
+ ['P','Pressão',[['pres','Pressão','Unidades, absoluta/manométrica, coluna']]],
+ ['W','Peso e massa',[['peso','Célula de carga','mV/V, tara, mV e mA'],['massa','Massa e força','kg, t, lb, N, kgf']]],
+ ['mA','Sinal e calibração',[['escala','Escala 4-20 mA','Valor ↔ % ↔ mA'],['cal','Calibração em 5 pontos','Erro, histerese, zero e span']]]
+];
+let CUR='escala';
+function findCalc(k){ for(const [b,g,its] of CATS) for(const it of its) if(it[0]===k) return {b,g,it}; return null; }
+function renderList(){ $('calc-list').innerHTML=CATS.map(([b,g,its])=>`<div class="grp"><span class="badge b-${b}">${b}</span><span>${g}</span></div>`+its.map(([k,t,s])=>`<button type="button" class="item${k===CUR?' on':''}" data-k="${k}"><b>${t}</b><small>${s}</small></button>`).join('')).join(''); }
+function openSheet(){ renderList(); $('calc-sheet').classList.remove('hidden'); document.body.style.overflow='hidden'; }
+function closeSheet(){ $('calc-sheet').classList.add('hidden'); document.body.style.overflow=''; }
+function showPanel(k){ const f=findCalc(k); if(!f) return; CUR=k;
+  $('calc-badge').textContent=f.b; $('calc-badge').className='badge b-'+f.b; $('calc-grp').textContent=f.g; $('calc-name').textContent=f.it[1];
+  document.querySelectorAll('.cpanel').forEach(p=>p.classList.toggle('hidden',p.id!=='p-'+k)); RUN[k]&&RUN[k](); try{localStorage.setItem('instr-calc',k);}catch(e){} }
+$('calc-btn').addEventListener('click',openSheet);
+$('calc-sheet').addEventListener('click',e=>{ const it=e.target.closest('.item'); if(it){ showPanel(it.dataset.k); closeSheet(); window.scrollTo(0,0); return; } if(e.target.closest('[data-close]')) closeSheet(); });
+function setHH(){ const hd=document.querySelector('header'); if(hd) document.documentElement.style.setProperty('--hh',hd.offsetHeight+'px'); }
+setHH(); window.addEventListener('resize',setHH);
+function flash(id){ const e=$(id); if(!e) return; e.classList.remove('flash'); void e.offsetWidth; e.classList.add('flash'); clearTimeout(e._t); e._t=setTimeout(()=>e.classList.remove('flash'),450); }
+
+// ---------- Vapor d'água: IAPWS-IF97 (região 2) + viscosidade IAPWS 2008 ----------
+const IF={"Region2_n": [-0.0017731742473213, -0.017834862292358, -0.045996013696365, -0.057581259083432, -0.05032527872793, -3.3032641670203e-05, -0.00018948987516315, -0.0039392777243355, -0.043797295650573, -2.6674547914087e-05, 2.0481737692309e-08, 4.3870667284435e-07, -3.227767723857e-05, -0.0015033924542148, -0.040668253562649, -7.8847309559367e-10, 1.2790717852285e-08, 4.8225372718507e-07, 2.2922076337661e-06, -1.6714766451061e-11, -0.0021171472321355, -23.895741934104, -5.905956432427e-18, -1.2621808899101e-06, -0.038946842435739, 1.1256211360459e-11, -8.2311340897998, 1.9809712802088e-08, 1.0406965210174e-19, -1.0234747095929e-13, -1.0018179379511e-09, -8.0882908646985e-11, 0.10693031879409, -0.33662250574171, 8.9185845355421e-25, 3.0629316876232e-13, -4.2002467698208e-06, -5.9056029685639e-26, 3.7826947613457e-06, -1.2768608934681e-15, 7.3087610595061e-29, 5.5414715350778e-17, -9.436970724121e-07], "Region2_Li": [1.0, 1.0, 1.0, 1.0, 1.0, 2.0, 2.0, 2.0, 2.0, 2.0, 3.0, 3.0, 3.0, 3.0, 3.0, 4.0, 4.0, 4.0, 5.0, 6.0, 6.0, 6.0, 7.0, 7.0, 7.0, 8.0, 8.0, 9.0, 10.0, 10.0, 10.0, 16.0, 16.0, 18.0, 20.0, 20.0, 20.0, 21.0, 22.0, 23.0, 24.0, 24.0, 24.0], "Region2_Lj": [0.0, 1.0, 2.0, 3.0, 6.0, 1.0, 2.0, 4.0, 7.0, 36.0, 0.0, 1.0, 3.0, 6.0, 35.0, 1.0, 2.0, 3.0, 7.0, 3.0, 16.0, 35.0, 0.0, 11.0, 25.0, 8.0, 36.0, 13.0, 4.0, 10.0, 14.0, 29.0, 50.0, 57.0, 20.0, 35.0, 48.0, 21.0, 53.0, 39.0, 26.0, 40.0, 58.0], "Region2_cp0_no": [-9.6927686500217, 10.086655968018, -0.005608791128302, 0.071452738081455, -0.40710498223928, 1.4240819171444, -4.383951131945, -0.28408632460772, 0.021268463753307], "Region2_cp0_Jo": [0.0, 1.0, -5.0, -4.0, -3.0, -2.0, -1.0, 2.0, 3.0], "R": 0.461526, "Tc": 647.096, "rhoc": 322.0};
+function tsatP(P){ const n=[0,0.11670521452767E+04,-0.72421316703206E+06,-0.17073846940092E+02,0.12020824702470E+05,-0.32325550322333E+07,0.14915108613530E+02,-0.48232657361591E+04,0.40511340542057E+06,-0.23855557567849E+00,0.65017534844798E+03];
+  const b=Math.pow(P,0.25), E=b*b+n[3]*b+n[6], F=n[1]*b*b+n[4]*b+n[7], G=n[2]*b*b+n[5]*b+n[8], D=2*G/(-F-Math.sqrt(F*F-4*E*G));
+  return (n[10]+D-Math.sqrt((n[10]+D)**2-4*(n[9]+n[10]*D)))/2; }
+function steamR2(T,P){ // T em K, P em MPa
+  const Tr=540/T, Pr=P, R=IF.R, n=IF.Region2_n, Li=IF.Region2_Li, Lj=IF.Region2_Lj, no=IF.Region2_cp0_no, Jo=IF.Region2_cp0_Jo;
+  let gop=1/Pr, gott=0; for(let i=0;i<no.length;i++) gott+=no[i]*Jo[i]*(Jo[i]-1)*Math.pow(Tr,Jo[i]-2);
+  let grp=0,grpp=0,grtt=0,grpt=0; const t=Tr-0.5;
+  for(let i=0;i<n.length;i++){ const a=Li[i], b=Lj[i];
+    grp+=n[i]*a*Math.pow(Pr,a-1)*Math.pow(t,b); grpp+=n[i]*a*(a-1)*Math.pow(Pr,a-2)*Math.pow(t,b);
+    grtt+=n[i]*b*(b-1)*Math.pow(Pr,a)*Math.pow(t,b-2); grpt+=n[i]*a*b*Math.pow(Pr,a-1)*Math.pow(t,b-1); }
+  const v=Pr*(gop+grp)*R*T/P/1000;
+  const w=Math.sqrt(R*T*1000*(1+2*Pr*grp+Pr*Pr*grp*grp)/(1-Pr*Pr*grpp+Math.pow(1+Pr*grp-Tr*Pr*grpt,2)/Tr/Tr/(gott+grtt)));
+  return {rho:1/v, w}; }
+function steamMu(rho,T){ const Tr=T/IF.Tc, Dr=rho/IF.rhoc, H=[1.67752,2.20462,0.6366564,-0.241605];
+  let s=0; H.forEach((h,i)=>s+=h/Math.pow(Tr,i)); const mu0=100*Math.sqrt(Tr)/s;
+  const li=[0,1,2,3,0,1,2,3,5,0,1,2,3,4,0,1,0,3,4,3,5], lj=[0,0,0,0,1,1,1,1,1,2,2,2,2,2,3,3,4,4,5,6,6];
+  const Hij=[0.520094,0.850895e-1,-0.108374e1,-0.289555,0.222531,0.999115,0.188797e1,0.126613e1,0.120573,-0.281378,-0.906851,-0.772479,-0.489837,-0.257040,0.161913,0.257399,-0.325372e-1,0.698452e-1,0.872102e-2,-0.435673e-2,-0.593264e-3];
+  let s1=0; for(let k=0;k<li.length;k++) s1+=Math.pow(1/Tr-1,li[k])*Hij[k]*Math.pow(Dr-1,lj[k]);
+  return mu0*Math.exp(Dr*s1)*1e-6; }
+function steamProps(Pabs_Pa,TC){ const P=Pabs_Pa/1e6, T=TC+273.15; if(P<0.000611||P>22.064) return {err:'Pressão fora da faixa da tabela de vapor (até 220 bar abs).'};
+  const Ts=tsatP(P); let warn=''; let TT=T;
+  if(T<Ts-0.01){ return {err:`A ${(T-273.15).toFixed(1).replace('.',',')} °C e ${(P*10).toFixed(2).replace('.',',')} bar abs a água está líquida (Tsat = ${(Ts-273.15).toFixed(1).replace('.',',')} °C). Para vapor saturado, use T = Tsat.`, Ts}; }
+  if(T>1073.15) return {err:'Temperatura acima de 800 °C: fora da região 2.'};
+  const r=steamR2(TT,P); const mu=steamMu(r.rho,TT); const k=r.w*r.w*r.rho/(P*1e6);
+  return {rho:r.rho, mu, k, Ts, sup:T-Ts}; }
 
 // ---------- ISO 5167-2 ----------
 function isoC(beta,Re,Dmm,tap){
@@ -1030,13 +1093,25 @@ function orSize(q,dp,o){ // dimensiona d (bisseção em β)
   return (lo+hi)/2;
 }
 function runOrif(){
-  const mode=V('or-mode'), gas=V('or-fl')==='g';
+  const mode=V('or-mode'), fl=V('or-fl'), gas=fl!=='l', steam=fl==='s';
+  document.querySelectorAll('#p-orif .s-only').forEach(e=>e.classList.toggle('hidden',!steam));
+  document.querySelectorAll('#p-orif .gas-only').forEach(e=>e.classList.toggle('hidden',fl!=='g'));
+  ['or-rho','or-mu','or-k'].forEach(i=>{ $(i).readOnly=steam; $(i).style.background=steam?'var(--bg)':''; });
+  if(steam){
+    const p1s=N('or-p1')*PU[V('or-p1u')]+(V('or-p1t')==='g'?PATM:0);
+    if($('or-sat').checked && p1s>611 && p1s<22.064e6){ $('or-T').value=F(tsatP(p1s/1e6)-273.15+0.001,2); }
+    $('or-T').readOnly=$('or-sat').checked;
+    const sp=steamProps(p1s,N('or-T'));
+    if(sp.err){ $('or-steam').textContent=sp.err; $('or-out').innerHTML=''; $('or-steps').textContent=''; $('or-warn').classList.add('hidden'); return; }
+    $('or-rho').value=F(sp.rho,4); $('or-mu').value=F(sp.mu*1000,5); $('or-k').value=F(sp.k,4);
+    $('or-steam').textContent=`Propriedades do vapor (IAPWS-IF97) a ${F(p1s/1e5,4)} bar abs e ${F(N('or-T'),2)} °C:\nρ = ${F(sp.rho,4)} kg/m³ · μ = ${F(sp.mu*1000,5)} cP · κ = ${F(sp.k,4)}\nTsat = ${F(sp.Ts-273.15,2)} °C · ${sp.sup<0.5?'vapor saturado':'superaquecimento de '+F(sp.sup,1)+' °C'}`;
+  }
   $('or-d-wrap').classList.toggle('hidden',mode==='d');
   $('or-q-wrap').classList.toggle('hidden',mode==='q');
   $('or-dp-wrap').classList.toggle('hidden',mode==='dp');
   document.querySelectorAll('#p-orif .g-only').forEach(e=>e.classList.toggle('hidden',!gas));
   const lam=parseFloat(V('or-mat')), T=N('or-T');
-  $('or-T-wrap').classList.toggle('hidden',lam===0 && !gas);
+  $('or-T-wrap').classList.toggle('hidden',lam===0 && !steam && fl!=='g');
   const kT=lam? (1+lam*(T-20)) : 1;
   const D=N('or-D')/1000*kT, d=N('or-d')/1000*kT, rho=N('or-rho'), mu=N('or-mu')/1000, k=N('or-k');
   const p1=gas? N('or-p1')*PU[V('or-p1u')]+(V('or-p1t')==='g'?PATM:0) : 1e9;
@@ -1245,10 +1320,12 @@ fill('ms-u',MU,'kg');
 const RUN={tanque:runTanque,peso:runPeso,massa:runMassa,orif:runOrif,raiz:runRaiz,nivel:runNivel,pres:runPres,cal:buildCal,temp:runTemp,vaz:runVaz,escala:()=>calc()};
 const MAP={tanque:'tq-',peso:'lc-',massa:'ms-',orif:'or-',raiz:'rz-',nivel:'nv-',pres:['pr-','pa-','ph-'],temp:'tp-',vaz:['vz-','vv-','gn-']};
 Object.entries(MAP).forEach(([k,pre])=>{ [].concat(pre).forEach(px=>{
-  document.querySelectorAll(`#p-${k} input[id^="${px}"], #p-${k} select[id^="${px}"]`).forEach(e=>{ e.addEventListener('input',RUN[k]); e.addEventListener('change',RUN[k]); });
+  const OUT={orif:'or-out',raiz:'rz-res',nivel:'nv-res',tanque:'tq-res',peso:'lc-res',temp:'tp-res'}[k];
+  const h=()=>{ RUN[k](); OUT&&flash(OUT); };
+  document.querySelectorAll(`#p-${k} input[id^="${px}"], #p-${k} select[id^="${px}"]`).forEach(e=>{ e.addEventListener('input',h); e.addEventListener('change',h); e.addEventListener('keyup',h); });
 });});
 buildCal();
-try{const k=localStorage.getItem('instr-calc'); if(k&&$('p-'+k)){ $('calc-sel').value=k; showPanel(k);} }catch(e){}
+try{const k=localStorage.getItem('instr-calc'); showPanel(k&&$('p-'+k)?k:'escala'); }catch(e){ showPanel('escala'); }
 window.__calcTest={orDP,orQ,orSize,isoC,cvdR,cvdT};
 })();
 </script>
