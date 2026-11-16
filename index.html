@@ -104,7 +104,15 @@ label.lbl{font-size:.78rem;color:var(--muted);display:block;margin-bottom:4px}
 .gauge .track{position:relative;height:12px;background:linear-gradient(90deg,#d8eef3,#0aa5c2);border-radius:8px}
 .gauge .pin{position:absolute;top:-5px;width:4px;height:22px;background:var(--navy);border-radius:2px;transform:translateX(-2px)}
 .gauge .lbls{display:flex;justify-content:space-between;font-size:.72rem;color:var(--muted);margin-top:4px;font-family:'IBM Plex Mono',monospace}
-.hidden{display:none}
+.tb{width:100%;border-collapse:collapse;font-size:.82rem}
+.tb th{text-align:left;color:var(--muted);font-weight:600;font-size:.74rem;padding:6px 6px;border-bottom:1px solid var(--line);white-space:nowrap}
+.tb td{padding:6px 6px;border-bottom:1px solid var(--line);font-family:'IBM Plex Mono',monospace;white-space:nowrap}
+.tb tr:last-child td{border-bottom:0}
+input.mini{padding:6px 8px;width:76px;font-size:.85rem}
+#tp-tab,#rz-tab,#tq-tab,#pr-tab,#vz-tab,#ms-tab{overflow-x:auto}
+optgroup{font-weight:700;color:var(--navy)}
+.hidden{display:none !important}
+
 .center{text-align:center}
 .big{font-size:2.2rem;font-weight:700;font-family:'IBM Plex Mono',monospace}
 </style>
@@ -251,8 +259,39 @@ label.lbl{font-size:.78rem;color:var(--muted);display:block;margin-bottom:4px}
 
   <!-- CALCULADORA -->
   <section id="v-calc" class="hidden">
+    <div class="card" style="padding:12px 14px">
+      <label class="lbl">Escolha o cálculo</label>
+      <select id="calc-sel" style="font-weight:600">
+        <optgroup label="Sinal">
+          <option value="escala">Escala 4-20 mA (valor ↔ % ↔ mA)</option>
+          <option value="cal">Calibração / ajuste em 5 pontos</option>
+        </optgroup>
+        <optgroup label="Nível">
+          <option value="nivel">Nível por pressão (aberto, perna úmida, selos)</option>
+          <option value="tanque">Volume e massa no tanque</option>
+        </optgroup>
+        <optgroup label="Vazão">
+          <option value="orif">Placa de orifício (ISO 5167)</option>
+          <option value="raiz">Vazão por ΔP — raiz quadrada</option>
+          <option value="vaz">Conversões de vazão, velocidade, Nm³/h</option>
+        </optgroup>
+        <optgroup label="Temperatura">
+          <option value="temp">Pt100 / Pt1000 (Ω ↔ °C)</option>
+        </optgroup>
+        <optgroup label="Pressão">
+          <option value="pres">Conversão, absoluta/manométrica, coluna</option>
+        </optgroup>
+        <optgroup label="Peso e massa">
+          <option value="peso">Célula de carga (mV/V, kg, mA)</option>
+          <option value="massa">Conversão de massa e força</option>
+        </optgroup>
+      </select>
+    </div>
+
+    <!-- 4-20 mA -->
+    <div class="cpanel" id="p-escala">
     <div class="card">
-      <h2 style="margin-top:0">Calculadora 4-20 mA</h2>
+      <h2 style="margin-top:0">Escala 4-20 mA</h2>
       <div class="grid2">
         <div><label class="lbl">LRV</label><input id="c-lrv" inputmode="decimal" value="0"></div>
         <div><label class="lbl">URV</label><input id="c-urv" inputmode="decimal" value="10"></div>
@@ -272,7 +311,255 @@ label.lbl{font-size:.78rem;color:var(--muted);display:block;margin-bottom:4px}
       <div class="steps" id="o-steps"></div>
       <div class="warn hidden" id="o-warn"></div>
     </div>
-    <div class="card small muted">Use para conferir os seus cálculos depois de tentar à mão, não antes.</div>
+    </div>
+
+    <!-- PLACA DE ORIFÍCIO -->
+    <div class="cpanel hidden" id="p-orif">
+    <div class="card">
+      <h2 style="margin-top:0">Placa de orifício (ISO 5167-2)</h2>
+      <div class="small muted">Placa concêntrica de canto vivo. Coeficiente C por Reader-Harris/Gallagher, com iteração em Reynolds.</div>
+      <div class="grid2" style="margin-top:10px">
+        <div><label class="lbl">Calcular</label><select id="or-mode"><option value="dp">ΔP (tenho a vazão)</option><option value="q">Vazão (tenho o ΔP)</option><option value="d">Orifício d (tenho vazão e ΔP)</option></select></div>
+        <div><label class="lbl">Fluido</label><select id="or-fl"><option value="g">Gás / vapor</option><option value="l">Líquido</option></select></div>
+        <div><label class="lbl">Tomadas</label><select id="or-tap"><option value="flange">Flange (1")</option><option value="canto">Canto (corner)</option><option value="dd2">D e D/2</option></select></div>
+        <div><label class="lbl">Correção térmica de D e d</label><select id="or-mat"><option value="0">Sem correção (já corrigidos)</option><option value="11.5e-6">Aço carbono (11,5×10⁻⁶/°C)</option><option value="16.5e-6">Inox 304/316 (16,5×10⁻⁶/°C)</option></select></div>
+        <div><label class="lbl">D interno do tubo (mm)</label><input id="or-D" inputmode="decimal" value="254,50"></div>
+        <div id="or-d-wrap"><label class="lbl">d do orifício (mm)</label><input id="or-d" inputmode="decimal" value="161,20"></div>
+        <div id="or-T-wrap"><label class="lbl">Temperatura do fluido (°C)</label><input id="or-T" inputmode="decimal" value="320"></div>
+        <div><label class="lbl">Massa específica ρ (kg/m³)</label><input id="or-rho" inputmode="decimal" value="8,28"></div>
+        <div><label class="lbl">Viscosidade μ (cP)</label><input id="or-mu" inputmode="decimal" value="0,021"></div>
+        <div class="g-only"><label class="lbl">Expoente isentrópico κ</label><input id="or-k" inputmode="decimal" value="1,3"></div>
+      </div>
+      <div class="g-only" style="margin-top:10px"><label class="lbl">Pressão a montante p1</label>
+        <div class="numwrap"><input id="or-p1" inputmode="decimal" value="21"><select id="or-p1u" style="width:auto"></select><select id="or-p1t" style="width:auto"><option value="g">man. (g)</option><option value="a">abs. (a)</option></select></div></div>
+      <div id="or-q-wrap" style="margin-top:10px"><label class="lbl">Vazão</label>
+        <div class="numwrap"><input id="or-q" inputmode="decimal" value="60"><select id="or-qu" style="width:auto"></select></div></div>
+      <div id="or-dp-wrap" class="hidden" style="margin-top:10px"><label class="lbl">ΔP</label>
+        <div class="numwrap"><input id="or-dp" inputmode="decimal" value="9565"><select id="or-dpu" style="width:auto"></select></div></div>
+      <details style="margin-top:10px"><summary class="small" style="cursor:pointer;color:var(--navy);font-weight:600">Estimar ρ de gás (gás real: P·M / Z·R·T)</summary>
+        <div class="grid2" style="margin-top:8px">
+          <div><label class="lbl">Massa molar M (g/mol)</label><input id="or-M" inputmode="decimal" value="18,015"></div>
+          <div><label class="lbl">Fator de compressibilidade Z</label><input id="or-Z" inputmode="decimal" value="0,953"></div>
+        </div>
+        <div class="small muted" style="margin-top:6px">Usa p1 e a temperatura acima. Vapor d'água: M = 18,015. Para vapor, prefira ρ da tabela de vapor (IAPWS-IF97). Ex.: 21 kgf/cm²g e 320 °C ≈ 8,28 kg/m³.</div>
+        <button class="btn sec" style="margin-top:8px" id="or-estrho">Estimar e usar ρ</button>
+      </details>
+      <div class="out" id="or-out"></div>
+      <div class="steps" id="or-steps"></div>
+      <div class="warn hidden" id="or-warn"></div>
+    </div>
+    </div>
+
+    <!-- VAZÃO POR ΔP -->
+    <div class="cpanel hidden" id="p-raiz">
+    <div class="card">
+      <h2 style="margin-top:0">Vazão por ΔP — raiz quadrada</h2>
+      <div class="small muted">Q = Qmáx × √(ΔP / ΔPmáx). Vale para placa de orifício, Venturi, bocal e Annubar.</div>
+      <div class="grid2" style="margin-top:10px">
+        <div><label class="lbl">ΔP máximo (URV do transmissor)</label><input id="rz-dpmax" inputmode="decimal" value="10000"></div>
+        <div><label class="lbl">Unidade de ΔP</label><select id="rz-dpu"></select></div>
+        <div><label class="lbl">Vazão máxima (100%)</label><input id="rz-qmax" inputmode="decimal" value="60"></div>
+        <div><label class="lbl">Unidade de vazão</label><input id="rz-qu" value="t/h"></div>
+        <div><label class="lbl">Saída do transmissor</label><select id="rz-out"><option value="lin">Linear em ΔP (raiz no CLP/DCS)</option><option value="sqrt">Com extração de raiz no transmissor</option></select></div>
+        <div><label class="lbl">Eu tenho</label><select id="rz-in"><option value="ma">o sinal (mA)</option><option value="dp">o ΔP</option><option value="q">a vazão</option></select></div>
+      </div>
+      <div style="margin-top:10px"><label class="lbl" id="rz-lbl">Sinal (mA)</label><input id="rz-x" inputmode="decimal" value="12"></div>
+      <div class="out" id="rz-res"></div>
+      <div class="steps" id="rz-steps"></div>
+      <h3 style="margin-top:14px">Tabela de pontos</h3>
+      <div id="rz-tab"></div>
+      <details style="margin-top:12px"><summary class="small" style="cursor:pointer;color:var(--navy);font-weight:600">Correção de densidade (fluido fora do projeto)</summary>
+        <div class="grid2" style="margin-top:8px">
+          <div><label class="lbl">ρ de projeto (kg/m³)</label><input id="rz-rp" inputmode="decimal" value="8,28"></div>
+          <div><label class="lbl">ρ real (kg/m³)</label><input id="rz-rr" inputmode="decimal" value="7,88"></div>
+          <div><label class="lbl">Tipo de vazão</label><select id="rz-qt"><option value="m">Mássica (kg/h, t/h)</option><option value="v">Volumétrica (m³/h)</option></select></div>
+          <div><label class="lbl">Vazão indicada</label><input id="rz-qi" inputmode="decimal" value="60"></div>
+        </div>
+        <div class="steps" id="rz-corr"></div>
+      </details>
+      <div class="warn">Abaixo de ~10% da vazão (1% do ΔP), a raiz amplifica ruído e erro de zero. É comum configurar um corte de baixa vazão (low flow cutoff).</div>
+    </div>
+    </div>
+
+    <!-- NÍVEL -->
+    <div class="cpanel hidden" id="p-nivel">
+    <div class="card">
+      <h2 style="margin-top:0">Nível por pressão hidrostática</h2>
+      <div class="small muted">P = ρ·g·h. Calcula LRV/URV do transmissor de pressão ou ΔP, com a cota do transmissor, a perna úmida ou os selos remotos.</div>
+      <div style="margin-top:10px"><label class="lbl">Montagem</label>
+        <select id="nv-tipo"><option value="aberto">Tanque aberto, ou fechado com perna seca</option><option value="umida">Tanque fechado com perna úmida (lado L)</option><option value="selos">Selos remotos com capilar nos dois lados</option></select></div>
+      <div class="grid2" style="margin-top:10px">
+        <div><label class="lbl">ρ do processo (kg/m³)</label><input id="nv-rp" inputmode="decimal" value="1000"></div>
+        <div><label class="lbl">Unidade de saída</label><select id="nv-u"></select></div>
+        <div><label class="lbl">Nível mínimo (mm, acima da tomada inferior)</label><input id="nv-lmin" inputmode="decimal" value="0"></div>
+        <div><label class="lbl">Nível máximo (mm, acima da tomada inferior)</label><input id="nv-lmax" inputmode="decimal" value="3000"></div>
+        <div id="nv-h0w"><label class="lbl">Transmissor abaixo da tomada inferior (mm)</label><input id="nv-h0" inputmode="decimal" value="500"></div>
+        <div id="nv-htw"><label class="lbl">Distância entre tomadas (mm)</label><input id="nv-ht" inputmode="decimal" value="3500"></div>
+        <div id="nv-rsw"><label class="lbl" id="nv-rsl">ρ do fluido de selagem (kg/m³)</label><input id="nv-rs" inputmode="decimal" value="1000"></div>
+        <div><label class="lbl">Nível atual (mm), opcional</label><input id="nv-l" inputmode="decimal" value="1500"></div>
+      </div>
+      <div class="small muted" style="margin-top:6px">Se o transmissor estiver acima da tomada inferior, use valor negativo.</div>
+      <div class="out" id="nv-res"></div>
+      <div class="steps" id="nv-steps"></div>
+      <div class="warn" id="nv-note"></div>
+    </div>
+    </div>
+
+    <!-- PRESSÃO -->
+    <div class="cpanel hidden" id="p-pres">
+    <div class="card">
+      <h2 style="margin-top:0">Conversão de pressão</h2>
+      <div class="numwrap"><input id="pr-v" inputmode="decimal" value="21"><select id="pr-u" style="width:auto"></select></div>
+      <div id="pr-tab" style="margin-top:10px"></div>
+    </div>
+    <div class="card">
+      <h3>Absoluta × manométrica</h3>
+      <div class="grid2">
+        <div><label class="lbl">Valor</label><input id="pa-v" inputmode="decimal" value="21"></div>
+        <div><label class="lbl">Unidade</label><select id="pa-u"></select></div>
+        <div><label class="lbl">O valor é</label><select id="pa-t"><option value="g">manométrico (g)</option><option value="a">absoluto (a)</option></select></div>
+        <div><label class="lbl">Pressão atmosférica (bar abs)</label><input id="pa-atm" inputmode="decimal" value="1,01325"></div>
+      </div>
+      <div class="steps" id="pa-out"></div>
+      <div class="small muted" style="margin-top:6px">A pressão atmosférica cai com a altitude (~1,2% a cada 100 m). Ao nível do mar: 1,01325 bar.</div>
+    </div>
+    <div class="card">
+      <h3>Coluna de líquido e correção de cota do transmissor</h3>
+      <div class="grid2">
+        <div><label class="lbl">ρ do líquido na tomada (kg/m³)</label><input id="ph-r" inputmode="decimal" value="1000"></div>
+        <div><label class="lbl">Desnível (m) — transmissor abaixo da tomada</label><input id="ph-h" inputmode="decimal" value="3"></div>
+        <div><label class="lbl">Unidade</label><select id="ph-u"></select></div>
+      </div>
+      <div class="steps" id="ph-out"></div>
+      <div class="small muted" style="margin-top:6px">Com a linha de impulso cheia de líquido e o transmissor abaixo da tomada, ele lê a mais o valor ρ·g·h. Esse offset deve ser compensado no zero (LRV/URV deslocados).</div>
+    </div>
+    </div>
+
+    <!-- CALIBRAÇÃO -->
+    <div class="cpanel hidden" id="p-cal">
+    <div class="card">
+      <h2 style="margin-top:0">Calibração em 5 pontos</h2>
+      <div class="grid2">
+        <div><label class="lbl">LRV</label><input id="cl-lrv" inputmode="decimal" value="0"></div>
+        <div><label class="lbl">URV</label><input id="cl-urv" inputmode="decimal" value="10"></div>
+        <div><label class="lbl">Unidade</label><input id="cl-u" value="bar"></div>
+        <div><label class="lbl">Função de saída</label><select id="cl-f"><option value="lin">Linear</option><option value="sqrt">Raiz quadrada</option></select></div>
+        <div><label class="lbl">Tolerância (± % do span)</label><input id="cl-tol" inputmode="decimal" value="0,25"></div>
+        <div><label class="lbl">Sentido</label><select id="cl-dir"><option value="1">Só subida</option><option value="2">Subida e descida (histerese)</option></select></div>
+      </div>
+      <div id="cl-tab" style="margin-top:12px;overflow-x:auto"></div>
+      <div class="steps" id="cl-sum"></div>
+    </div>
+    </div>
+
+    <!-- Pt100 -->
+    <div class="cpanel hidden" id="p-temp">
+    <div class="card">
+      <h2 style="margin-top:0">Pt100 / Pt1000 (IEC 60751)</h2>
+      <div class="small muted">Callendar-Van Dusen, α = 0,00385. Útil para simular a entrada do transmissor de temperatura com uma década resistiva ou um calibrador.</div>
+      <div class="grid2" style="margin-top:10px">
+        <div><label class="lbl">Sensor</label><select id="tp-r0"><option value="100">Pt100</option><option value="1000">Pt1000</option></select></div>
+        <div><label class="lbl">Eu tenho</label><select id="tp-m"><option value="t">a temperatura (°C)</option><option value="r">a resistência (Ω)</option></select></div>
+        <div><label class="lbl" id="tp-l">Temperatura (°C)</label><input id="tp-x" inputmode="decimal" value="100"></div>
+        <div></div>
+        <div><label class="lbl">Range do transmissor: LRV (°C)</label><input id="tp-lrv" inputmode="decimal" value="0"></div>
+        <div><label class="lbl">URV (°C)</label><input id="tp-urv" inputmode="decimal" value="200"></div>
+      </div>
+      <div class="out" id="tp-res"></div>
+      <div id="tp-tab" style="margin-top:10px"></div>
+    </div>
+    </div>
+
+    <!-- CONVERSÕES DE VAZÃO -->
+    <div class="cpanel hidden" id="p-vaz">
+    <div class="card">
+      <h2 style="margin-top:0">Mássica × volumétrica</h2>
+      <div class="grid2">
+        <div><label class="lbl">Vazão</label><input id="vz-q" inputmode="decimal" value="60"></div>
+        <div><label class="lbl">Unidade</label><select id="vz-qu"></select></div>
+        <div><label class="lbl">ρ (kg/m³)</label><input id="vz-r" inputmode="decimal" value="8,28"></div>
+      </div>
+      <div id="vz-tab" style="margin-top:10px"></div>
+    </div>
+    <div class="card">
+      <h3>Velocidade e Reynolds na tubulação</h3>
+      <div class="grid2">
+        <div><label class="lbl">Vazão (m³/h, nas condições de operação)</label><input id="vv-q" inputmode="decimal" value="7246"></div>
+        <div><label class="lbl">D interno (mm)</label><input id="vv-d" inputmode="decimal" value="254,5"></div>
+        <div><label class="lbl">ρ (kg/m³)</label><input id="vv-r" inputmode="decimal" value="8,28"></div>
+        <div><label class="lbl">μ (cP)</label><input id="vv-mu" inputmode="decimal" value="0,021"></div>
+      </div>
+      <div class="steps" id="vv-out"></div>
+      <div class="small muted" style="margin-top:6px">Referências usuais: líquidos 1–3 m/s; vapor saturado 20–30 m/s; vapor superaquecido 30–50 m/s.</div>
+    </div>
+    <div class="card">
+      <h3>Gás: normal (Nm³/h) × real (m³/h)</h3>
+      <div class="grid2">
+        <div><label class="lbl">Eu tenho</label><select id="gn-m"><option value="n">Nm³/h</option><option value="r">m³/h real</option></select></div>
+        <div><label class="lbl">Vazão</label><input id="gn-q" inputmode="decimal" value="1000"></div>
+        <div><label class="lbl">Pressão de operação (bar g)</label><input id="gn-p" inputmode="decimal" value="5"></div>
+        <div><label class="lbl">Temperatura de operação (°C)</label><input id="gn-t" inputmode="decimal" value="40"></div>
+        <div><label class="lbl">Z (operação / normal)</label><input id="gn-z" inputmode="decimal" value="1"></div>
+        <div><label class="lbl">Patm (bar abs)</label><input id="gn-a" inputmode="decimal" value="1,01325"></div>
+      </div>
+      <div class="steps" id="gn-out"></div>
+      <div class="small muted" style="margin-top:6px">Condição normal: 0 °C e 1,01325 bar abs. Condição "standard" (Sm³) varia: 15 °C ou 20 °C. Confira a referência usada no projeto.</div>
+    </div>
+    </div>
+
+
+    <!-- TANQUE -->
+    <div class="cpanel hidden" id="p-tanque">
+    <div class="card">
+      <h2 style="margin-top:0">Volume e massa no tanque</h2>
+      <div class="grid2">
+        <div><label class="lbl">Formato</label><select id="tq-f"><option value="v">Cilindro vertical</option><option value="h">Cilindro horizontal</option><option value="r">Retangular</option></select></div>
+        <div><label class="lbl">ρ do produto (kg/m³)</label><input id="tq-r" inputmode="decimal" value="1000"></div>
+        <div><label class="lbl" id="tq-al">Diâmetro (m)</label><input id="tq-a" inputmode="decimal" value="3"></div>
+        <div id="tq-bw"><label class="lbl" id="tq-bl">Comprimento (m)</label><input id="tq-b" inputmode="decimal" value="6"></div>
+        <div id="tq-cw"><label class="lbl">Largura (m)</label><input id="tq-c" inputmode="decimal" value="2"></div>
+        <div><label class="lbl">Altura máxima útil (m)</label><input id="tq-hm" inputmode="decimal" value="4"></div>
+        <div><label class="lbl">Nível atual (m)</label><input id="tq-h" inputmode="decimal" value="2"></div>
+      </div>
+      <div class="out" id="tq-res"></div>
+      <div class="steps" id="tq-steps"></div>
+      <div id="tq-tab" style="margin-top:10px"></div>
+      <div class="small muted" style="margin-top:6px">No cilindro horizontal o volume não é linear com o nível: use a tabela para linearizar no CLP/DCS (strapping).</div>
+    </div>
+    </div>
+
+    <!-- CÉLULA DE CARGA -->
+    <div class="cpanel hidden" id="p-peso">
+    <div class="card">
+      <h2 style="margin-top:0">Célula de carga</h2>
+      <div class="small muted">Saída (mV) = sensibilidade (mV/V) × excitação (V) × carga / capacidade total.</div>
+      <div class="grid2" style="margin-top:10px">
+        <div><label class="lbl">Capacidade de cada célula (kg)</label><input id="lc-cap" inputmode="decimal" value="5000"></div>
+        <div><label class="lbl">Número de células</label><input id="lc-n" inputmode="decimal" value="4"></div>
+        <div><label class="lbl">Sensibilidade (mV/V)</label><input id="lc-s" inputmode="decimal" value="2"></div>
+        <div><label class="lbl">Excitação (V)</label><input id="lc-e" inputmode="decimal" value="10"></div>
+        <div><label class="lbl">Peso morto / tara (kg)</label><input id="lc-t" inputmode="decimal" value="3000"></div>
+        <div><label class="lbl">Carga útil (produto) atual (kg)</label><input id="lc-w" inputmode="decimal" value="6000"></div>
+        <div><label class="lbl">Range do transmissor: LRV (kg líquido)</label><input id="lc-lrv" inputmode="decimal" value="0"></div>
+        <div><label class="lbl">URV (kg líquido)</label><input id="lc-urv" inputmode="decimal" value="12000"></div>
+      </div>
+      <div class="out" id="lc-res"></div>
+      <div class="steps" id="lc-steps"></div>
+      <div class="warn hidden" id="lc-warn"></div>
+    </div>
+    </div>
+
+    <!-- MASSA E FORÇA -->
+    <div class="cpanel hidden" id="p-massa">
+    <div class="card">
+      <h2 style="margin-top:0">Conversão de massa e força</h2>
+      <div class="numwrap"><input id="ms-v" inputmode="decimal" value="1000"><select id="ms-u" style="width:auto"></select></div>
+      <div id="ms-tab" style="margin-top:10px"></div>
+      <div class="small muted" style="margin-top:6px">Massa (kg) é a quantidade de matéria. Peso é força: P = m·g. Com g padrão (9,80665 m/s²), 1 kgf = 9,80665 N. Balanças industriais indicam massa, calibradas com pesos-padrão.</div>
+    </div>
+    </div>
+
+    <div class="card small muted">Ferramentas de apoio ao estudo e à pré-configuração. Valores finais de projeto seguem a folha de dados, a memória de cálculo do fabricante e as normas aplicáveis.</div>
   </section>
 </main>
 
@@ -689,8 +976,281 @@ document.getElementById('c-mode').addEventListener('change',()=>{
 
 renderHome(); renderPdfs();
 if('serviceWorker' in navigator && location.protocol==='https:' && !location.hostname.endsWith('claude.ai')){
-  navigator.serviceWorker.register('sw.js').catch(()=>{});
+  navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(r=>r.update()).catch(()=>{});
+  let reloaded=false; navigator.serviceWorker.addEventListener('controllerchange',()=>{ if(!reloaded){ reloaded=true; location.reload(); } });
 }
+</script>
+<script>
+// ================= CALCULADORAS DE INSTRUMENTAÇÃO =================
+(function(){
+const $=id=>document.getElementById(id);
+const N=id=>parseNum($(id).value);
+const V=id=>$(id).value;
+const G=9.80665, PATM=101325;
+const PU={'Pa':1,'kPa':1e3,'MPa':1e6,'bar':1e5,'mbar':100,'kgf/cm²':98066.5,'psi':6894.757,'mmH2O':9.80665,'mH2O':9806.65,'inH2O':249.08891,'mmHg':133.3224,'atm':101325};
+const FU={'t/h':['m',1000/3600],'kg/h':['m',1/3600],'kg/s':['m',1],'lb/h':['m',0.45359237/3600],'m³/h':['v',1/3600],'L/min':['v',1/60000],'L/s':['v',1e-3],'gpm (US)':['v',3.785411784e-3/60]};
+function fill(id,obj,def){ const s=$(id); s.innerHTML=Object.keys(obj).map(k=>`<option${k===def?' selected':''}>${k}</option>`).join(''); }
+function F(x,d){ if(!isFinite(x)) return '–'; const a=Math.abs(x); if(d===undefined) d=a>=10000?0:a>=1000?1:a>=100?2:a>=1?3:a>=0.01?4:6;
+  return x.toLocaleString('pt-BR',{maximumFractionDigits:d,minimumFractionDigits:0}); }
+function stat(v,l){ return `<div class="stat"><b>${v}</b><span>${l}</span></div>`; }
+function table(head,rows){ return `<table class="tb"><thead><tr>${head.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table>`; }
+function toKgS(q,u,rho){ const [t,f]=FU[u]; return t==='m'?q*f:q*f*rho; }
+function fromKgS(m,u,rho){ const [t,f]=FU[u]; return t==='m'?m/f:m/rho/f; }
+
+// ---------- navegação dos painéis ----------
+function showPanel(k){ document.querySelectorAll('.cpanel').forEach(p=>p.classList.toggle('hidden',p.id!=='p-'+k)); RUN[k]&&RUN[k](); try{localStorage.setItem('instr-calc',k);}catch(e){} }
+$('calc-sel').addEventListener('change',()=>showPanel(V('calc-sel')));
+
+// ---------- ISO 5167-2 ----------
+function isoC(beta,Re,Dmm,tap){
+  let L1,L2; if(tap==='flange'){L1=L2=25.4/Dmm;} else if(tap==='canto'){L1=L2=0;} else {L1=1;L2=0.47;}
+  const b4=beta**4, A=Math.pow(19000*beta/Re,0.8), M2=2*L2/(1-beta);
+  let C=0.5961+0.0261*beta*beta-0.216*beta**8+0.000521*Math.pow(1e6*beta/Re,0.7)
+    +(0.0188+0.0063*A)*Math.pow(beta,3.5)*Math.pow(1e6/Re,0.3)
+    +(0.043+0.080*Math.exp(-10*L1)-0.123*Math.exp(-7*L1))*(1-0.11*A)*b4/(1-b4)
+    -0.031*(M2-0.8*Math.pow(M2,1.1))*Math.pow(beta,1.3);
+  if(Dmm<71.12) C+=0.011*(0.75-beta)*(2.8-Dmm/25.4);
+  return C;
+}
+function isoEps(beta,dp,p1,k){ const r=1-dp/p1; if(r<=0) return NaN; return 1-(0.351+0.256*beta**4+0.93*beta**8)*(1-Math.pow(r,1/k)); }
+function orQ(dp,o){ // vazão mássica kg/s a partir do ΔP
+  const beta=o.d/o.D, E=1/Math.sqrt(1-beta**4), Ad=Math.PI/4*o.d*o.d, eps=o.gas?isoEps(beta,dp,o.p1,o.k):1;
+  let C=0.6,q=0,Re=0; for(let i=0;i<60;i++){ q=C*E*eps*Ad*Math.sqrt(2*dp*o.rho); Re=4*q/(Math.PI*o.mu*o.D); const Cn=isoC(beta,Re,o.D*1000,o.tap); if(Math.abs(Cn-C)<1e-10){C=Cn;break;} C=Cn; }
+  q=C*E*eps*Ad*Math.sqrt(2*dp*o.rho); return {q,C,E,eps,Re,beta};
+}
+function orDP(q,o){ // ΔP (Pa) a partir da vazão mássica
+  const beta=o.d/o.D, E=1/Math.sqrt(1-beta**4), Ad=Math.PI/4*o.d*o.d, Re=4*q/(Math.PI*o.mu*o.D), C=isoC(beta,Re,o.D*1000,o.tap);
+  let eps=1,dp=0; for(let i=0;i<80;i++){ dp=Math.pow(q/(C*E*eps*Ad),2)/(2*o.rho); if(!o.gas) break; const en=isoEps(beta,dp,o.p1,o.k); if(!isFinite(en)) return {dp:NaN}; if(Math.abs(en-eps)<1e-12){eps=en;break;} eps=en; }
+  dp=Math.pow(q/(C*E*eps*Ad),2)/(2*o.rho); return {dp,C,E,eps,Re,beta};
+}
+function orSize(q,dp,o){ // dimensiona d (bisseção em β)
+  let lo=0.05,hi=0.85; const f=b=>orQ(dp,Object.assign({},o,{d:b*o.D})).q-q;
+  if(f(lo)>0||f(hi)<0) return null;
+  for(let i=0;i<80;i++){ const m=(lo+hi)/2; f(m)>0?hi=m:lo=m; }
+  return (lo+hi)/2;
+}
+function runOrif(){
+  const mode=V('or-mode'), gas=V('or-fl')==='g';
+  $('or-d-wrap').classList.toggle('hidden',mode==='d');
+  $('or-q-wrap').classList.toggle('hidden',mode==='q');
+  $('or-dp-wrap').classList.toggle('hidden',mode==='dp');
+  document.querySelectorAll('#p-orif .g-only').forEach(e=>e.classList.toggle('hidden',!gas));
+  const lam=parseFloat(V('or-mat')), T=N('or-T');
+  $('or-T-wrap').classList.toggle('hidden',lam===0 && !gas);
+  const kT=lam? (1+lam*(T-20)) : 1;
+  const D=N('or-D')/1000*kT, d=N('or-d')/1000*kT, rho=N('or-rho'), mu=N('or-mu')/1000, k=N('or-k');
+  const p1=gas? N('or-p1')*PU[V('or-p1u')]+(V('or-p1t')==='g'?PATM:0) : 1e9;
+  const o={D,d,rho,mu,k,p1,gas,tap:V('or-tap')};
+  const out=$('or-out'), st=$('or-steps'), w=$('or-warn'); const warns=[];
+  if([D,rho,mu].some(x=>!isFinite(x)||x<=0)||(gas&&(!isFinite(p1)||!isFinite(k)))){ out.innerHTML=''; st.textContent='Preencha os dados.'; w.classList.add('hidden'); return; }
+  let r, q, dp, dd=d;
+  if(mode==='dp'){ q=toKgS(N('or-q'),V('or-qu'),rho); if(!(d>0&&d<D)){st.textContent='d deve ser menor que D.';out.innerHTML='';return;} r=orDP(q,o); dp=r.dp; }
+  else if(mode==='q'){ dp=N('or-dp')*PU[V('or-dpu')]; if(!(d>0&&d<D)){st.textContent='d deve ser menor que D.';out.innerHTML='';return;} r=orQ(dp,o); q=r.q; }
+  else { q=toKgS(N('or-q'),V('or-qu'),rho); dp=N('or-dp')*PU[V('or-dpu')]; const b=orSize(q,dp,o);
+    if(b===null){ out.innerHTML=''; st.textContent='Não há β entre 0,05 e 0,85 que atenda: ajuste o ΔP ou o diâmetro da linha.'; w.classList.add('hidden'); return; }
+    dd=b*D; o.d=dd; r=orQ(dp,o); }
+  if(!isFinite(dp)){ out.innerHTML=''; st.textContent='ΔP resultante maior que a pressão a montante: vazão impossível para este orifício.'; return; }
+  const dpU=u=>F(dp/PU[u]);
+  let html='';
+  if(mode==='dp') html=stat(dpU('mmH2O'),'ΔP mmH2O')+stat(dpU('kPa'),'ΔP kPa')+stat(dpU('mbar'),'ΔP mbar');
+  else if(mode==='q') html=stat(F(fromKgS(q,'t/h')),'t/h')+stat(F(fromKgS(q,'kg/h')),'kg/h')+stat(F(fromKgS(q,'m³/h',rho)),'m³/h (operação)');
+  else html=stat(F(dd*1000/kT,2),'d a 20 °C (mm)')+stat(F(r.beta,4),'β = d/D')+stat(F(dd*1000,2),'d na operação (mm)');
+  out.innerHTML=html;
+  let s=`β = d/D = ${F(dd*1000,2)}/${F(D*1000,2)} = ${F(r.beta,4)}\nE = 1/√(1−β⁴) = ${F(r.E,4)}\nReD = 4·qm/(π·μ·D) = ${F(r.Re,0)}\nC (Reader-Harris/Gallagher) = ${F(r.C,4)}\nε (expansibilidade) = ${F(r.eps,4)}\nqm = C·E·ε·(π/4)·d²·√(2·ΔP·ρ)\n\n`;
+  s+=`Vazão: ${F(fromKgS(q,'t/h'))} t/h · ${F(fromKgS(q,'kg/h'))} kg/h · ${F(fromKgS(q,'m³/h',rho))} m³/h\n`;
+  s+=`ΔP: ${dpU('mmH2O')} mmH2O · ${dpU('kPa')} kPa · ${dpU('mbar')} mbar · ${dpU('kgf/cm²')} kgf/cm² · ${dpU('inH2O')} inH2O`;
+  if(kT!==1) s+=`\n\nCorreção térmica: D e d × ${F(kT,6)} (λ = ${F(lam*1e6,1)}×10⁻⁶/°C, ${F(T,1)} °C)`;
+  if(gas) s+=`\np1 = ${F(p1/1e5,4)} bar abs · p2/p1 = ${F(1-dp/p1,4)}`;
+  st.textContent=s;
+  if(r.beta<0.1||r.beta>0.75) warns.push('β fora da faixa da ISO 5167-2 (0,10 a 0,75).');
+  if(D*1000<50||D*1000>1000) warns.push('D fora da faixa da norma (50 a 1000 mm).');
+  if(dd*1000<12.5) warns.push('d menor que 12,5 mm: fora da norma.');
+  if(gas && (1-dp/p1)<0.75) warns.push('p2/p1 < 0,75: fora do limite da norma para a fórmula de ε.');
+  const Remin = r.beta<=0.56?5000:16000*r.beta*r.beta; if(r.Re<Remin) warns.push(`Reynolds abaixo do mínimo da norma (≈ ${F(Remin,0)}).`);
+  w.innerHTML=warns.join('<br>'); w.classList.toggle('hidden',!warns.length);
+}
+fill('or-p1u',PU,'kgf/cm²'); fill('or-qu',FU,'t/h'); fill('or-dpu',PU,'mmH2O');
+$('or-estrho').addEventListener('click',()=>{
+  const p1=N('or-p1')*PU[V('or-p1u')]+(V('or-p1t')==='g'?PATM:0), T=N('or-T')+273.15, M=N('or-M')/1000, Z=N('or-Z');
+  const rho=p1*M/(Z*8.314462618*T); if(isFinite(rho)){ $('or-rho').value=F(rho,4); runOrif(); }
+});
+
+// ---------- Vazão por ΔP ----------
+function runRaiz(){
+  const dpmax=N('rz-dpmax'), qmax=N('rz-qmax'), u=V('rz-dpu'), qu=V('rz-qu'), sq=V('rz-out')==='sqrt', inp=V('rz-in'), x=N('rz-x');
+  $('rz-lbl').textContent = inp==='ma'?'Sinal (mA)':inp==='dp'?'ΔP ('+u+')':'Vazão ('+qu+')';
+  let fq; // fração de vazão 0..1
+  if(inp==='ma'){ const f=(x-4)/16; fq= sq? f : Math.sqrt(Math.max(0,f)); }
+  else if(inp==='dp') fq=Math.sqrt(Math.max(0,x/dpmax));
+  else fq=x/qmax;
+  const fdp=fq*fq, ma= sq? 4+16*fq : 4+16*fdp;
+  $('rz-res').innerHTML=stat(F(fq*qmax),'vazão '+qu)+stat(F(fdp*dpmax),'ΔP '+u)+stat(F(ma,2),'mA');
+  $('rz-steps').textContent=`Vazão = ${F(fq*100,2)}% → ΔP = (${F(fq,4)})² = ${F(fdp*100,2)}% do ΔPmáx\nSaída ${sq?'com extração de raiz: mA = 4 + 16 × %vazão':'linear em ΔP: mA = 4 + 16 × %ΔP'} = ${F(ma,2)} mA`;
+  const pts=[0,10,20,25,30,40,50,60,70,75,80,90,100];
+  $('rz-tab').innerHTML=table(['Vazão %','Vazão '+qu,'ΔP %','ΔP '+u,'mA linear','mA c/ raiz'],
+    pts.map(p=>{const f=p/100;return [p+'%',F(f*qmax),F(f*f*100,2)+'%',F(f*f*dpmax),F(4+16*f*f,2),F(4+16*f,2)];}));
+  const rp=N('rz-rp'), rr=N('rz-rr'), qi=N('rz-qi'), mass=V('rz-qt')==='m';
+  const fac= mass? Math.sqrt(rr/rp) : Math.sqrt(rp/rr);
+  $('rz-corr').textContent = `${mass?'Mássica: Q_real = Q_ind × √(ρ_real/ρ_proj)':'Volumétrica: Q_real = Q_ind × √(ρ_proj/ρ_real)'}\nFator = ${F(fac,5)}\nQ_real = ${F(qi)} × ${F(fac,5)} = ${F(qi*fac)} (erro de ${F((fac-1)*100,2)}% sem correção)`;
+}
+fill('rz-dpu',PU,'mmH2O');
+
+// ---------- Nível ----------
+function runNivel(){
+  const t=V('nv-tipo'), sgp=N('nv-rp')/1000, sgs=N('nv-rs')/1000, lmin=N('nv-lmin'), lmax=N('nv-lmax'), h0=N('nv-h0'), ht=N('nv-ht'), L=N('nv-l'), u=V('nv-u');
+  $('nv-htw').classList.toggle('hidden',t==='aberto'); $('nv-rsw').classList.toggle('hidden',t==='aberto');
+  $('nv-h0w').classList.toggle('hidden',t==='selos');
+  $('nv-rsl').textContent = t==='umida'?'ρ do líquido da perna úmida (kg/m³)':'ρ do fluido de selagem do capilar (kg/m³)';
+  const dpmm = l => t==='aberto' ? sgp*(h0+l) : t==='umida' ? sgp*(h0+l) - sgs*(h0+ht) : sgp*l - sgs*ht;
+  const cv = mm => mm*G/PU[u];
+  const lrv=cv(dpmm(lmin)), urv=cv(dpmm(lmax)), span=urv-lrv;
+  let html=stat(F(lrv),'LRV '+u)+stat(F(urv),'URV '+u)+stat(F(span),'span '+u);
+  $('nv-res').innerHTML=html;
+  let s='';
+  if(t==='aberto') s=`ΔP = ρp·g·(h0 + L)\nLRV: ${F(sgp,4)} × (${F(h0)} + ${F(lmin)}) = ${F(dpmm(lmin))} mmH2O\nURV: ${F(sgp,4)} × (${F(h0)} + ${F(lmax)}) = ${F(dpmm(lmax))} mmH2O`;
+  else if(t==='umida') s=`ΔP = ρp·g·(h0 + L) − ρw·g·(h0 + Htomadas)\nLado L (perna úmida): ${F(sgs,4)} × (${F(h0)} + ${F(ht)}) = ${F(sgs*(h0+ht))} mmH2O\nLRV: ${F(dpmm(lmin))} mmH2O · URV: ${F(dpmm(lmax))} mmH2O`;
+  else s=`ΔP = ρp·g·L − ρs·g·Htomadas  (a cota do transmissor se cancela)\nCapilares: ${F(sgs,4)} × ${F(ht)} = ${F(sgs*ht)} mmH2O\nLRV: ${F(dpmm(lmin))} mmH2O · URV: ${F(dpmm(lmax))} mmH2O`;
+  if(isFinite(L)){ const dp=cv(dpmm(L)), f=(dp-lrv)/span; s+=`\n\nNível ${F(L)} mm → ΔP = ${F(dp)} ${u} → ${F(f*100,2)}% → ${F(4+16*f,2)} mA`; }
+  $('nv-steps').textContent=s;
+  $('nv-note').innerHTML = (lrv<0?'<b>LRV negativo</b>: o zero do transmissor fica abaixo de 0 (típico de perna úmida e selos).':lrv>0?'<b>LRV positivo</b>: o zero fica acima de 0 (típico de transmissor abaixo da tomada).':'LRV = 0.')
+    +'<br>A nomenclatura varia: pela ISA, LRV &gt; 0 é "zero suprimido" e LRV &lt; 0 é "zero elevado". Alguns materiais usam o inverso: confira a convenção da sua empresa.';
+}
+fill('nv-u',PU,'mmH2O');
+
+// ---------- Pressão ----------
+function runPres(){
+  const v=N('pr-v'), u=V('pr-u'), pa=v*PU[u];
+  $('pr-tab').innerHTML=table(['Unidade','Valor'],Object.keys(PU).map(k=>[k,`<span class="mono">${F(pa/PU[k])}</span>`]));
+  const a=N('pa-v')*PU[V('pa-u')], atm=N('pa-atm')*1e5, ua=V('pa-u');
+  const abs = V('pa-t')==='g'? a+atm : a, man = abs-atm;
+  $('pa-out').textContent=`Absoluta: ${F(abs/PU[ua])} ${ua}(a)  ·  ${F(abs/1e5)} bar(a)\nManométrica: ${F(man/PU[ua])} ${ua}(g)  ·  ${F(man/1e5)} bar(g)${man<0?'\n(negativo = vácuo em relação à atmosfera)':''}`;
+  const ph=N('ph-r')*G*N('ph-h'), uh=V('ph-u');
+  $('ph-out').textContent=`P = ρ·g·h = ${F(N('ph-r'))} × 9,80665 × ${F(N('ph-h'))} = ${F(ph)} Pa\n= ${F(ph/PU[uh])} ${uh}\nO transmissor lê ${F(ph/PU[uh])} ${uh} a mais. Compense: LRV e URV deslocados em +${F(ph/PU[uh])} ${uh}, ou faça o ajuste de zero com a linha cheia.`;
+}
+fill('pr-u',PU,'kgf/cm²'); fill('pa-u',PU,'kgf/cm²'); fill('ph-u',PU,'kPa');
+
+// ---------- Calibração ----------
+const CLP=[0,25,50,75,100];
+function buildCal(){
+  const two=V('cl-dir')==='2';
+  let h='<table class="tb"><thead><tr><th>%</th><th>Entrada</th><th>mA esperado</th><th>mA subida</th>'+(two?'<th>mA descida</th>':'')+'<th>Erro % span</th><th></th></tr></thead><tbody>';
+  CLP.forEach((p,i)=>{ h+=`<tr><td>${p}%</td><td class="mono" id="cl-in${i}"></td><td class="mono" id="cl-ex${i}"></td><td><input class="mini" id="cl-up${i}" inputmode="decimal" placeholder="—"></td>`+(two?`<td><input class="mini" id="cl-dn${i}" inputmode="decimal" placeholder="—"></td>`:'')+`<td class="mono" id="cl-er${i}"></td><td id="cl-ok${i}"></td></tr>`; });
+  $('cl-tab').innerHTML=h+'</tbody></table>';
+  $('cl-tab').querySelectorAll('input').forEach(e=>e.addEventListener('input',runCal));
+  runCal();
+}
+function runCal(){
+  const lrv=N('cl-lrv'), urv=N('cl-urv'), u=V('cl-u'), sq=V('cl-f')==='sqrt', tol=N('cl-tol'), two=V('cl-dir')==='2';
+  let maxE=0, maxH=0, errs=[], any=false;
+  CLP.forEach((p,i)=>{
+    const f=p/100, inp= sq? lrv+(urv-lrv)*f*f : lrv+(urv-lrv)*f, ex= 4+16*f;
+    $('cl-in'+i).textContent=F(inp)+' '+u+(sq?' (ΔP)':''); $('cl-ex'+i).textContent=F(ex,3);
+    const up=parseNum($('cl-up'+i).value), dn=two?parseNum(($('cl-dn'+i)||{}).value):NaN;
+    let e=NaN, txt='';
+    if(isFinite(up)){ e=(up-ex)/16*100; any=true; errs.push(e); }
+    if(isFinite(dn)){ const e2=(dn-ex)/16*100; errs.push(e2); if(!isFinite(e)||Math.abs(e2)>Math.abs(e)) e=e2; if(isFinite(up)) maxH=Math.max(maxH,Math.abs(up-dn)/16*100); any=true; }
+    $('cl-er'+i).textContent=isFinite(e)?(e>=0?'+':'')+F(e,3)+'%':'';
+    const ok=isFinite(e)?Math.abs(e)<=tol:null; if(isFinite(e)) maxE=Math.max(maxE,Math.abs(e));
+    $('cl-ok'+i).innerHTML= ok===null?'':ok?'<span style="color:var(--green)">✔</span>':'<span style="color:var(--red)">✘</span>';
+  });
+  if(!any){ $('cl-sum').textContent=`Preencha os mA medidos.\n${sq?'Na função raiz quadrada, a entrada de cada ponto é o ΔP que gera aquele % de vazão (ex.: 50% → 25% do ΔP).':'Entrada = LRV + span × %.'}`; return; }
+  const mean=errs.reduce((a,b)=>a+b,0)/errs.length, spread=Math.max(...errs)-Math.min(...errs);
+  let s=`Maior erro: ${F(maxE,3)}% do span (tolerância ±${F(tol,3)}%) → ${maxE<=tol?'CONFORME':'FORA DO CRITÉRIO'}`;
+  if(two && maxH>0) s+=`\nMaior histerese (subida − descida): ${F(maxH,3)}% do span`;
+  s+=`\nErro médio: ${mean>=0?'+':''}${F(mean,3)}% · dispersão: ${F(spread,3)}%`;
+  if(maxE>tol){
+    const e0=parseNum($('cl-up0').value), e4=parseNum($('cl-up4').value);
+    if(isFinite(e0)&&isFinite(e4)){ const d0=(e0-4)/16*100, d4=(e4-20)/16*100;
+      if(Math.abs(d0-d4)<tol) s+='\nPadrão: erro parecido em toda a faixa → indica ajuste de ZERO (deslocamento).';
+      else if(Math.abs(d0)<tol) s+='\nPadrão: zero bom e erro crescendo até 100% → indica ajuste de SPAN (ganho).';
+      else s+='\nPadrão: zero e span com erro → ajuste o zero primeiro, depois o span, e repita (eles interagem em alguns modelos).'; }
+    s+='\nApós qualquer ajuste: calibre de novo e registre o "como deixado".';
+  }
+  $('cl-sum').textContent=s;
+}
+['cl-lrv','cl-urv','cl-u','cl-f','cl-tol'].forEach(i=>$(i).addEventListener('input',runCal));
+$('cl-dir').addEventListener('change',buildCal);
+
+// ---------- Pt100 ----------
+const CA=3.9083e-3, CB=-5.775e-7, CC=-4.183e-12;
+function cvdR(T,R0){ return R0*(1+CA*T+CB*T*T+(T<0?CC*(T-100)*T**3:0)); }
+function cvdT(R,R0){ if(R>=R0) return (-CA+Math.sqrt(CA*CA-4*CB*(1-R/R0)))/(2*CB);
+  let T=(R/R0-1)/CA; for(let i=0;i<50;i++){ const f=cvdR(T,R0)-R, df=R0*(CA+2*CB*T+CC*(4*T**3-300*T*T)); T-=f/df; } return T; }
+function runTemp(){
+  const R0=+V('tp-r0'), m=V('tp-m'), x=N('tp-x'), lrv=N('tp-lrv'), urv=N('tp-urv');
+  $('tp-l').textContent= m==='t'?'Temperatura (°C)':'Resistência (Ω)';
+  const T= m==='t'? x : cvdT(x,R0), R= m==='t'? cvdR(x,R0) : x, f=(T-lrv)/(urv-lrv);
+  $('tp-res').innerHTML=stat(F(T,2),'°C')+stat(F(R,3),'Ω')+stat(F(4+16*f,3),'mA (range)');
+  $('tp-tab').innerHTML=table(['%','°C','Ω','mA'],[0,25,50,75,100].map(p=>{const t=lrv+(urv-lrv)*p/100;return [p+'%',F(t,2),F(cvdR(t,R0),3),F(4+16*p/100,2)];}));
+}
+
+// ---------- Conversões de vazão ----------
+function runVaz(){
+  const q=N('vz-q'), u=V('vz-qu'), r=N('vz-r'), m=toKgS(q,u,r);
+  $('vz-tab').innerHTML=table(['Unidade','Valor'],Object.keys(FU).map(k=>[k,`<span class="mono">${F(fromKgS(m,k,r))}</span>`]));
+  const Q=N('vv-q')/3600, D=N('vv-d')/1000, rv=N('vv-r'), mu=N('vv-mu')/1000, A=Math.PI/4*D*D, v=Q/A, Re=rv*v*D/mu;
+  $('vv-out').textContent=`Área = π/4 × D² = ${F(A,5)} m²\nv = Q/A = ${F(v,3)} m/s\nRe = ρ·v·D/μ = ${F(Re,0)} (${Re<2300?'laminar':Re<4000?'transição':'turbulento'})`;
+  const p=(N('gn-p')+N('gn-a'))*1e5, T=N('gn-t')+273.15, z=N('gn-z'), qg=N('gn-q'), fac=(101325/p)*(T/273.15)*z;
+  $('gn-out').textContent = V('gn-m')==='n'
+    ? `Q_real = Q_N × (P_N/P) × (T/T_N) × Z\n= ${F(qg)} × (1,01325/${F(p/1e5,4)}) × (${F(T,2)}/273,15) × ${F(z,3)}\n= ${F(qg*fac)} m³/h nas condições de operação`
+    : `Q_N = Q_real × (P/P_N) × (T_N/T) / Z\n= ${F(qg)} × (${F(p/1e5,4)}/1,01325) × (273,15/${F(T,2)}) / ${F(z,3)}\n= ${F(qg/fac)} Nm³/h`;
+}
+fill('vz-qu',FU,'t/h');
+
+
+// ---------- Tanque ----------
+function segArea(R,h){ h=Math.max(0,Math.min(2*R,h)); return R*R*Math.acos((R-h)/R)-(R-h)*Math.sqrt(2*R*h-h*h); }
+function runTanque(){
+  const f=V('tq-f'), r=N('tq-r'), a=N('tq-a'), b=N('tq-b'), c=N('tq-c'), hm=N('tq-hm'), h=N('tq-h');
+  $('tq-al').textContent= f==='r'?'Comprimento (m)':'Diâmetro (m)';
+  $('tq-bw').classList.toggle('hidden',f==='v'); $('tq-cw').classList.toggle('hidden',f!=='r');
+  $('tq-bl').textContent='Comprimento (m)';
+  const vol = x => f==='v'? Math.PI/4*a*a*x : f==='h'? segArea(a/2,x)*b : a*c*x;
+  const hmax = f==='h'? Math.min(hm,a) : hm;
+  const Vt=vol(hmax), Vh=vol(h);
+  $('tq-res').innerHTML=stat(F(Vh),'m³ atuais')+stat(F(Vh*r/1000),'t atuais')+stat(F(Vh/Vt*100,2)+'%','do volume útil');
+  let s= f==='v'?'V = π/4 × D² × h':f==='h'?'V = A_segmento(h) × L,  A = R²·acos((R−h)/R) − (R−h)·√(2Rh − h²)':'V = comprimento × largura × h';
+  s+=`
+Volume útil (h = ${F(hmax)} m): ${F(Vt)} m³ = ${F(Vt*1000,0)} L
+Nível ${F(h)} m → ${F(Vh)} m³ · massa = ρ·V = ${F(Vh*r)} kg`;
+  s+=`
+Nível ${F(h/hmax*100,2)}% da altura ≠ volume ${F(Vh/Vt*100,2)}%`;
+  $('tq-steps').textContent=s;
+  $('tq-tab').innerHTML=table(['Nível %','Nível m','Volume m³','Volume %','Massa t'],[0,10,20,30,40,50,60,70,80,90,100].map(p=>{const x=hmax*p/100,v=vol(x);return [p+'%',F(x),F(v),F(v/Vt*100,2)+'%',F(v*r/1000)];}));
+}
+
+// ---------- Célula de carga ----------
+function runPeso(){
+  const cap=N('lc-cap'), n=N('lc-n'), s=N('lc-s'), e=N('lc-e'), t=N('lc-t'), w=N('lc-w'), lrv=N('lc-lrv'), urv=N('lc-urv');
+  const capT=cap*n, full=s*e, tot=t+w, mv=full*tot/capT, mvT=full*t/capT, f=(w-lrv)/(urv-lrv);
+  $('lc-res').innerHTML=stat(F(mv,3),'mV no somador')+stat(F(tot/capT*100,1)+'%','da capacidade')+stat(F(4+16*f,2),'mA (range)');
+  $('lc-steps').textContent=`Capacidade total = ${F(cap)} × ${F(n,0)} = ${F(capT)} kg
+Fundo de escala = ${F(s,3)} mV/V × ${F(e,2)} V = ${F(full,3)} mV
+Tara ${F(t)} kg → ${F(mvT,3)} mV (zero do transmissor)
+Tara + produto = ${F(tot)} kg → ${F(mv,3)} mV
+Sensibilidade = ${F(full/capT*1000,4)} mV por tonelada
+Range: ${F(lrv)} a ${F(urv)} kg líquido → ${F(mvT+full*lrv/capT,3)} a ${F(mvT+full*urv/capT,3)} mV`;
+  const warns=[]; const used=(t+urv)/capT;
+  if(used>0.8) warns.push(`Tara + URV usam ${F(used*100,1)}% da capacidade. Recomenda-se ficar abaixo de ~70–80% para margem de sobrecarga, vento e impacto.`);
+  if(t/capT>0.5) warns.push('A tara ocupa mais da metade da capacidade: a resolução útil fica menor.');
+  $('lc-warn').innerHTML=warns.join('<br>'); $('lc-warn').classList.toggle('hidden',!warns.length);
+}
+
+// ---------- Massa e força ----------
+const MU={'kg':1,'g':1e-3,'t':1000,'lb':0.45359237,'oz':0.028349523,'kgf (força)':1,'N (força)':1/9.80665,'kN (força)':1000/9.80665,'lbf (força)':0.45359237};
+function runMassa(){ const v=N('ms-v'), kg=v*MU[V('ms-u')];
+  $('ms-tab').innerHTML=table(['Unidade','Valor'],Object.keys(MU).map(k=>[k,`<span class="mono">${F(kg/MU[k])}</span>`])); }
+fill('ms-u',MU,'kg');
+
+const RUN={tanque:runTanque,peso:runPeso,massa:runMassa,orif:runOrif,raiz:runRaiz,nivel:runNivel,pres:runPres,cal:buildCal,temp:runTemp,vaz:runVaz,escala:()=>calc()};
+const MAP={tanque:'tq-',peso:'lc-',massa:'ms-',orif:'or-',raiz:'rz-',nivel:'nv-',pres:['pr-','pa-','ph-'],temp:'tp-',vaz:['vz-','vv-','gn-']};
+Object.entries(MAP).forEach(([k,pre])=>{ [].concat(pre).forEach(px=>{
+  document.querySelectorAll(`#p-${k} input[id^="${px}"], #p-${k} select[id^="${px}"]`).forEach(e=>{ e.addEventListener('input',RUN[k]); e.addEventListener('change',RUN[k]); });
+});});
+buildCal();
+try{const k=localStorage.getItem('instr-calc'); if(k&&$('p-'+k)){ $('calc-sel').value=k; showPanel(k);} }catch(e){}
+window.__calcTest={orDP,orQ,orSize,isoC,cvdR,cvdT};
+})();
 </script>
 </body>
 </html>
