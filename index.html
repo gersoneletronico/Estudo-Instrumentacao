@@ -140,6 +140,10 @@ optgroup{font-weight:700;color:var(--navy)}
 .sticky-out .stat{background:var(--cyan-soft);transition:background .4s}
 .sticky-out.flash .stat{background:#bfeef7}
 .out.sticky-out{margin-top:8px}
+.sec-t{font-size:.74rem;font-weight:700;color:var(--cyan);text-transform:uppercase;letter-spacing:.7px;margin:18px 0 8px;padding-top:12px;border-top:1px solid var(--line)}
+.hint{font-size:.82rem;color:var(--muted);background:var(--bg);border-radius:10px;padding:8px 10px;margin-top:8px}
+.tagline{font-size:.8rem;color:#076f84;background:var(--cyan-soft);border-radius:8px;padding:7px 10px;margin-top:8px;font-family:'IBM Plex Mono',monospace}
+pre.steps{margin:0}
 .hidden{display:none !important}
 
 .center{text-align:center}
@@ -402,22 +406,100 @@ optgroup{font-weight:700;color:var(--navy)}
     <div class="card">
       <h2 style="margin-top:0">Nível por pressão hidrostática</h2>
       <div class="out sticky-out" id="nv-res"></div>
-      <div class="small muted">P = ρ·g·h. Calcula LRV/URV do transmissor de pressão ou ΔP, com a cota do transmissor, a perna úmida ou os selos remotos.</div>
-      <div style="margin-top:10px"><label class="lbl">Montagem</label>
-        <select id="nv-tipo"><option value="aberto">Tanque aberto, ou fechado com perna seca</option><option value="umida">Tanque fechado com perna úmida (lado L)</option><option value="selos">Selos remotos com capilar nos dois lados</option></select></div>
-      <div class="grid2" style="margin-top:10px">
-        <div><label class="lbl">ρ do processo (kg/m³)</label><input id="nv-rp" inputmode="decimal" value="1000"></div>
-        <div><label class="lbl">Unidade de saída</label><select id="nv-u"></select></div>
-        <div><label class="lbl">Nível mínimo (mm, acima da tomada inferior)</label><input id="nv-lmin" inputmode="decimal" value="0"></div>
-        <div><label class="lbl">Nível máximo (mm, acima da tomada inferior)</label><input id="nv-lmax" inputmode="decimal" value="3000"></div>
+      <div class="small muted">Calcula LRV e URV do transmissor de pressão ou ΔP a partir do produto, da geometria e da instalação.</div>
+
+      <div class="sec-t">1 · Aplicação</div>
+      <select id="nv-tipo">
+        <option value="aberto">Tanque aberto (ou fechado com perna seca)</option>
+        <option value="umida">Tanque fechado com perna úmida</option>
+        <option value="selos">Selos remotos com capilar nos dois lados</option>
+        <option value="drum">Tambor de caldeira (perna de referência)</option>
+      </select>
+      <div class="hint" id="nv-hint"></div>
+
+      <div class="sec-t" id="nv-prod-t">2 · Produto</div>
+      <div id="nv-prod-w">
+        <select id="nv-prod">
+          <optgroup label="Água">
+            <option value="agua" selected>Água / condensado (pela temperatura)</option>
+          </optgroup>
+          <optgroup label="Usina de açúcar e etanol">
+            <option value="1.05">Caldo de cana (SG ≈ 1,05)</option>
+            <option value="1.30">Xarope (SG ≈ 1,30)</option>
+            <option value="1.40">Melaço / mel final (SG ≈ 1,40)</option>
+            <option value="1.02">Vinhaça (SG ≈ 1,02)</option>
+            <option value="0.81">Etanol hidratado (SG ≈ 0,81)</option>
+          </optgroup>
+          <optgroup label="Químicos">
+            <option value="1.84">Ácido sulfúrico 98% (SG ≈ 1,84)</option>
+            <option value="1.52">Soda cáustica 50% (SG ≈ 1,52)</option>
+            <option value="1.16">Ácido clorídrico 33% (SG ≈ 1,16)</option>
+          </optgroup>
+          <optgroup label="Combustíveis">
+            <option value="0.85">Óleo diesel (SG ≈ 0,85)</option>
+            <option value="0.98">Óleo combustível BPF (SG ≈ 0,98)</option>
+            <option value="0.74">Gasolina (SG ≈ 0,74)</option>
+          </optgroup>
+          <optgroup label="Outro">
+            <option value="sg">Informar densidade relativa (SG)</option>
+          </optgroup>
+        </select>
+        <div class="grid2" style="margin-top:8px">
+          <div id="nv-tw"><label class="lbl">Temperatura do produto (°C)</label><input id="nv-t" inputmode="decimal" value="25"></div>
+          <div id="nv-sgw" class="hidden"><label class="lbl">Densidade relativa (SG)</label><input id="nv-sg" inputmode="decimal" value="1,000"></div>
+        </div>
+        <div class="tagline" id="nv-prod-info"></div>
+      </div>
+
+      <div id="nv-drum-w" class="hidden">
+        <div class="grid2">
+          <div><label class="lbl">Pressão do tambor</label><input id="nv-dp" inputmode="decimal" value="21"></div>
+          <div><label class="lbl">Unidade (manométrica)</label><select id="nv-dpu"></select></div>
+          <div><label class="lbl">Temperatura da perna de referência (°C)</label><input id="nv-dt" inputmode="decimal" value="50"></div>
+        </div>
+        <div class="tagline" id="nv-drum-info"></div>
+      </div>
+
+      <div class="sec-t">3 · Faixa de medição</div>
+      <div class="grid2">
+        <div><label class="lbl">Nível 0% (mm acima da tomada inferior)</label><input id="nv-lmin" inputmode="decimal" value="0"></div>
+        <div><label class="lbl">Nível 100% (mm acima da tomada inferior)</label><input id="nv-lmax" inputmode="decimal" value="3000"></div>
+      </div>
+
+      <div class="sec-t">4 · Instalação</div>
+      <div class="grid2">
         <div id="nv-h0w"><label class="lbl">Transmissor abaixo da tomada inferior (mm)</label><input id="nv-h0" inputmode="decimal" value="500"></div>
-        <div id="nv-htw"><label class="lbl">Distância entre tomadas (mm)</label><input id="nv-ht" inputmode="decimal" value="3500"></div>
-        <div id="nv-rsw"><label class="lbl" id="nv-rsl">ρ do fluido de selagem (kg/m³)</label><input id="nv-rs" inputmode="decimal" value="1000"></div>
+        <div id="nv-htw"><label class="lbl">Distância entre as tomadas (mm)</label><input id="nv-ht" inputmode="decimal" value="3500"></div>
+      </div>
+      <div class="small muted" id="nv-h0-note" style="margin-top:4px">Transmissor acima da tomada: use valor negativo.</div>
+      <div id="nv-legw" class="hidden" style="margin-top:8px">
+        <label class="lbl">Líquido da perna úmida</label>
+        <select id="nv-leg"><option value="agua">Água / condensado (pela temperatura)</option><option value="1.07">Glicol 50% (SG ≈ 1,07)</option><option value="prod">O mesmo produto do tanque</option><option value="sg">Informar SG</option></select>
+        <div class="grid2" style="margin-top:8px">
+          <div id="nv-legtw"><label class="lbl">Temperatura da perna (°C)</label><input id="nv-legt" inputmode="decimal" value="30"></div>
+          <div id="nv-legsgw" class="hidden"><label class="lbl">SG da perna</label><input id="nv-legsg" inputmode="decimal" value="1,000"></div>
+        </div>
+      </div>
+      <div id="nv-sealw" class="hidden" style="margin-top:8px">
+        <label class="lbl">Fluido de enchimento dos selos</label>
+        <select id="nv-seal"><option value="0.93">Silicone DC 200 (SG ≈ 0,93)</option><option value="1.07">Silicone DC 704, alta temperatura (SG ≈ 1,07)</option><option value="0.92">Neobee M-20, grau alimentício (SG ≈ 0,92)</option><option value="1.26">Glicerina (SG ≈ 1,26)</option><option value="1.85">Halocarbono, oxigênio/cloro (SG ≈ 1,85)</option><option value="sg">Informar SG</option></select>
+        <div id="nv-sealsgw" class="hidden" style="margin-top:8px"><label class="lbl">SG do fluido de enchimento</label><input id="nv-sealsg" inputmode="decimal" value="0,930"></div>
+      </div>
+
+      <div class="sec-t">5 · Saída</div>
+      <div class="grid2">
+        <div><label class="lbl">Unidade de configuração</label><select id="nv-u"></select></div>
         <div><label class="lbl">Nível atual (mm), opcional</label><input id="nv-l" inputmode="decimal" value="1500"></div>
       </div>
-      <div class="small muted" style="margin-top:6px">Se o transmissor estiver acima da tomada inferior, use valor negativo.</div>
+
       <div class="steps" id="nv-steps"></div>
+      <div id="nv-tab" style="margin-top:10px;overflow-x:auto"></div>
       <div class="warn" id="nv-note"></div>
+
+      <div class="sec-t">Folha de configuração</div>
+      <pre class="steps" id="nv-sheet" style="margin-top:4px"></pre>
+      <button class="btn sec block" id="nv-copy" type="button">Copiar configuração</button>
+      <div class="small muted" style="margin-top:8px">SG típicos a ~20 °C. Para o valor de projeto, use a folha de dados do produto ou a FISPQ. mmH2O considerado a 4 °C (9,80665 Pa).</div>
     </div>
     </div>
 
@@ -1064,6 +1146,14 @@ function steamProps(Pabs_Pa,TC){ const P=Pabs_Pa/1e6, T=TC+273.15; if(P<0.000611
   const r=steamR2(TT,P); const mu=steamMu(r.rho,TT); const k=r.w*r.w*r.rho/(P*1e6);
   return {rho:r.rho, mu, k, Ts, sup:T-Ts}; }
 
+// ---------- Água líquida: IAPWS-IF97 região 1 ----------
+const IF1={"Region1_n": [0.14632971213167, -0.84548187169114, -3.756360367204, 3.3855169168385, -0.95791963387872, 0.15772038513228, -0.016616417199501, 0.00081214629983568, 0.00028319080123804, -0.00060706301565874, -0.018990068218419, -0.032529748770505, -0.021841717175414, -5.283835796993e-05, -0.00047184321073267, -0.00030001780793026, 4.7661393906987e-05, -4.4141845330846e-06, -7.2694996297594e-16, -3.1679644845054e-05, -2.8270797985312e-06, -8.5205128120103e-10, -2.2425281908e-06, -6.5171222895601e-07, -1.4341729937924e-13, -4.0516996860117e-07, -1.2734301741641e-09, -1.7424871230634e-10, -6.8762131295531e-19, 1.4478307828521e-20, 2.6335781662795e-23, -1.1947622640071e-23, 1.8228094581404e-24, -9.3537087292458e-26], "Region1_Li": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 2.0, 2.0, 2.0, 2.0, 2.0, 3.0, 3.0, 3.0, 4.0, 4.0, 4.0, 5.0, 8.0, 8.0, 21.0, 23.0, 29.0, 30.0, 31.0, 32.0], "Region1_Lj": [-2.0, -1.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0, -9.0, -7.0, -1.0, 0.0, 1.0, 3.0, -3.0, 0.0, 1.0, 3.0, 17.0, -4.0, 0.0, 6.0, -5.0, -2.0, 10.0, -8.0, -11.0, -6.0, -29.0, -31.0, -38.0, -39.0, -40.0, -41.0]};
+function waterR1(T,P){ // ρ (kg/m³), T em K, P em MPa
+  const Tr=1386/T, Pr=P/16.53, n=IF1.Region1_n, Li=IF1.Region1_Li, Lj=IF1.Region1_Lj; let gp=0;
+  for(let i=0;i<n.length;i++) gp-=n[i]*Li[i]*Math.pow(7.1-Pr,Li[i]-1)*Math.pow(Tr-1.222,Lj[i]);
+  const v=Pr*gp*IF.R*T/P/1000; return 1/v; }
+function waterRho(TC,Pabs_Pa){ const P=Math.max(Pabs_Pa||101325,611.3)/1e6, T=TC+273.15; const Ts=tsatP(P); return waterR1(Math.min(T,Ts-1e-6),P); }
+
 // ---------- ISO 5167-2 ----------
 function isoC(beta,Re,Dmm,tap){
   let L1,L2; if(tap==='flange'){L1=L2=25.4/Dmm;} else if(tap==='canto'){L1=L2=0;} else {L1=1;L2=0.47;}
@@ -1170,27 +1260,83 @@ function runRaiz(){
 }
 fill('rz-dpu',PU,'mmH2O');
 
-// ---------- Nível ----------
+// ---------- Nível (profissional) ----------
+const NV_HINT={
+  aberto:'HP na tomada inferior com a linha cheia de produto; LP aberto para a atmosfera (ou perna seca, cheia de gás).',
+  umida:'Lado L ligado ao topo por uma perna sempre cheia de líquido (selagem). O ΔP diminui da perna e o LRV costuma ficar negativo.',
+  selos:'Selos de diafragma nas duas tomadas, com capilares cheios do fluido de enchimento. A altura do transmissor se cancela.',
+  drum:'HP na perna de referência (pote de condensado), sempre cheia; LP na tomada inferior do tambor. Usa as densidades de água e vapor saturados na pressão do tambor.'
+};
+function nvProd(){ const v=V('nv-prod'); $('nv-tw').classList.toggle('hidden',v!=='agua'); $('nv-sgw').classList.toggle('hidden',v!=='sg');
+  if(v==='agua'){ const t=N('nv-t'); const r=waterRho(t,101325); return {sg:r/1000, nome:`Água a ${F(t,1)} °C`, rho:r}; }
+  if(v==='sg'){ const s=N('nv-sg'); return {sg:s, nome:`Produto com SG ${F(s,4)}`, rho:s*1000}; }
+  const s=parseFloat(v); const nome=$('nv-prod').selectedOptions[0].textContent.replace(/\s*\(SG.*$/,''); return {sg:s, nome, rho:s*1000}; }
+function nvLeg(prodSg){ const v=V('nv-leg'); $('nv-legtw').classList.toggle('hidden',v!=='agua'); $('nv-legsgw').classList.toggle('hidden',v!=='sg');
+  if(v==='agua'){ const t=N('nv-legt'); return {sg:waterRho(t,101325)/1000, nome:`água a ${F(t,1)} °C`}; }
+  if(v==='prod') return {sg:prodSg, nome:'o mesmo produto'};
+  if(v==='sg') return {sg:N('nv-legsg'), nome:'SG informado'};
+  return {sg:parseFloat(v), nome:'glicol 50%'}; }
+function nvSeal(){ const v=V('nv-seal'); $('nv-sealsgw').classList.toggle('hidden',v!=='sg');
+  if(v==='sg') return {sg:N('nv-sealsg'), nome:'SG informado'};
+  return {sg:parseFloat(v), nome:$('nv-seal').selectedOptions[0].textContent.replace(/\s*\(SG.*$/,'')}; }
+let NV_SHEET='';
 function runNivel(){
-  const t=V('nv-tipo'), sgp=N('nv-rp')/1000, sgs=N('nv-rs')/1000, lmin=N('nv-lmin'), lmax=N('nv-lmax'), h0=N('nv-h0'), ht=N('nv-ht'), L=N('nv-l'), u=V('nv-u');
-  $('nv-htw').classList.toggle('hidden',t==='aberto'); $('nv-rsw').classList.toggle('hidden',t==='aberto');
-  $('nv-h0w').classList.toggle('hidden',t==='selos');
-  $('nv-rsl').textContent = t==='umida'?'ρ do líquido da perna úmida (kg/m³)':'ρ do fluido de selagem do capilar (kg/m³)';
-  const dpmm = l => t==='aberto' ? sgp*(h0+l) : t==='umida' ? sgp*(h0+l) - sgs*(h0+ht) : sgp*l - sgs*ht;
-  const cv = mm => mm*G/PU[u];
+  const t=V('nv-tipo'), u=V('nv-u'), lmin=N('nv-lmin'), lmax=N('nv-lmax'), h0=N('nv-h0'), ht=N('nv-ht'), L=N('nv-l');
+  const drum=t==='drum';
+  $('nv-hint').textContent=NV_HINT[t];
+  $('nv-prod-w').classList.toggle('hidden',drum); $('nv-drum-w').classList.toggle('hidden',!drum);
+  $('nv-prod-t').textContent= drum?'2 · Condições do tambor':'2 · Produto';
+  $('nv-h0w').classList.toggle('hidden',t==='selos'||drum); $('nv-h0-note').classList.toggle('hidden',t==='selos'||drum);
+  $('nv-htw').classList.toggle('hidden',t==='aberto');
+  $('nv-legw').classList.toggle('hidden',t!=='umida'); $('nv-sealw').classList.toggle('hidden',t!=='selos');
+  let dpmm, desc='', form='', extra='', prodTxt='';
+  if(!drum){
+    const p=nvProd(); prodTxt=p.nome+` (SG ${F(p.sg,4)})`;
+    $('nv-prod-info').textContent=`SG = ${F(p.sg,4)} · ρ = ${F(p.rho,1)} kg/m³ · 1 m de produto = ${F(p.sg*1000,1)} mmH2O`;
+    if(t==='aberto'){ dpmm=l=>p.sg*(h0+l); form=`ΔP = SG × (h0 + L) = ${F(p.sg,4)} × (${F(h0)} + L)`; }
+    else if(t==='umida'){ const lg=nvLeg(p.sg); dpmm=l=>p.sg*(h0+l)-lg.sg*(h0+ht); form=`ΔP = SGp × (h0 + L) − SGperna × (h0 + H)\nPerna úmida (${lg.nome}, SG ${F(lg.sg,4)}): ${F(lg.sg*(h0+ht))} mmH2O`; extra=`Perna úmida: ${lg.nome}, SG ${F(lg.sg,4)}`; }
+    else { const s=nvSeal(); dpmm=l=>p.sg*l-s.sg*ht; form=`ΔP = SGp × L − SGenchimento × H  (a altura do transmissor se cancela)\nCapilares (${s.nome}): ${F(s.sg,4)} × ${F(ht)} = ${F(s.sg*ht)} mmH2O`; extra=`Selos: ${s.nome}, SG ${F(s.sg,4)}`; }
+  } else {
+    const Pg=N('nv-dp')*PU[V('nv-dpu')], P=Pg+PATM, Pm=P/1e6;
+    if(!(Pm>0.0012&&Pm<16.5)){ $('nv-res').innerHTML=''; $('nv-steps').textContent='Pressão do tambor fora da faixa (até ~165 bar abs).'; $('nv-tab').innerHTML=''; $('nv-sheet').textContent=''; return; }
+    const Ts=tsatP(Pm), rw=waterR1(Ts,Pm), rs=steamR2(Ts,Pm).rho, tr=N('nv-dt'), rr=waterRho(tr,P);
+    const sw=rw/1000, ss=rs/1000, sr=rr/1000;
+    $('nv-drum-info').textContent=`Tsat = ${F(Ts-273.15,2)} °C · água saturada SG ${F(sw,4)} · vapor saturado SG ${F(ss,5)} · perna de referência SG ${F(sr,4)}`;
+    dpmm=l=>sr*ht-(sw*l+ss*(ht-l));
+    form=`ΔP = SGref × H − [SGágua × L + SGvapor × (H − L)]\n= ${F(sr,4)} × ${F(ht)} − [${F(sw,4)} × L + ${F(ss,5)} × (${F(ht)} − L)]`;
+    prodTxt=`Água saturada a ${F(N('nv-dp'))} ${V('nv-dpu')} (Tsat ${F(Ts-273.15,1)} °C)`; extra=`Perna de referência a ${F(tr,1)} °C`;
+  }
+  const cv=mm=>mm*G/PU[u];
   const lrv=cv(dpmm(lmin)), urv=cv(dpmm(lmax)), span=urv-lrv;
-  let html=stat(F(lrv),'LRV '+u)+stat(F(urv),'URV '+u)+stat(F(span),'span '+u);
-  $('nv-res').innerHTML=html;
-  let s='';
-  if(t==='aberto') s=`ΔP = ρp·g·(h0 + L)\nLRV: ${F(sgp,4)} × (${F(h0)} + ${F(lmin)}) = ${F(dpmm(lmin))} mmH2O\nURV: ${F(sgp,4)} × (${F(h0)} + ${F(lmax)}) = ${F(dpmm(lmax))} mmH2O`;
-  else if(t==='umida') s=`ΔP = ρp·g·(h0 + L) − ρw·g·(h0 + Htomadas)\nLado L (perna úmida): ${F(sgs,4)} × (${F(h0)} + ${F(ht)}) = ${F(sgs*(h0+ht))} mmH2O\nLRV: ${F(dpmm(lmin))} mmH2O · URV: ${F(dpmm(lmax))} mmH2O`;
-  else s=`ΔP = ρp·g·L − ρs·g·Htomadas  (a cota do transmissor se cancela)\nCapilares: ${F(sgs,4)} × ${F(ht)} = ${F(sgs*ht)} mmH2O\nLRV: ${F(dpmm(lmin))} mmH2O · URV: ${F(dpmm(lmax))} mmH2O`;
-  if(isFinite(L)){ const dp=cv(dpmm(L)), f=(dp-lrv)/span; s+=`\n\nNível ${F(L)} mm → ΔP = ${F(dp)} ${u} → ${F(f*100,2)}% → ${F(4+16*f,2)} mA`; }
+  if(!isFinite(lrv)||!isFinite(urv)||span===0){ $('nv-res').innerHTML=''; $('nv-steps').textContent='Confira os dados.'; return; }
+  $('nv-res').innerHTML=stat(F(lrv),'LRV · 4 mA')+stat(F(urv),'URV · 20 mA')+stat(F(Math.abs(span)),'span '+u);
+  let s=form+`\n\nLRV (nível ${F(lmin)} mm) = ${F(dpmm(lmin))} mmH2O = ${F(lrv)} ${u}\nURV (nível ${F(lmax)} mm) = ${F(dpmm(lmax))} mmH2O = ${F(urv)} ${u}`;
+  if(isFinite(L)){ const dp=cv(dpmm(L)), f=(dp-lrv)/span; s+=`\n\nNível atual ${F(L)} mm → ΔP ${F(dp)} ${u} → ${F(f*100,2)}% → ${F(4+16*f,2)} mA`; }
   $('nv-steps').textContent=s;
-  $('nv-note').innerHTML = (lrv<0?'<b>LRV negativo</b>: o zero do transmissor fica abaixo de 0 (típico de perna úmida e selos).':lrv>0?'<b>LRV positivo</b>: o zero fica acima de 0 (típico de transmissor abaixo da tomada).':'LRV = 0.')
-    +'<br>A nomenclatura varia: pela ISA, LRV &gt; 0 é "zero suprimido" e LRV &lt; 0 é "zero elevado". Alguns materiais usam o inverso: confira a convenção da sua empresa.';
+  $('nv-tab').innerHTML=table(['Nível %','Nível mm','ΔP '+u,'mA'],[0,10,25,50,75,90,100].map(p=>{const l=lmin+(lmax-lmin)*p/100;return [p+'%',F(l),F(cv(dpmm(l))),F(4+16*p/100,2)];}));
+  const notes=[];
+  if(span<0) notes.push('<b>LRV maior que URV (ação reversa):</b> o ΔP cai quando o nível sobe. A maioria dos transmissores aceita LRV &gt; URV; outra opção é inverter as ligações HP/LP ou a ação no DCS.');
+  if(lrv<0) notes.push('<b>LRV negativo:</b> o zero do transmissor fica abaixo de 0 (típico de perna úmida e selos).');
+  else if(lrv>0 && span>0) notes.push('<b>LRV positivo:</b> o zero fica acima de 0 (típico de transmissor abaixo da tomada).');
+  if(drum) notes.push('<b>Tambor:</b> a calibração vale para a pressão de operação. Na partida, com o tambor frio e sem pressão, a indicação fica diferente. É comum compensar a densidade pela pressão no DCS.');
+  if(t==='selos') notes.push('<b>Selos:</b> a temperatura muda o SG do fluido de enchimento e os capilares sofrem efeito do sol e do ambiente. Mantenha os dois capilares com o mesmo comprimento e protegidos.');
+  if(t==='umida') notes.push('<b>Perna úmida:</b> a perna precisa estar sempre cheia. Se ela esvaziar, a indicação sobe indevidamente.');
+  notes.push('Nomenclatura: pela ISA, LRV &gt; 0 é "zero suprimido" e LRV &lt; 0 é "zero elevado". Alguns materiais usam o inverso: confira a convenção da sua empresa.');
+  $('nv-note').innerHTML=notes.join('<br><br>');
+  const apl=$('nv-tipo').selectedOptions[0].textContent;
+  NV_SHEET=`CONFIGURAÇÃO DO TRANSMISSOR — NÍVEL
+Aplicação: ${apl}
+Produto: ${prodTxt}${extra?'\n'+extra:''}
+Faixa de nível: ${F(lmin)} a ${F(lmax)} mm${t!=='aberto'?`\nDistância entre tomadas: ${F(ht)} mm`:''}${(t==='aberto'||t==='umida')?`\nTransmissor abaixo da tomada inferior: ${F(h0)} mm`:''}
+LRV (4 mA): ${F(lrv)} ${u}
+URV (20 mA): ${F(urv)} ${u}
+Função de transferência: linear${span<0?' (LRV > URV, ação reversa)':''}`;
+  $('nv-sheet').textContent=NV_SHEET;
 }
-fill('nv-u',PU,'mmH2O');
+fill('nv-u',PU,'mmH2O'); fill('nv-dpu',PU,'kgf/cm²');
+$('nv-copy').addEventListener('click',()=>{ const b=$('nv-copy'); const done=()=>{ b.textContent='Copiado ✔'; setTimeout(()=>b.textContent='Copiar configuração',1500); };
+  try{ navigator.clipboard.writeText(NV_SHEET).then(done,()=>{ selText(); }); }catch(e){ selText(); }
+  function selText(){ const r=document.createRange(); r.selectNodeContents($('nv-sheet')); const s=getSelection(); s.removeAllRanges(); s.addRange(r); b.textContent='Texto selecionado: toque em Copiar'; } });
 
 // ---------- Pressão ----------
 function runPres(){
