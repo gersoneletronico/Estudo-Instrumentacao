@@ -95,7 +95,7 @@ input:focus,select:focus{outline:none;border-color:var(--cyan)}
 .ruler b{display:block;color:var(--navy)}
 .warn{background:var(--orange-soft);border-radius:10px;padding:10px 12px;font-size:.85rem;margin-top:8px}
 /* calc */
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.grid2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}
 label.lbl{font-size:.78rem;color:var(--muted);display:block;margin-bottom:4px}
 .out{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
 .out .stat b{font-size:1.1rem}
@@ -120,7 +120,7 @@ optgroup{font-weight:700;color:var(--navy)}
 .pick-txt b{font-size:1rem;font-weight:600}
 .chev{width:22px;height:22px;stroke:var(--muted);fill:none;stroke-width:2}
 .badge{flex:none;width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:1rem;color:#fff;background:var(--navy)}
-.b-L{background:#2563a8}.b-F{background:#0aa5c2}.b-T{background:#e07a1e}.b-P{background:#0f2a44}.b-W{background:#1f9d61}.b-mA{background:#6b4fbb}
+.b-L{background:#2563a8}.b-F{background:#0aa5c2}.b-T{background:#e07a1e}.b-P{background:#0f2a44}.b-W{background:#1f9d61}.b-mA{background:#6b4fbb}.b-A{background:#b0397a}
 .sheet{position:fixed;inset:0;z-index:20;display:flex;align-items:flex-end;justify-content:center}
 .sheet-bg{position:absolute;inset:0;background:rgba(15,42,68,.45)}
 .sheet-box{position:relative;background:#fff;width:100%;max-width:760px;max-height:86vh;overflow-y:auto;border-radius:18px 18px 0 0;padding:6px 14px calc(18px + env(safe-area-inset-bottom));animation:up .2s ease-out}
@@ -144,6 +144,25 @@ optgroup{font-weight:700;color:var(--navy)}
 .hint{font-size:.82rem;color:var(--muted);background:var(--bg);border-radius:10px;padding:8px 10px;margin-top:8px}
 .tagline{font-size:.8rem;color:#076f84;background:var(--cyan-soft);border-radius:8px;padding:7px 10px;margin-top:8px;font-family:'IBM Plex Mono',monospace}
 pre.steps{margin:0}
+.psel{width:100%;min-width:0;display:flex;align-items:center;gap:8px;border:1.5px solid var(--line);background:#fff;border-radius:10px;padding:10px 12px;font:inherit;cursor:pointer;text-align:left;color:var(--ink);min-height:46px}
+.psel:active{background:var(--bg)}
+.psel .pv{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.psel .pv small{color:var(--muted);font-size:.78rem;margin-left:6px}
+.psel svg{width:18px;height:18px;flex:none;stroke:var(--muted);fill:none;stroke-width:2}
+.numwrap .psel{width:auto;flex:none;max-width:52%}
+.opt-it{display:flex;align-items:center;gap:10px;width:100%;text-align:left;border:1px solid var(--line);background:#fff;border-radius:12px;padding:11px 13px;margin:0 0 7px;font:inherit;cursor:pointer;color:var(--ink)}
+.opt-it .ot{flex:1}
+.opt-it b{display:block;font-weight:600;font-size:.95rem}
+.opt-it small{color:var(--muted);font-size:.8rem}
+.opt-it .ck{width:20px;height:20px;border-radius:50%;border:2px solid var(--line);flex:none}
+.opt-it.on{border-color:var(--cyan);background:var(--cyan-soft)}
+.opt-it.on .ck{border-color:var(--cyan);background:var(--cyan);box-shadow:inset 0 0 0 3px #fff}
+.og{font-size:.74rem;font-weight:700;color:var(--cyan);text-transform:uppercase;letter-spacing:.7px;margin:14px 2px 8px}
+.illus{margin:4px 0 12px;background:#fbfcfd;border:1px solid var(--line);border-radius:12px;padding:6px 4px}
+.illus svg{width:100%;height:auto;display:block;max-height:260px}
+.sym{display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:18px;padding:0 5px;margin-right:6px;border-radius:5px;background:var(--navy);color:#fff;font-family:'IBM Plex Mono',monospace;font-size:.72rem;font-weight:600;vertical-align:1px}
+.sym sub{font-size:.6rem;margin-left:1px}
+#p-escala .gauge{display:none}
 .hidden{display:none !important}
 
 .center{text-align:center}
@@ -299,6 +318,13 @@ pre.steps{margin:0}
         <svg viewBox="0 0 24 24" class="chev"><path d="M6 9l6 6 6-6"/></svg>
       </button>
     </div>
+    <div class="sheet hidden" id="pick-sheet">
+      <div class="sheet-bg" data-close></div>
+      <div class="sheet-box">
+        <div class="sheet-head"><b id="pick-title">Selecione</b><button class="sheet-x" data-close type="button">✕</button></div>
+        <div id="pick-list"></div>
+      </div>
+    </div>
     <div class="sheet hidden" id="calc-sheet">
       <div class="sheet-bg" data-close></div>
       <div class="sheet-box">
@@ -311,16 +337,17 @@ pre.steps{margin:0}
     <div class="cpanel" id="p-escala">
     <div class="card">
       <h2 style="margin-top:0">Escala 4-20 mA</h2>
+      <div class="illus" id="es-ill"></div>
       <div class="grid2">
-        <div><label class="lbl">LRV</label><input id="c-lrv" inputmode="decimal" value="0"></div>
-        <div><label class="lbl">URV</label><input id="c-urv" inputmode="decimal" value="10"></div>
+        <div><label class="lbl"><span class="sym">LRV</span>LRV</label><input id="c-lrv" inputmode="decimal" value="0"></div>
+        <div><label class="lbl"><span class="sym">URV</span>URV</label><input id="c-urv" inputmode="decimal" value="10"></div>
       </div>
       <div class="grid2" style="margin-top:10px">
         <div><label class="lbl">Unidade</label><input id="c-un" value="bar"></div>
         <div><label class="lbl">Eu tenho</label>
           <select id="c-mode"><option value="v">o valor</option><option value="p">o %</option><option value="m" selected>o sinal (mA)</option></select></div>
       </div>
-      <div style="margin-top:10px"><label class="lbl" id="c-in-lbl">Sinal (mA)</label><input id="c-in" inputmode="decimal" value="12"></div>
+      <div style="margin-top:10px"><label class="lbl"><span class="sym">x</span><span id="c-in-lbl">Sinal (mA)</span></label><input id="c-in" inputmode="decimal" value="12"></div>
       <div class="out">
         <div class="stat"><b id="o-v">–</b><span>valor</span></div>
         <div class="stat"><b id="o-p">–</b><span>% da faixa</span></div>
@@ -337,25 +364,26 @@ pre.steps{margin:0}
     <div class="card">
       <h2 style="margin-top:0">Placa de orifício (ISO 5167-2)</h2>
       <div class="out sticky-out" id="or-out"></div>
+      <div class="illus" id="or-ill"></div>
       <div class="small muted">Placa concêntrica de canto vivo. Coeficiente C por Reader-Harris/Gallagher, com iteração em Reynolds.</div>
       <div class="grid2" style="margin-top:10px">
         <div><label class="lbl">Calcular</label><select id="or-mode"><option value="dp">ΔP (tenho a vazão)</option><option value="q">Vazão (tenho o ΔP)</option><option value="d">Orifício d (tenho vazão e ΔP)</option></select></div>
         <div><label class="lbl">Fluido</label><select id="or-fl"><option value="s" selected>Vapor d'água (IAPWS-IF97)</option><option value="g">Gás (ρ informado)</option><option value="l">Líquido</option></select></div>
         <div><label class="lbl">Tomadas</label><select id="or-tap"><option value="flange">Flange (1")</option><option value="canto">Canto (corner)</option><option value="dd2">D e D/2</option></select></div>
         <div><label class="lbl">Correção térmica de D e d</label><select id="or-mat"><option value="0">Sem correção (já corrigidos)</option><option value="11.5e-6">Aço carbono (11,5×10⁻⁶/°C)</option><option value="16.5e-6">Inox 304/316 (16,5×10⁻⁶/°C)</option></select></div>
-        <div><label class="lbl">D interno do tubo (mm)</label><input id="or-D" inputmode="decimal" value="254,50"></div>
-        <div id="or-d-wrap"><label class="lbl">d do orifício (mm)</label><input id="or-d" inputmode="decimal" value="161,20"></div>
-        <div id="or-T-wrap"><label class="lbl">Temperatura do fluido (°C)</label><input id="or-T" inputmode="decimal" value="320"><label class="small s-only" style="display:flex;gap:6px;align-items:center;margin-top:6px"><input type="checkbox" id="or-sat" style="width:auto"> Vapor saturado (T = Tsat)</label></div>
-        <div><label class="lbl">Massa específica ρ (kg/m³)</label><input id="or-rho" inputmode="decimal" value="8,28"></div>
-        <div><label class="lbl">Viscosidade μ (cP)</label><input id="or-mu" inputmode="decimal" value="0,021"></div>
-        <div class="g-only"><label class="lbl">Expoente isentrópico κ</label><input id="or-k" inputmode="decimal" value="1,3"></div>
+        <div><label class="lbl"><span class="sym">D</span>Diâmetro interno do tubo (mm)</label><input id="or-D" inputmode="decimal" value="254,50"></div>
+        <div id="or-d-wrap"><label class="lbl"><span class="sym">d</span>Diâmetro do orifício (mm)</label><input id="or-d" inputmode="decimal" value="161,20"></div>
+        <div id="or-T-wrap"><label class="lbl"><span class="sym">T</span>Temperatura do fluido (°C)</label><input id="or-T" inputmode="decimal" value="320"><label class="small s-only" style="display:flex;gap:6px;align-items:center;margin-top:6px"><input type="checkbox" id="or-sat" style="width:auto"> Vapor saturado (T = Tsat)</label></div>
+        <div><label class="lbl"><span class="sym">ρ</span>Massa específica ρ (kg/m³)</label><input id="or-rho" inputmode="decimal" value="8,28"></div>
+        <div><label class="lbl"><span class="sym">μ</span>Viscosidade μ (cP)</label><input id="or-mu" inputmode="decimal" value="0,021"></div>
+        <div class="g-only"><label class="lbl"><span class="sym">κ</span>Expoente isentrópico κ</label><input id="or-k" inputmode="decimal" value="1,3"></div>
       </div>
-      <div class="g-only" style="margin-top:10px"><label class="lbl">Pressão a montante p1</label>
-        <div class="numwrap"><input id="or-p1" inputmode="decimal" value="21"><select id="or-p1u" style="width:auto"></select><select id="or-p1t" style="width:auto"><option value="g">man. (g)</option><option value="a">abs. (a)</option></select></div></div>
-      <div id="or-q-wrap" style="margin-top:10px"><label class="lbl">Vazão</label>
-        <div class="numwrap"><input id="or-q" inputmode="decimal" value="60"><select id="or-qu" style="width:auto"></select></div></div>
-      <div id="or-dp-wrap" class="hidden" style="margin-top:10px"><label class="lbl">ΔP</label>
-        <div class="numwrap"><input id="or-dp" inputmode="decimal" value="9565"><select id="or-dpu" style="width:auto"></select></div></div>
+      <div class="g-only" style="margin-top:10px"><label class="lbl"><span class="sym">p1</span>Pressão a montante p1</label>
+        <div class="numwrap"><input id="or-p1" inputmode="decimal" value="21"><select id="or-p1u" data-title="Unidade" style="width:auto"></select><select id="or-p1t" data-title="Tipo de pressão" style="width:auto"><option value="g">man. (g)</option><option value="a">abs. (a)</option></select></div></div>
+      <div id="or-q-wrap" style="margin-top:10px"><label class="lbl"><span class="sym">q</span>Vazão</label>
+        <div class="numwrap"><input id="or-q" inputmode="decimal" value="60"><select id="or-qu" data-title="Unidade" style="width:auto"></select></div></div>
+      <div id="or-dp-wrap" class="hidden" style="margin-top:10px"><label class="lbl"><span class="sym">ΔP</span>ΔP</label>
+        <div class="numwrap"><input id="or-dp" inputmode="decimal" value="9565"><select id="or-dpu" data-title="Unidade" style="width:auto"></select></div></div>
       <div class="steps s-only" id="or-steam" style="margin-top:10px"></div>
       <details class="gas-only" style="margin-top:10px"><summary class="small" style="cursor:pointer;color:var(--navy);font-weight:600">Estimar ρ de gás (gás real: P·M / Z·R·T)</summary>
         <div class="grid2" style="margin-top:8px">
@@ -375,25 +403,26 @@ pre.steps{margin:0}
     <div class="card">
       <h2 style="margin-top:0">Vazão por ΔP — raiz quadrada</h2>
       <div class="out sticky-out" id="rz-res"></div>
+      <div class="illus" id="rz-ill"></div>
       <div class="small muted">Q = Qmáx × √(ΔP / ΔPmáx). Vale para placa de orifício, Venturi, bocal e Annubar.</div>
       <div class="grid2" style="margin-top:10px">
-        <div><label class="lbl">ΔP máximo (URV do transmissor)</label><input id="rz-dpmax" inputmode="decimal" value="10000"></div>
+        <div><label class="lbl"><span class="sym">ΔP<sub>máx</sub></span>ΔP máximo (URV do transmissor)</label><input id="rz-dpmax" inputmode="decimal" value="10000"></div>
         <div><label class="lbl">Unidade de ΔP</label><select id="rz-dpu"></select></div>
-        <div><label class="lbl">Vazão máxima (100%)</label><input id="rz-qmax" inputmode="decimal" value="60"></div>
+        <div><label class="lbl"><span class="sym">Q<sub>máx</sub></span>Vazão máxima (100%)</label><input id="rz-qmax" inputmode="decimal" value="60"></div>
         <div><label class="lbl">Unidade de vazão</label><input id="rz-qu" value="t/h"></div>
         <div><label class="lbl">Saída do transmissor</label><select id="rz-out"><option value="lin">Linear em ΔP (raiz no CLP/DCS)</option><option value="sqrt">Com extração de raiz no transmissor</option></select></div>
         <div><label class="lbl">Eu tenho</label><select id="rz-in"><option value="ma">o sinal (mA)</option><option value="dp">o ΔP</option><option value="q">a vazão</option></select></div>
       </div>
-      <div style="margin-top:10px"><label class="lbl" id="rz-lbl">Sinal (mA)</label><input id="rz-x" inputmode="decimal" value="12"></div>
+      <div style="margin-top:10px"><label class="lbl"><span class="sym">x</span><span id="rz-lbl">Sinal (mA)</span></label><input id="rz-x" inputmode="decimal" value="12"></div>
       <div class="steps" id="rz-steps"></div>
       <h3 style="margin-top:14px">Tabela de pontos</h3>
       <div id="rz-tab"></div>
       <details style="margin-top:12px"><summary class="small" style="cursor:pointer;color:var(--navy);font-weight:600">Correção de densidade (fluido fora do projeto)</summary>
         <div class="grid2" style="margin-top:8px">
-          <div><label class="lbl">ρ de projeto (kg/m³)</label><input id="rz-rp" inputmode="decimal" value="8,28"></div>
-          <div><label class="lbl">ρ real (kg/m³)</label><input id="rz-rr" inputmode="decimal" value="7,88"></div>
+          <div><label class="lbl"><span class="sym">ρ<sub>proj</sub></span>ρ de projeto (kg/m³)</label><input id="rz-rp" inputmode="decimal" value="8,28"></div>
+          <div><label class="lbl"><span class="sym">ρ<sub>real</sub></span>ρ real (kg/m³)</label><input id="rz-rr" inputmode="decimal" value="7,88"></div>
           <div><label class="lbl">Tipo de vazão</label><select id="rz-qt"><option value="m">Mássica (kg/h, t/h)</option><option value="v">Volumétrica (m³/h)</option></select></div>
-          <div><label class="lbl">Vazão indicada</label><input id="rz-qi" inputmode="decimal" value="60"></div>
+          <div><label class="lbl"><span class="sym">Q<sub>ind</sub></span>Vazão indicada</label><input id="rz-qi" inputmode="decimal" value="60"></div>
         </div>
         <div class="steps" id="rz-corr"></div>
       </details>
@@ -404,22 +433,23 @@ pre.steps{margin:0}
     <!-- NÍVEL -->
     <div class="cpanel hidden" id="p-nivel">
     <div class="card">
-      <h2 style="margin-top:0">Nível por pressão hidrostática</h2>
+      <h2 style="margin-top:0" id="nv-title">Nível por pressão hidrostática</h2>
       <div class="out sticky-out" id="nv-res"></div>
+      <div class="illus" id="nv-ill"></div>
       <div class="small muted">Calcula LRV e URV do transmissor de pressão ou ΔP a partir do produto, da geometria e da instalação.</div>
 
       <div class="sec-t">1 · Aplicação</div>
-      <select id="nv-tipo">
+      <div id="nv-tipo-w"><select id="nv-tipo" data-title="Aplicação">
         <option value="aberto">Tanque aberto (ou fechado com perna seca)</option>
         <option value="umida">Tanque fechado com perna úmida</option>
         <option value="selos">Selos remotos com capilar nos dois lados</option>
         <option value="drum">Tambor de caldeira (perna de referência)</option>
-      </select>
+      </select></div>
       <div class="hint" id="nv-hint"></div>
 
       <div class="sec-t" id="nv-prod-t">2 · Produto</div>
       <div id="nv-prod-w">
-        <select id="nv-prod">
+        <select id="nv-prod" data-title="Produto">
           <optgroup label="Água">
             <option value="agua" selected>Água / condensado (pela temperatura)</option>
           </optgroup>
@@ -445,51 +475,51 @@ pre.steps{margin:0}
           </optgroup>
         </select>
         <div class="grid2" style="margin-top:8px">
-          <div id="nv-tw"><label class="lbl">Temperatura do produto (°C)</label><input id="nv-t" inputmode="decimal" value="25"></div>
-          <div id="nv-sgw" class="hidden"><label class="lbl">Densidade relativa (SG)</label><input id="nv-sg" inputmode="decimal" value="1,000"></div>
+          <div id="nv-tw"><label class="lbl"><span class="sym">T</span>Temperatura do produto (°C)</label><input id="nv-t" inputmode="decimal" value="25"></div>
+          <div id="nv-sgw" class="hidden"><label class="lbl"><span class="sym">SG</span>Densidade relativa (SG)</label><input id="nv-sg" inputmode="decimal" value="1,000"></div>
         </div>
         <div class="tagline" id="nv-prod-info"></div>
       </div>
 
       <div id="nv-drum-w" class="hidden">
         <div class="grid2">
-          <div><label class="lbl">Pressão do tambor</label><input id="nv-dp" inputmode="decimal" value="21"></div>
+          <div><label class="lbl"><span class="sym">P</span>Pressão do tambor</label><input id="nv-dp" inputmode="decimal" value="21"></div>
           <div><label class="lbl">Unidade (manométrica)</label><select id="nv-dpu"></select></div>
-          <div><label class="lbl">Temperatura da perna de referência (°C)</label><input id="nv-dt" inputmode="decimal" value="50"></div>
+          <div><label class="lbl"><span class="sym">T<sub>ref</sub></span>Temperatura da perna de referência (°C)</label><input id="nv-dt" inputmode="decimal" value="50"></div>
         </div>
         <div class="tagline" id="nv-drum-info"></div>
       </div>
 
       <div class="sec-t">3 · Faixa de medição</div>
       <div class="grid2">
-        <div><label class="lbl">Nível 0% (mm acima da tomada inferior)</label><input id="nv-lmin" inputmode="decimal" value="0"></div>
-        <div><label class="lbl">Nível 100% (mm acima da tomada inferior)</label><input id="nv-lmax" inputmode="decimal" value="3000"></div>
+        <div><label class="lbl"><span class="sym">L<sub>0%</sub></span>Nível 0% (mm acima da tomada inferior)</label><input id="nv-lmin" inputmode="decimal" value="0"></div>
+        <div><label class="lbl"><span class="sym">L<sub>100%</sub></span>Nível 100% (mm acima da tomada inferior)</label><input id="nv-lmax" inputmode="decimal" value="3000"></div>
       </div>
 
       <div class="sec-t">4 · Instalação</div>
       <div class="grid2">
-        <div id="nv-h0w"><label class="lbl">Transmissor abaixo da tomada inferior (mm)</label><input id="nv-h0" inputmode="decimal" value="500"></div>
-        <div id="nv-htw"><label class="lbl">Distância entre as tomadas (mm)</label><input id="nv-ht" inputmode="decimal" value="3500"></div>
+        <div id="nv-h0w"><label class="lbl"><span class="sym">h0</span>Transmissor abaixo da tomada inferior (mm)</label><input id="nv-h0" inputmode="decimal" value="500"></div>
+        <div id="nv-htw"><label class="lbl"><span class="sym">H</span>Distância entre as tomadas (mm)</label><input id="nv-ht" inputmode="decimal" value="3500"></div>
       </div>
       <div class="small muted" id="nv-h0-note" style="margin-top:4px">Transmissor acima da tomada: use valor negativo.</div>
       <div id="nv-legw" class="hidden" style="margin-top:8px">
         <label class="lbl">Líquido da perna úmida</label>
         <select id="nv-leg"><option value="agua">Água / condensado (pela temperatura)</option><option value="1.07">Glicol 50% (SG ≈ 1,07)</option><option value="prod">O mesmo produto do tanque</option><option value="sg">Informar SG</option></select>
         <div class="grid2" style="margin-top:8px">
-          <div id="nv-legtw"><label class="lbl">Temperatura da perna (°C)</label><input id="nv-legt" inputmode="decimal" value="30"></div>
-          <div id="nv-legsgw" class="hidden"><label class="lbl">SG da perna</label><input id="nv-legsg" inputmode="decimal" value="1,000"></div>
+          <div id="nv-legtw"><label class="lbl"><span class="sym">T</span>Temperatura da perna (°C)</label><input id="nv-legt" inputmode="decimal" value="30"></div>
+          <div id="nv-legsgw" class="hidden"><label class="lbl"><span class="sym">SG</span>SG da perna</label><input id="nv-legsg" inputmode="decimal" value="1,000"></div>
         </div>
       </div>
       <div id="nv-sealw" class="hidden" style="margin-top:8px">
         <label class="lbl">Fluido de enchimento dos selos</label>
         <select id="nv-seal"><option value="0.93">Silicone DC 200 (SG ≈ 0,93)</option><option value="1.07">Silicone DC 704, alta temperatura (SG ≈ 1,07)</option><option value="0.92">Neobee M-20, grau alimentício (SG ≈ 0,92)</option><option value="1.26">Glicerina (SG ≈ 1,26)</option><option value="1.85">Halocarbono, oxigênio/cloro (SG ≈ 1,85)</option><option value="sg">Informar SG</option></select>
-        <div id="nv-sealsgw" class="hidden" style="margin-top:8px"><label class="lbl">SG do fluido de enchimento</label><input id="nv-sealsg" inputmode="decimal" value="0,930"></div>
+        <div id="nv-sealsgw" class="hidden" style="margin-top:8px"><label class="lbl"><span class="sym">SG</span>SG do fluido de enchimento</label><input id="nv-sealsg" inputmode="decimal" value="0,930"></div>
       </div>
 
       <div class="sec-t">5 · Saída</div>
       <div class="grid2">
         <div><label class="lbl">Unidade de configuração</label><select id="nv-u"></select></div>
-        <div><label class="lbl">Nível atual (mm), opcional</label><input id="nv-l" inputmode="decimal" value="1500"></div>
+        <div><label class="lbl"><span class="sym">L</span>Nível atual (mm), opcional</label><input id="nv-l" inputmode="decimal" value="1500"></div>
       </div>
 
       <div class="steps" id="nv-steps"></div>
@@ -507,25 +537,28 @@ pre.steps{margin:0}
     <div class="cpanel hidden" id="p-pres">
     <div class="card">
       <h2 style="margin-top:0">Conversão de pressão</h2>
-      <div class="numwrap"><input id="pr-v" inputmode="decimal" value="21"><select id="pr-u" style="width:auto"></select></div>
+      <label class="lbl"><span class="sym">P</span>Valor de pressão</label>
+      <div class="numwrap"><input id="pr-v" inputmode="decimal" value="21"><select id="pr-u" data-title="Unidade" style="width:auto"></select></div>
       <div id="pr-tab" style="margin-top:10px"></div>
     </div>
     <div class="card">
       <h3>Absoluta × manométrica</h3>
+      <div class="illus" id="pa-ill"></div>
       <div class="grid2">
-        <div><label class="lbl">Valor</label><input id="pa-v" inputmode="decimal" value="21"></div>
+        <div><label class="lbl"><span class="sym">P</span>Valor</label><input id="pa-v" inputmode="decimal" value="21"></div>
         <div><label class="lbl">Unidade</label><select id="pa-u"></select></div>
         <div><label class="lbl">O valor é</label><select id="pa-t"><option value="g">manométrico (g)</option><option value="a">absoluto (a)</option></select></div>
-        <div><label class="lbl">Pressão atmosférica (bar abs)</label><input id="pa-atm" inputmode="decimal" value="1,01325"></div>
+        <div><label class="lbl"><span class="sym">Patm</span>Pressão atmosférica (bar abs)</label><input id="pa-atm" inputmode="decimal" value="1,01325"></div>
       </div>
       <div class="steps" id="pa-out"></div>
       <div class="small muted" style="margin-top:6px">A pressão atmosférica cai com a altitude (~1,2% a cada 100 m). Ao nível do mar: 1,01325 bar.</div>
     </div>
     <div class="card">
       <h3>Coluna de líquido e correção de cota do transmissor</h3>
+      <div class="illus" id="ph-ill"></div>
       <div class="grid2">
-        <div><label class="lbl">ρ do líquido na tomada (kg/m³)</label><input id="ph-r" inputmode="decimal" value="1000"></div>
-        <div><label class="lbl">Desnível (m) — transmissor abaixo da tomada</label><input id="ph-h" inputmode="decimal" value="3"></div>
+        <div><label class="lbl"><span class="sym">ρ</span>ρ do líquido na tomada (kg/m³)</label><input id="ph-r" inputmode="decimal" value="1000"></div>
+        <div><label class="lbl"><span class="sym">h</span>Desnível (m) — transmissor abaixo da tomada</label><input id="ph-h" inputmode="decimal" value="3"></div>
         <div><label class="lbl">Unidade</label><select id="ph-u"></select></div>
       </div>
       <div class="steps" id="ph-out"></div>
@@ -537,12 +570,13 @@ pre.steps{margin:0}
     <div class="cpanel hidden" id="p-cal">
     <div class="card">
       <h2 style="margin-top:0">Calibração em 5 pontos</h2>
+      <div class="illus" id="cl-ill"></div>
       <div class="grid2">
-        <div><label class="lbl">LRV</label><input id="cl-lrv" inputmode="decimal" value="0"></div>
-        <div><label class="lbl">URV</label><input id="cl-urv" inputmode="decimal" value="10"></div>
+        <div><label class="lbl"><span class="sym">LRV</span>LRV</label><input id="cl-lrv" inputmode="decimal" value="0"></div>
+        <div><label class="lbl"><span class="sym">URV</span>URV</label><input id="cl-urv" inputmode="decimal" value="10"></div>
         <div><label class="lbl">Unidade</label><input id="cl-u" value="bar"></div>
         <div><label class="lbl">Função de saída</label><select id="cl-f"><option value="lin">Linear</option><option value="sqrt">Raiz quadrada</option></select></div>
-        <div><label class="lbl">Tolerância (± % do span)</label><input id="cl-tol" inputmode="decimal" value="0,25"></div>
+        <div><label class="lbl"><span class="sym">tol</span>Tolerância (± % do span)</label><input id="cl-tol" inputmode="decimal" value="0,25"></div>
         <div><label class="lbl">Sentido</label><select id="cl-dir"><option value="1">Só subida</option><option value="2">Subida e descida (histerese)</option></select></div>
       </div>
       <div id="cl-tab" style="margin-top:12px;overflow-x:auto"></div>
@@ -555,16 +589,165 @@ pre.steps{margin:0}
     <div class="card">
       <h2 style="margin-top:0">Pt100 / Pt1000 (IEC 60751)</h2>
       <div class="out sticky-out" id="tp-res"></div>
+      <div class="illus" id="tp-ill"></div>
       <div class="small muted">Callendar-Van Dusen, α = 0,00385. Útil para simular a entrada do transmissor de temperatura com uma década resistiva ou um calibrador.</div>
       <div class="grid2" style="margin-top:10px">
         <div><label class="lbl">Sensor</label><select id="tp-r0"><option value="100">Pt100</option><option value="1000">Pt1000</option></select></div>
         <div><label class="lbl">Eu tenho</label><select id="tp-m"><option value="t">a temperatura (°C)</option><option value="r">a resistência (Ω)</option></select></div>
-        <div><label class="lbl" id="tp-l">Temperatura (°C)</label><input id="tp-x" inputmode="decimal" value="100"></div>
+        <div><label class="lbl"><span class="sym">T/R</span><span id="tp-l">Temperatura (°C)</span></label><input id="tp-x" inputmode="decimal" value="100"></div>
         <div></div>
-        <div><label class="lbl">Range do transmissor: LRV (°C)</label><input id="tp-lrv" inputmode="decimal" value="0"></div>
-        <div><label class="lbl">URV (°C)</label><input id="tp-urv" inputmode="decimal" value="200"></div>
+        <div><label class="lbl"><span class="sym">LRV</span>Range do transmissor: LRV (°C)</label><input id="tp-lrv" inputmode="decimal" value="0"></div>
+        <div><label class="lbl"><span class="sym">URV</span>URV (°C)</label><input id="tp-urv" inputmode="decimal" value="200"></div>
       </div>
       <div id="tp-tab" style="margin-top:10px"></div>
+    </div>
+    </div>
+
+
+    <!-- TERMOPAR -->
+    <div class="cpanel hidden" id="p-tc">
+    <div class="card">
+      <h2 style="margin-top:0">Termopar (NIST ITS-90)</h2>
+      <div class="out sticky-out" id="tc-res"></div>
+      <div class="illus" id="tc-ill"></div>
+      <div class="small muted">Polinômios oficiais NIST ITS-90 (SRD 60). A tensão medida nos terminais depende da diferença entre a junta quente (T) e a junta de referência (Tref).</div>
+      <div class="sec-t">1 · Tipo</div>
+      <select id="tc-tipo" data-title="Tipo de termopar">
+        <optgroup label="Metais básicos">
+          <option value="K" selected>Tipo K (Cromel-Alumel · −270 a 1372 °C)</option>
+          <option value="J">Tipo J (Ferro-Constantan · −210 a 1200 °C)</option>
+          <option value="T">Tipo T (Cobre-Constantan · −270 a 400 °C)</option>
+          <option value="E">Tipo E (Cromel-Constantan · −270 a 1000 °C)</option>
+          <option value="N">Tipo N (Nicrosil-Nisil · −270 a 1300 °C)</option>
+        </optgroup>
+        <optgroup label="Metais nobres">
+          <option value="R">Tipo R (Pt-13%Rh / Pt · −50 a 1768 °C)</option>
+          <option value="S">Tipo S (Pt-10%Rh / Pt · −50 a 1768 °C)</option>
+          <option value="B">Tipo B (Pt-30%Rh / Pt-6%Rh · 0 a 1820 °C)</option>
+        </optgroup>
+      </select>
+      <div class="sec-t">2 · Conversão</div>
+      <div class="grid2">
+        <div><label class="lbl">Eu tenho</label><select id="tc-m"><option value="t">a temperatura (°C)</option><option value="mv">a tensão medida (mV)</option></select></div>
+        <div><label class="lbl"><span class="sym" id="tc-sym">T</span><span id="tc-l">Temperatura da junta quente (°C)</span></label><input id="tc-x" inputmode="decimal" value="400"></div>
+        <div><label class="lbl"><span class="sym">T<sub>ref</sub></span>Junta de referência / borne (°C)</label><input id="tc-ref" inputmode="decimal" value="25"></div>
+      </div>
+      <div class="small muted" style="margin-top:4px">Para simular no calibrador com a compensação desligada, use Tref = 0 °C (tabela pura).</div>
+      <div class="sec-t">3 · Range do transmissor</div>
+      <div class="grid2">
+        <div><label class="lbl"><span class="sym">LRV</span>Início (°C)</label><input id="tc-lrv" inputmode="decimal" value="0"></div>
+        <div><label class="lbl"><span class="sym">URV</span>Fim (°C)</label><input id="tc-urv" inputmode="decimal" value="800"></div>
+      </div>
+      <div class="steps" id="tc-steps"></div>
+      <div id="tc-tab" style="margin-top:10px;overflow-x:auto"></div>
+      <div class="warn" id="tc-warn"></div>
+    </div>
+    </div>
+
+
+    <!-- pH -->
+    <div class="cpanel hidden" id="p-ph">
+    <div class="card">
+      <h2 style="margin-top:0">pH — eletrodo de vidro</h2>
+      <div class="out sticky-out" id="phm-res"></div>
+      <div class="illus" id="phm-ill"></div>
+      <div class="small muted">Equação de Nernst: E = E₀ − s · (2,3026·R·T/F) · (pH − 7). Inclinação teórica: 59,16 mV/pH a 25 °C, que muda com a temperatura.</div>
+      <div class="sec-t">1 · Conversão</div>
+      <div class="grid2">
+        <div><label class="lbl">Eu tenho</label><select id="phx-m"><option value="mv">a tensão do eletrodo (mV)</option><option value="ph">o pH</option></select></div>
+        <div><label class="lbl"><span class="sym" id="phx-sym">E</span><span id="phx-l">Tensão do eletrodo (mV)</span></label><input id="phx-x" inputmode="decimal" value="-120"></div>
+        <div><label class="lbl"><span class="sym">T</span>Temperatura da amostra (°C)</label><input id="phx-t" inputmode="decimal" value="25"></div>
+        <div></div>
+        <div><label class="lbl"><span class="sym">E₀</span>Offset: mV em pH 7</label><input id="phx-e0" inputmode="decimal" value="0"></div>
+        <div><label class="lbl"><span class="sym">s</span>Slope (% do teórico)</label><input id="phx-s" inputmode="decimal" value="100"></div>
+      </div>
+      <div class="sec-t">2 · Calibração em 2 pontos (buffers)</div>
+      <div class="grid2">
+        <div><label class="lbl"><span class="sym">pH<sub>A</sub></span>Buffer A</label><input id="phx-pa" inputmode="decimal" value="7,00"></div>
+        <div><label class="lbl"><span class="sym">E<sub>A</sub></span>mV lido no buffer A</label><input id="phx-ea" inputmode="decimal" value="-4"></div>
+        <div><label class="lbl"><span class="sym">pH<sub>B</sub></span>Buffer B</label><input id="phx-pb" inputmode="decimal" value="4,01"></div>
+        <div><label class="lbl"><span class="sym">E<sub>B</sub></span>mV lido no buffer B</label><input id="phx-eb" inputmode="decimal" value="166"></div>
+      </div>
+      <div class="steps" id="phx-cal"></div>
+      <button class="btn sec block" id="phx-use" type="button" style="margin-top:8px">Usar esta calibração na conversão</button>
+      <div class="sec-t">3 · Range do transmissor</div>
+      <div class="grid2">
+        <div><label class="lbl"><span class="sym">LRV</span>pH em 4 mA</label><input id="phx-lrv" inputmode="decimal" value="0"></div>
+        <div><label class="lbl"><span class="sym">URV</span>pH em 20 mA</label><input id="phx-urv" inputmode="decimal" value="14"></div>
+      </div>
+      <div class="steps" id="phx-steps"></div>
+      <div id="phx-tab" style="margin-top:10px;overflow-x:auto"></div>
+      <div class="warn">Buffers também variam com a temperatura (ex.: o buffer 4,01 vale ~4,00 a 20 °C e ~4,03 a 40 °C). Use o valor do rótulo para a temperatura da calibração. Calibre com o buffer 7 primeiro e depois com um buffer próximo da faixa do processo.</div>
+    </div>
+    </div>
+
+
+    <!-- BRIX -->
+    <div class="cpanel hidden" id="p-bx">
+    <div class="card">
+      <h2 style="margin-top:0">Brix · densidade · Baumé</h2>
+      <div class="out sticky-out" id="bx-res"></div>
+      <div class="illus" id="bx-ill"></div>
+      <div class="small muted">Soluções de sacarose pura a 20 °C, pela tabela oficial NBS Circular 457 (0 a 95 °Bx). Erro do ajuste menor que 0,01 °Bx.</div>
+      <div class="sec-t">1 · Conversão</div>
+      <div class="grid2">
+        <div><label class="lbl">Eu tenho</label><select id="bx-m"><option value="bx">°Brix</option><option value="sg">SG aparente (20/20 °C)</option><option value="rho">Massa específica (kg/m³ a 20 °C)</option><option value="be">°Baumé</option></select></div>
+        <div><label class="lbl"><span class="sym" id="bx-sym">Bx</span><span id="bx-l">°Brix</span></label><input id="bx-x" inputmode="decimal" value="65"></div>
+      </div>
+      <div class="steps" id="bx-steps"></div>
+      <div class="sec-t">2 · Pureza</div>
+      <div class="grid2">
+        <div><label class="lbl"><span class="sym">Pol</span>Pol (% sacarose aparente)</label><input id="bx-pol" inputmode="decimal" value="55"></div>
+      </div>
+      <div class="steps" id="bx-pur"></div>
+      <div class="sec-t">3 · Sólidos e evaporação</div>
+      <div class="grid2">
+        <div><label class="lbl"><span class="sym">F</span>Vazão de entrada (t/h)</label><input id="bx-f" inputmode="decimal" value="300"></div>
+        <div><label class="lbl"><span class="sym">Bx<sub>e</sub></span>Brix de entrada</label><input id="bx-be" inputmode="decimal" value="15"></div>
+        <div><label class="lbl"><span class="sym">Bx<sub>s</sub></span>Brix de saída</label><input id="bx-bs" inputmode="decimal" value="65"></div>
+      </div>
+      <div class="steps" id="bx-ev"></div>
+      <div id="bx-tab" style="margin-top:10px;overflow-x:auto"></div>
+      <div class="small muted" style="margin-top:6px">Refratômetros medem índice de refração e precisam de correção de temperatura (normalmente automática, referência 20 °C). Para outros produtos (caldo com impurezas, mel), a relação Brix × densidade muda um pouco.</div>
+    </div>
+    </div>
+
+    <!-- DENSIDADE -->
+    <div class="cpanel hidden" id="p-dens">
+    <div class="card">
+      <h2 style="margin-top:0">Transmissor de densidade por ΔP</h2>
+      <div class="out sticky-out" id="dn-res"></div>
+      <div class="illus" id="dn-ill"></div>
+      <div class="small muted">Duas tomadas separadas por uma altura fixa H, com selos ou pernas cheias de fluido conhecido: ΔP = (SGprocesso − SGfluido) × H. O nível não interfere, desde que as duas tomadas estejam cobertas.</div>
+      <div class="sec-t">1 · Faixa de densidade</div>
+      <div class="grid2">
+        <div><label class="lbl">Unidade da faixa</label><select id="dn-u"><option value="sg">Densidade relativa (SG)</option><option value="rho">kg/m³</option><option value="bx">°Brix (sacarose)</option></select></div>
+        <div></div>
+        <div><label class="lbl"><span class="sym">ρ<sub>mín</sub></span>Mínimo (4 mA)</label><input id="dn-min" inputmode="decimal" value="1,00"></div>
+        <div><label class="lbl"><span class="sym">ρ<sub>máx</sub></span>Máximo (20 mA)</label><input id="dn-max" inputmode="decimal" value="1,40"></div>
+      </div>
+      <div class="sec-t">2 · Instalação</div>
+      <div class="grid2">
+        <div><label class="lbl"><span class="sym">H</span>Distância entre as tomadas (mm)</label><input id="dn-h" inputmode="decimal" value="1000"></div>
+        <div><label class="lbl">Fluido dos selos / pernas</label><select id="dn-fl"><option value="0.93">Silicone DC 200 (SG ≈ 0,93)</option><option value="1.07">Silicone DC 704 (SG ≈ 1,07)</option><option value="1.00">Água (SG ≈ 1,00)</option><option value="1.26">Glicerina (SG ≈ 1,26)</option><option value="sg">Informar SG</option></select></div>
+        <div id="dn-fsgw" class="hidden"><label class="lbl"><span class="sym">SG<sub>f</sub></span>SG do fluido</label><input id="dn-fsg" inputmode="decimal" value="0,930"></div>
+        <div><label class="lbl">Unidade de configuração</label><select id="dn-pu"></select></div>
+      </div>
+      <div class="steps" id="dn-steps"></div>
+      <div id="dn-tab" style="margin-top:10px;overflow-x:auto"></div>
+    </div>
+    <div class="card">
+      <h3>Calibração com amostras do laboratório (2 pontos)</h3>
+      <div class="small muted">Compare a leitura do transmissor com a densidade medida no laboratório em duas amostras (de preferência uma baixa e uma alta da faixa).</div>
+      <div class="grid2" style="margin-top:10px">
+        <div><label class="lbl"><span class="sym">Lab<sub>1</sub></span>Amostra 1: laboratório</label><input id="dc-l1" inputmode="decimal" value="1,080"></div>
+        <div><label class="lbl"><span class="sym">Ind<sub>1</sub></span>Amostra 1: transmissor</label><input id="dc-i1" inputmode="decimal" value="1,090"></div>
+        <div><label class="lbl"><span class="sym">Lab<sub>2</sub></span>Amostra 2: laboratório</label><input id="dc-l2" inputmode="decimal" value="1,320"></div>
+        <div><label class="lbl"><span class="sym">Ind<sub>2</sub></span>Amostra 2: transmissor</label><input id="dc-i2" inputmode="decimal" value="1,345"></div>
+        <div><label class="lbl"><span class="sym">tol</span>Tolerância (± na unidade)</label><input id="dc-tol" inputmode="decimal" value="0,005"></div>
+      </div>
+      <div class="steps" id="dc-out"></div>
+      <div class="warn">Colete a amostra no mesmo ponto e momento da leitura, com o processo estável. Densidade varia com a temperatura: compare as duas na mesma referência (ex.: 20 °C).</div>
     </div>
     </div>
 
@@ -572,33 +755,36 @@ pre.steps{margin:0}
     <div class="cpanel hidden" id="p-vaz">
     <div class="card">
       <h2 style="margin-top:0">Mássica × volumétrica</h2>
+      <div class="illus" id="vz-ill"></div>
       <div class="grid2">
-        <div><label class="lbl">Vazão</label><input id="vz-q" inputmode="decimal" value="60"></div>
+        <div><label class="lbl"><span class="sym">Q</span>Vazão</label><input id="vz-q" inputmode="decimal" value="60"></div>
         <div><label class="lbl">Unidade</label><select id="vz-qu"></select></div>
-        <div><label class="lbl">ρ (kg/m³)</label><input id="vz-r" inputmode="decimal" value="8,28"></div>
+        <div><label class="lbl"><span class="sym">ρ</span>ρ (kg/m³)</label><input id="vz-r" inputmode="decimal" value="8,28"></div>
       </div>
       <div id="vz-tab" style="margin-top:10px"></div>
     </div>
     <div class="card">
       <h3>Velocidade e Reynolds na tubulação</h3>
+      <div class="illus" id="vv-ill"></div>
       <div class="grid2">
-        <div><label class="lbl">Vazão (m³/h, nas condições de operação)</label><input id="vv-q" inputmode="decimal" value="7246"></div>
-        <div><label class="lbl">D interno (mm)</label><input id="vv-d" inputmode="decimal" value="254,5"></div>
-        <div><label class="lbl">ρ (kg/m³)</label><input id="vv-r" inputmode="decimal" value="8,28"></div>
-        <div><label class="lbl">μ (cP)</label><input id="vv-mu" inputmode="decimal" value="0,021"></div>
+        <div><label class="lbl"><span class="sym">Q</span>Vazão (m³/h, nas condições de operação)</label><input id="vv-q" inputmode="decimal" value="7246"></div>
+        <div><label class="lbl"><span class="sym">D</span>D interno (mm)</label><input id="vv-d" inputmode="decimal" value="254,5"></div>
+        <div><label class="lbl"><span class="sym">ρ</span>ρ (kg/m³)</label><input id="vv-r" inputmode="decimal" value="8,28"></div>
+        <div><label class="lbl"><span class="sym">μ</span>μ (cP)</label><input id="vv-mu" inputmode="decimal" value="0,021"></div>
       </div>
       <div class="steps" id="vv-out"></div>
       <div class="small muted" style="margin-top:6px">Referências usuais: líquidos 1–3 m/s; vapor saturado 20–30 m/s; vapor superaquecido 30–50 m/s.</div>
     </div>
     <div class="card">
       <h3>Gás: normal (Nm³/h) × real (m³/h)</h3>
+      <div class="illus" id="gn-ill"></div>
       <div class="grid2">
         <div><label class="lbl">Eu tenho</label><select id="gn-m"><option value="n">Nm³/h</option><option value="r">m³/h real</option></select></div>
-        <div><label class="lbl">Vazão</label><input id="gn-q" inputmode="decimal" value="1000"></div>
-        <div><label class="lbl">Pressão de operação (bar g)</label><input id="gn-p" inputmode="decimal" value="5"></div>
-        <div><label class="lbl">Temperatura de operação (°C)</label><input id="gn-t" inputmode="decimal" value="40"></div>
-        <div><label class="lbl">Z (operação / normal)</label><input id="gn-z" inputmode="decimal" value="1"></div>
-        <div><label class="lbl">Patm (bar abs)</label><input id="gn-a" inputmode="decimal" value="1,01325"></div>
+        <div><label class="lbl"><span class="sym">Q</span>Vazão</label><input id="gn-q" inputmode="decimal" value="1000"></div>
+        <div><label class="lbl"><span class="sym">P</span>Pressão de operação (bar g)</label><input id="gn-p" inputmode="decimal" value="5"></div>
+        <div><label class="lbl"><span class="sym">T</span>Temperatura de operação (°C)</label><input id="gn-t" inputmode="decimal" value="40"></div>
+        <div><label class="lbl"><span class="sym">Z</span>Z (operação / normal)</label><input id="gn-z" inputmode="decimal" value="1"></div>
+        <div><label class="lbl"><span class="sym">Patm</span>Patm (bar abs)</label><input id="gn-a" inputmode="decimal" value="1,01325"></div>
       </div>
       <div class="steps" id="gn-out"></div>
       <div class="small muted" style="margin-top:6px">Condição normal: 0 °C e 1,01325 bar abs. Condição "standard" (Sm³) varia: 15 °C ou 20 °C. Confira a referência usada no projeto.</div>
@@ -611,14 +797,15 @@ pre.steps{margin:0}
     <div class="card">
       <h2 style="margin-top:0">Volume e massa no tanque</h2>
       <div class="out sticky-out" id="tq-res"></div>
+      <div class="illus" id="tq-ill"></div>
       <div class="grid2">
         <div><label class="lbl">Formato</label><select id="tq-f"><option value="v">Cilindro vertical</option><option value="h">Cilindro horizontal</option><option value="r">Retangular</option></select></div>
-        <div><label class="lbl">ρ do produto (kg/m³)</label><input id="tq-r" inputmode="decimal" value="1000"></div>
-        <div><label class="lbl" id="tq-al">Diâmetro (m)</label><input id="tq-a" inputmode="decimal" value="3"></div>
-        <div id="tq-bw"><label class="lbl" id="tq-bl">Comprimento (m)</label><input id="tq-b" inputmode="decimal" value="6"></div>
-        <div id="tq-cw"><label class="lbl">Largura (m)</label><input id="tq-c" inputmode="decimal" value="2"></div>
-        <div><label class="lbl">Altura máxima útil (m)</label><input id="tq-hm" inputmode="decimal" value="4"></div>
-        <div><label class="lbl">Nível atual (m)</label><input id="tq-h" inputmode="decimal" value="2"></div>
+        <div><label class="lbl"><span class="sym">ρ</span>ρ do produto (kg/m³)</label><input id="tq-r" inputmode="decimal" value="1000"></div>
+        <div><label class="lbl"><span class="sym">D</span><span id="tq-al">Diâmetro (m)</span></label><input id="tq-a" inputmode="decimal" value="3"></div>
+        <div id="tq-bw"><label class="lbl"><span class="sym">C</span><span id="tq-bl">Comprimento (m)</span></label><input id="tq-b" inputmode="decimal" value="6"></div>
+        <div id="tq-cw"><label class="lbl"><span class="sym">W</span>Largura (m)</label><input id="tq-c" inputmode="decimal" value="2"></div>
+        <div><label class="lbl"><span class="sym">h<sub>máx</sub></span>Altura máxima útil (m)</label><input id="tq-hm" inputmode="decimal" value="4"></div>
+        <div><label class="lbl"><span class="sym">h</span>Nível atual (m)</label><input id="tq-h" inputmode="decimal" value="2"></div>
       </div>
       <div class="steps" id="tq-steps"></div>
       <div id="tq-tab" style="margin-top:10px"></div>
@@ -631,16 +818,17 @@ pre.steps{margin:0}
     <div class="card">
       <h2 style="margin-top:0">Célula de carga</h2>
       <div class="out sticky-out" id="lc-res"></div>
+      <div class="illus" id="lc-ill"></div>
       <div class="small muted">Saída (mV) = sensibilidade (mV/V) × excitação (V) × carga / capacidade total.</div>
       <div class="grid2" style="margin-top:10px">
-        <div><label class="lbl">Capacidade de cada célula (kg)</label><input id="lc-cap" inputmode="decimal" value="5000"></div>
-        <div><label class="lbl">Número de células</label><input id="lc-n" inputmode="decimal" value="4"></div>
-        <div><label class="lbl">Sensibilidade (mV/V)</label><input id="lc-s" inputmode="decimal" value="2"></div>
-        <div><label class="lbl">Excitação (V)</label><input id="lc-e" inputmode="decimal" value="10"></div>
-        <div><label class="lbl">Peso morto / tara (kg)</label><input id="lc-t" inputmode="decimal" value="3000"></div>
-        <div><label class="lbl">Carga útil (produto) atual (kg)</label><input id="lc-w" inputmode="decimal" value="6000"></div>
-        <div><label class="lbl">Range do transmissor: LRV (kg líquido)</label><input id="lc-lrv" inputmode="decimal" value="0"></div>
-        <div><label class="lbl">URV (kg líquido)</label><input id="lc-urv" inputmode="decimal" value="12000"></div>
+        <div><label class="lbl"><span class="sym">Cap</span>Capacidade de cada célula (kg)</label><input id="lc-cap" inputmode="decimal" value="5000"></div>
+        <div><label class="lbl"><span class="sym">n</span>Número de células</label><input id="lc-n" inputmode="decimal" value="4"></div>
+        <div><label class="lbl"><span class="sym">S</span>Sensibilidade (mV/V)</label><input id="lc-s" inputmode="decimal" value="2"></div>
+        <div><label class="lbl"><span class="sym">V<sub>exc</sub></span>Excitação (V)</label><input id="lc-e" inputmode="decimal" value="10"></div>
+        <div><label class="lbl"><span class="sym">Tara</span>Peso morto / tara (kg)</label><input id="lc-t" inputmode="decimal" value="3000"></div>
+        <div><label class="lbl"><span class="sym">W</span>Carga útil (produto) atual (kg)</label><input id="lc-w" inputmode="decimal" value="6000"></div>
+        <div><label class="lbl"><span class="sym">LRV</span>Range do transmissor: LRV (kg líquido)</label><input id="lc-lrv" inputmode="decimal" value="0"></div>
+        <div><label class="lbl"><span class="sym">URV</span>URV (kg líquido)</label><input id="lc-urv" inputmode="decimal" value="12000"></div>
       </div>
       <div class="steps" id="lc-steps"></div>
       <div class="warn hidden" id="lc-warn"></div>
@@ -651,7 +839,9 @@ pre.steps{margin:0}
     <div class="cpanel hidden" id="p-massa">
     <div class="card">
       <h2 style="margin-top:0">Conversão de massa e força</h2>
-      <div class="numwrap"><input id="ms-v" inputmode="decimal" value="1000"><select id="ms-u" style="width:auto"></select></div>
+      <div class="illus" id="ms-ill"></div>
+      <label class="lbl"><span class="sym">m</span>Valor</label>
+      <div class="numwrap"><input id="ms-v" inputmode="decimal" value="1000"><select id="ms-u" data-title="Unidade" style="width:auto"></select></div>
       <div id="ms-tab" style="margin-top:10px"></div>
       <div class="small muted" style="margin-top:6px">Massa (kg) é a quantidade de matéria. Peso é força: P = m·g. Com g padrão (9,80665 m/s²), 1 kgf = 9,80665 N. Balanças industriais indicam massa, calibradas com pesos-padrão.</div>
     </div>
@@ -1097,9 +1287,10 @@ function fromKgS(m,u,rho){ const [t,f]=FU[u]; return t==='m'?m/f:m/rho/f; }
 
 // ---------- navegação dos painéis ----------
 const CATS=[
- ['L','Nível',[['nivel','Nível por pressão','Aberto, perna úmida e selos remotos'],['tanque','Volume e massa no tanque','Vertical, horizontal e retangular']]],
+ ['L','Nível',[['nivel:aberto','Tanque aberto','Transmissor de pressão ou ΔP com perna seca'],['nivel:umida','Tanque fechado com perna úmida','Lado L com selagem líquida'],['nivel:selos','Selos remotos','Capilares nos dois lados'],['nivel:drum','Nível de caldeira','Tambor com perna de referência · água e vapor saturados'],['tanque','Volume e massa no tanque','Vertical, horizontal e retangular']]],
  ['F','Vazão',[['orif','Placa de orifício','ISO 5167 · ΔP, vazão ou diâmetro d'],['raiz','Vazão por ΔP (raiz quadrada)','Linear × extração de raiz · correção de ρ'],['vaz','Conversões de vazão','Mássica, volumétrica, velocidade, Nm³/h']]],
- ['T','Temperatura',[['temp','Pt100 / Pt1000','Ω ↔ °C e mA do transmissor']]],
+ ['T','Temperatura',[['temp','Pt100 / Pt1000','Ω ↔ °C e mA do transmissor'],['tc','Termopar','K, J, T, E, N, R, S, B · mV ↔ °C · junta fria']]],
+ ['A','Análise',[['ph','pH','Nernst · mV ↔ pH · calibração com buffers · diagnóstico'],['bx','Brix','°Brix ↔ SG ↔ kg/m³ ↔ °Baumé · pureza · evaporação'],['dens','Densidade por ΔP','Range do transmissor · calibração com amostras do laboratório']]],
  ['P','Pressão',[['pres','Pressão','Unidades, absoluta/manométrica, coluna']]],
  ['W','Peso e massa',[['peso','Célula de carga','mV/V, tara, mV e mA'],['massa','Massa e força','kg, t, lb, N, kgf']]],
  ['mA','Sinal e calibração',[['escala','Escala 4-20 mA','Valor ↔ % ↔ mA'],['cal','Calibração em 5 pontos','Erro, histerese, zero e span']]]
@@ -1109,9 +1300,10 @@ function findCalc(k){ for(const [b,g,its] of CATS) for(const it of its) if(it[0]
 function renderList(){ $('calc-list').innerHTML=CATS.map(([b,g,its])=>`<div class="grp"><span class="badge b-${b}">${b}</span><span>${g}</span></div>`+its.map(([k,t,s])=>`<button type="button" class="item${k===CUR?' on':''}" data-k="${k}"><b>${t}</b><small>${s}</small></button>`).join('')).join(''); }
 function openSheet(){ renderList(); $('calc-sheet').classList.remove('hidden'); document.body.style.overflow='hidden'; }
 function closeSheet(){ $('calc-sheet').classList.add('hidden'); document.body.style.overflow=''; }
-function showPanel(k){ const f=findCalc(k); if(!f) return; CUR=k;
+function showPanel(k){ const f=findCalc(k); if(!f) return; CUR=k; const [pk,sub]=k.split(':');
+  if(pk==='nivel'){ if(sub){ $('nv-tipo').value=sub; } $('nv-tipo-w').classList.toggle('hidden',!!sub); }
   $('calc-badge').textContent=f.b; $('calc-badge').className='badge b-'+f.b; $('calc-grp').textContent=f.g; $('calc-name').textContent=f.it[1];
-  document.querySelectorAll('.cpanel').forEach(p=>p.classList.toggle('hidden',p.id!=='p-'+k)); RUN[k]&&RUN[k](); try{localStorage.setItem('instr-calc',k);}catch(e){} }
+  document.querySelectorAll('.cpanel').forEach(p=>p.classList.toggle('hidden',p.id!=='p-'+pk)); RUN[pk]&&RUN[pk](); if(typeof enhanceAll==='function') enhanceAll(); try{localStorage.setItem('instr-calc',k);}catch(e){} }
 $('calc-btn').addEventListener('click',openSheet);
 $('calc-sheet').addEventListener('click',e=>{ const it=e.target.closest('.item'); if(it){ showPanel(it.dataset.k); closeSheet(); window.scrollTo(0,0); return; } if(e.target.closest('[data-close]')) closeSheet(); });
 function setHH(){ const hd=document.querySelector('header'); if(hd) document.documentElement.style.setProperty('--hh',hd.offsetHeight+'px'); }
@@ -1153,6 +1345,328 @@ function waterR1(T,P){ // ρ (kg/m³), T em K, P em MPa
   for(let i=0;i<n.length;i++) gp-=n[i]*Li[i]*Math.pow(7.1-Pr,Li[i]-1)*Math.pow(Tr-1.222,Lj[i]);
   const v=Pr*gp*IF.R*T/P/1000; return 1/v; }
 function waterRho(TC,Pabs_Pa){ const P=Math.max(Pabs_Pa||101325,611.3)/1e6, T=TC+273.15; const Ts=tsatP(P); return waterR1(Math.min(T,Ts-1e-6),P); }
+
+// ---------- Ilustrações (SVG) ----------
+const IC={navy:'#0f2a44',cyan:'#0aa5c2',wat:'#8fd3e6',wat2:'#4fb3cf',steam:'#eef3f8',line:'#9aa8b6',or:'#e08a1e',mut:'#5c6b7a',bg:'#f3f5f8'};
+const svgT=(x,y,t,o={})=>`<text x="${x}" y="${y}" font-size="${o.s||10}" fill="${o.c||IC.mut}" font-weight="${o.w||500}" text-anchor="${o.a||'start'}" font-family="IBM Plex Sans,sans-serif">${t}</text>`;
+const dimV=(x,y1,y2,lab,side=1)=>`<line x1="${x}" y1="${y1}" x2="${x}" y2="${y2}" stroke="${IC.mut}" stroke-width="1" marker-start="url(#ar)" marker-end="url(#ar)"/>`+svgT(x+6*side,(y1+y2)/2+3,lab,{a:side>0?'start':'end',s:10,w:600,c:IC.navy});
+const DEFS=`<defs><marker id="ar" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="${IC.mut}"/></marker>
+<marker id="af" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="${IC.cyan}"/></marker></defs>`;
+let SVGN=0;
+const wrapSvg=(inner,h=210)=>{ const k='m'+(++SVGN); const fix=s=>s.replace(/url\(#(ar|af|dc|hc|pc)\)/g,(m,a)=>`url(#${a}${k})`).replace(/id="(ar|af|dc|hc|pc)"/g,(m,a)=>`id="${a}${k}"`);
+  return `<svg viewBox="0 0 340 ${h}" xmlns="http://www.w3.org/2000/svg" role="img">${fix(DEFS)}${fix(inner)}</svg>`; };
+function tx(x,y,lab,mode){ // transmissor; mode: 'swap' (L|H) ou 'none'
+  let s=`<rect x="${x-26}" y="${y-14}" width="52" height="28" rx="6" fill="#fff" stroke="${IC.navy}" stroke-width="1.6"/>`+svgT(x,y+4,lab||'LT',{a:'middle',w:700,c:IC.navy,s:11});
+  if(mode!=='none'){ const a=mode==='swap'?'L':'H', b=mode==='swap'?'H':'L'; s+=svgT(x-17,y+25,a,{s:9,w:700,c:IC.navy,a:'middle'})+svgT(x+17,y+25,b,{s:9,w:700,c:IC.navy,a:'middle'}); }
+  return s; }
+function svgNivel(t,frac,h0pos){
+  frac=Math.max(0,Math.min(1,isFinite(frac)?frac:0.5));
+  if(t==='drum'){
+    const lvl=150-frac*70;
+    let s=`<rect x="30" y="40" width="170" height="130" rx="40" fill="${IC.steam}" stroke="${IC.navy}" stroke-width="2"/>`;
+    s+=`<clipPath id="dc"><rect x="31" y="41" width="168" height="128" rx="39"/></clipPath><rect x="30" y="${lvl}" width="170" height="${170-lvl}" fill="${IC.wat}" clip-path="url(#dc)"/>`;
+    s+=svgT(115,62,'vapor saturado',{a:'middle'})+svgT(115,lvl+16,'água saturada',{a:'middle',c:'#0b5d73'});
+    // pote de condensado + perna de referência
+    s+=`<line x1="200" y1="70" x2="240" y2="70" stroke="${IC.navy}" stroke-width="2"/><rect x="236" y="56" width="18" height="24" rx="3" fill="${IC.wat}" stroke="${IC.navy}" stroke-width="1.5"/>`;
+    s+=`<line x1="245" y1="80" x2="245" y2="170" stroke="${IC.wat2}" stroke-width="5"/>`+svgT(258,72,'pote de',{s:9})+svgT(258,82,'condensado',{s:9})+svgT(252,130,'perna de',{s:9})+svgT(252,140,'referência',{s:9});
+    s+=`<line x1="200" y1="150" x2="222" y2="150" stroke="${IC.navy}" stroke-width="2"/><line x1="222" y1="150" x2="222" y2="170" stroke="${IC.wat2}" stroke-width="4"/>`;
+    s+=tx(234,186,'LT','swap')+dimV(18,70,150,'H',-1)+dimV(212,150,lvl,'L');
+    return wrapSvg(s,222);
+  }
+  const top=24, bot=176, tapL=160, tapH=44, lvl=tapL-frac*(tapL-tapH-6);
+  let s=`<rect x="40" y="${top}" width="130" height="${bot-top}" rx="6" fill="#fff" stroke="${IC.navy}" stroke-width="2"/>`;
+  s+=`<rect x="42" y="${lvl}" width="126" height="${bot-lvl-2}" fill="${IC.wat}"/><line x1="42" y1="${lvl}" x2="168" y2="${lvl}" stroke="${IC.wat2}" stroke-width="1.5"/>`;
+  if(t==='aberto') s+=`<line x1="40" y1="${top}" x2="170" y2="${top}" stroke="#fff" stroke-width="3" stroke-dasharray="6 4"/>`+svgT(105,top-6,'aberto para a atmosfera',{a:'middle',s:9});
+  const txY= t==='selos'?120: (h0pos? 196:140);
+  const lx=232;
+  // tomada inferior
+  if(t==='selos'){
+    s+=`<rect x="170" y="${tapL-9}" width="8" height="18" fill="${IC.or}"/><rect x="170" y="${tapH-9}" width="8" height="18" fill="${IC.or}"/>`;
+    s+=`<path d="M178 ${tapL} H${lx-14} V${txY+14}" fill="none" stroke="${IC.or}" stroke-width="2.2" stroke-dasharray="5 3"/>`;
+    s+=`<path d="M178 ${tapH} H${lx+14} V${txY-14}" fill="none" stroke="${IC.or}" stroke-width="2.2" stroke-dasharray="5 3"/>`;
+    s+=svgT(262,tapH+4,'capilares',{s:9,c:IC.or,w:600})+svgT(262,tapH+15,'(enchimento)',{s:9,c:IC.or})+svgT(182,tapL-12,'selo',{s:9,c:IC.or,w:600});
+    s+=tx(lx,txY,'LT')+dimV(22,tapL,tapH,'H',-1)+dimV(150,tapL,lvl,'L',-1);
+  } else {
+    s+=`<path d="M170 ${tapL} H${lx-14} V${txY-14}" fill="none" stroke="${IC.wat2}" stroke-width="4"/>`;
+    if(t==='umida'){
+      s+=`<path d="M170 ${tapH} H${lx+14} V${txY-14}" fill="none" stroke="${IC.wat2}" stroke-width="4"/>`+svgT(lx+22,tapH+40,'perna',{s:9,w:600,c:'#0b5d73'})+svgT(lx+22,tapH+51,'úmida',{s:9,w:600,c:'#0b5d73'});
+      s+=dimV(22,tapL,tapH,'H',-1);
+    } else {
+      s+=`<path d="M${lx+14} ${txY-14} V${txY-30}" stroke="${IC.line}" stroke-width="2"/>`+svgT(lx+20,txY-28,'LP: atm',{s:9});
+    }
+    s+=tx(lx,txY,'LT')+dimV(150,tapL,lvl,'L',-1);
+    if(h0pos) s+=`<line x1="172" y1="${txY}" x2="204" y2="${txY}" stroke="${IC.line}" stroke-dasharray="2 2"/>`+dimV(190,tapL,txY,'h0',-1);
+  }
+  return wrapSvg(s,232);
+}
+function svgOrif(D,d,beta,tap,fl){
+  const pr=42*Math.min(1,Math.max(0.15,beta||0.6)); const cy=130;
+  let s=`<rect x="10" y="${cy-42}" width="320" height="84" fill="${fl==='l'?'#d9f0f6':'#eef3f8'}"/><line x1="10" y1="${cy-42}" x2="330" y2="${cy-42}" stroke="${IC.navy}" stroke-width="2.5"/><line x1="10" y1="${cy+42}" x2="330" y2="${cy+42}" stroke="${IC.navy}" stroke-width="2.5"/>`;
+  s+=`<rect x="166" y="${cy-48}" width="8" height="${48-pr}" fill="${IC.navy}"/><rect x="166" y="${cy+pr}" width="8" height="${48-pr}" fill="${IC.navy}"/>`;
+  s+=`<path d="M30 ${cy} H140" stroke="${IC.cyan}" stroke-width="2.5" marker-end="url(#af)"/><path d="M178 ${cy-pr+6} Q215 ${cy-pr+2} 300 ${cy-18}" fill="none" stroke="${IC.cyan}" stroke-width="1.5" stroke-dasharray="4 3"/><path d="M178 ${cy+pr-6} Q215 ${cy+pr-2} 300 ${cy+18}" fill="none" stroke="${IC.cyan}" stroke-width="1.5" stroke-dasharray="4 3"/>`;
+  s+=svgT(40,cy-8,fl==='s'?'vapor':fl==='g'?'gás':'líquido',{c:'#076f84',w:600});
+  const hx= tap==='dd2'?90:150, lx2= tap==='dd2'?212:190;
+  s+=`<path d="M${hx} ${cy-42} V40 H150" fill="none" stroke="${IC.navy}" stroke-width="1.6"/><path d="M${lx2} ${cy-42} V40 H190" fill="none" stroke="${IC.navy}" stroke-width="1.6"/>`;
+  s+=tx(170,32,'FT')+svgT(hx-4,cy-50,'HP',{a:'end',s:9,w:700,c:IC.navy})+svgT(lx2+4,cy-50,'LP',{s:9,w:700,c:IC.navy});
+  s+=dimV(320,cy-42,cy+42,'',1)+svgT(312,cy+4,'D',{a:'end',w:700,c:IC.navy,s:11})+dimV(186,cy-pr,cy+pr,'d');
+  s+=svgT(20,198,`D = ${F(D,2)} mm   ·   d = ${F(d,2)} mm   ·   β = ${F(beta,4)}`,{c:IC.navy,w:600,s:10.5});
+  return wrapSvg(s,206);
+}
+function svgRaiz(fq){
+  fq=Math.max(0,Math.min(1,isFinite(fq)?fq:0)); const X=v=>40+v*270, Y=v=>180-v*150;
+  let s=`<line x1="40" y1="180" x2="315" y2="180" stroke="${IC.navy}"/><line x1="40" y1="180" x2="40" y2="24" stroke="${IC.navy}"/>`;
+  for(let i=1;i<=4;i++){ s+=`<line x1="${X(i/4)}" y1="180" x2="${X(i/4)}" y2="30" stroke="#e6ebf0"/><line x1="40" y1="${Y(i/4)}" x2="310" y2="${Y(i/4)}" stroke="#e6ebf0"/>`+svgT(X(i/4),194,i*25+'%',{a:'middle',s:9})+svgT(34,Y(i/4)+3,i*25+'%',{a:'end',s:9}); }
+  let d='M'+X(0)+' '+Y(0); for(let i=1;i<=50;i++){const v=i/50; d+=` L${X(v)} ${Y(v*v)}`;} s+=`<path d="${d}" fill="none" stroke="${IC.cyan}" stroke-width="2.5"/>`;
+  s+=`<path d="M${X(0)} ${Y(0)} L${X(1)} ${Y(1)}" stroke="${IC.or}" stroke-width="1.5" stroke-dasharray="5 4"/>`;
+  s+=`<line x1="${X(fq)}" y1="180" x2="${X(fq)}" y2="${Y(fq*fq)}" stroke="${IC.navy}" stroke-dasharray="3 3"/><line x1="40" y1="${Y(fq*fq)}" x2="${X(fq)}" y2="${Y(fq*fq)}" stroke="${IC.navy}" stroke-dasharray="3 3"/><circle cx="${X(fq)}" cy="${Y(fq*fq)}" r="5" fill="${IC.navy}"/>`;
+  s+=svgT(312,206,'vazão %',{a:'end',s:9,w:600})+svgT(46,20,'ΔP %',{s:9,w:600})+svgT(200,60,'ΔP = Q²',{c:IC.cyan,w:700,s:11})+svgT(120,60,'linear',{c:IC.or,w:600,s:10});
+  return wrapSvg(s,210);
+}
+function svgTanque(f,frac){
+  frac=Math.max(0,Math.min(1,isFinite(frac)?frac:0.5));
+  let s='';
+  if(f==='v'){ const t=30,b=180,y=b-frac*(b-t);
+    s+=`<rect x="110" y="${t}" width="120" height="${b-t}" fill="#fff" stroke="${IC.navy}" stroke-width="2"/><rect x="111" y="${y}" width="118" height="${b-y}" fill="${IC.wat}"/>`;
+    s+=`<ellipse cx="170" cy="${y}" rx="59" ry="9" fill="${IC.wat2}" opacity=".5"/><ellipse cx="170" cy="${t}" rx="60" ry="10" fill="#fff" stroke="${IC.navy}" stroke-width="2"/><path d="M110 ${b} A60 10 0 0 0 230 ${b}" fill="none" stroke="${IC.navy}" stroke-width="2"/>`;
+    s+=dimV(250,b,y,'h')+`<line x1="110" y1="204" x2="230" y2="204" stroke="${IC.mut}" marker-start="url(#ar)" marker-end="url(#ar)"/>`+svgT(170,218,'D',{a:'middle',w:700,c:IC.navy});
+  } else if(f==='h'){ const cx=170,cy=105,R=75,y=cy+R-frac*2*R;
+    s+=`<clipPath id="hc"><circle cx="${cx}" cy="${cy}" r="${R-1}"/></clipPath><circle cx="${cx}" cy="${cy}" r="${R}" fill="#fff" stroke="${IC.navy}" stroke-width="2"/><rect x="${cx-R}" y="${y}" width="${2*R}" height="${2*R}" fill="${IC.wat}" clip-path="url(#hc)"/>`;
+    s+=dimV(265,cy+R,y,'h')+dimV(75,cy+R,cy-R,'D',-1)+svgT(cx,cy+R+18,'vista lateral do cilindro (comprimento C)',{a:'middle',s:9});
+  } else { const t=40,b=170,y=b-frac*(b-t);
+    s+=`<path d="M100 ${t} L130 ${t-20} L260 ${t-20} L230 ${t} Z" fill="#fff" stroke="${IC.navy}" stroke-width="2"/><path d="M230 ${t} L260 ${t-20} L260 ${b-20} L230 ${b} Z" fill="#f6f8fa" stroke="${IC.navy}" stroke-width="2"/>`;
+    s+=`<rect x="100" y="${t}" width="130" height="${b-t}" fill="#fff" stroke="${IC.navy}" stroke-width="2"/><rect x="101" y="${y}" width="128" height="${b-y-1}" fill="${IC.wat}"/>`+dimV(80,b,y,'h',-1)
+      +`<line x1="100" y1="${b+16}" x2="230" y2="${b+16}" stroke="${IC.mut}" marker-start="url(#ar)" marker-end="url(#ar)"/>`+svgT(165,b+30,'C',{a:'middle',w:700,c:IC.navy})
+      +svgT(254,b-2,'W',{w:700,c:IC.navy});
+  }
+  return wrapSvg(s,224);
+}
+function svgPeso(n,frac){
+  frac=Math.max(0,Math.min(1,isFinite(frac)?frac:0.5)); n=Math.max(1,Math.min(6,Math.round(n)||4));
+  const y=150-frac*95;
+  let s=`<rect x="90" y="40" width="160" height="110" rx="14" fill="#fff" stroke="${IC.navy}" stroke-width="2"/><clipPath id="pc"><rect x="91" y="41" width="158" height="108" rx="13"/></clipPath><rect x="90" y="${y}" width="160" height="${150-y}" fill="${IC.wat}" clip-path="url(#pc)"/>`;
+  const legs=Math.min(n,4), xs=[];
+  for(let i=0;i<legs;i++){ const x= legs===1?170: 100+i*(140/(legs-1)); xs.push(x);
+    s+=`<line x1="${x}" y1="150" x2="${x}" y2="168" stroke="${IC.navy}" stroke-width="3"/><rect x="${x-11}" y="168" width="22" height="12" rx="2" fill="${IC.or}"/>`; }
+  s+=`<line x1="70" y1="181" x2="270" y2="181" stroke="${IC.navy}" stroke-width="2"/>`;
+  s+=`<rect x="285" y="150" width="40" height="24" rx="4" fill="#fff" stroke="${IC.navy}" stroke-width="1.5"/>`+svgT(305,166,'J-box',{a:'middle',s:9,w:700,c:IC.navy});
+  s+=`<path d="M${xs[xs.length-1]+11} 174 H285" stroke="${IC.or}" stroke-width="1.5"/><path d="M305 150 V110" stroke="${IC.navy}" stroke-width="1.5"/>`+tx(305,96,'WT','none');
+  s+=svgT(170,198,`${n} célula(s) de carga`,{a:'middle',s:10,w:600,c:IC.or});
+  return wrapSvg(s,205);
+}
+function setIll(id,svg){ const e=$(id); if(e) e.innerHTML=svg; }
+
+// ---------- Ilustrações (parte 2) ----------
+function svgEscala(lrv,urv,un,p){
+  p=isFinite(p)?p:50; const pc=Math.max(0,Math.min(100,p)), X=v=>40+v*2.6;
+  let s=`<rect x="20" y="22" width="56" height="36" rx="7" fill="#fff" stroke="${IC.navy}" stroke-width="1.6"/>`+svgT(48,45,'PT',{a:'middle',w:700,c:IC.navy,s:12});
+  s+=`<path d="M76 34 H150 M76 46 H150" stroke="${IC.navy}" stroke-width="1.5"/><circle cx="170" cy="40" r="20" fill="#fff" stroke="${IC.navy}" stroke-width="1.6"/>`+svgT(170,44,'mA',{a:'middle',w:700,c:IC.cyan,s:11});
+  s+=`<path d="M190 34 H250 M190 46 H250" stroke="${IC.navy}" stroke-width="1.5"/><rect x="250" y="22" width="70" height="36" rx="7" fill="#fff" stroke="${IC.navy}" stroke-width="1.6"/>`+svgT(285,44,'CLP / DCS',{a:'middle',w:700,c:IC.navy,s:10});
+  s+=svgT(113,28,'loop 4-20 mA',{a:'middle',s:9});
+  s+=`<rect x="40" y="98" width="260" height="12" rx="6" fill="#d8eef3"/><rect x="40" y="98" width="${pc*2.6}" height="12" rx="6" fill="${IC.cyan}"/>`;
+  [0,25,50,75,100].forEach(v=>{ s+=`<line x1="${X(v)}" y1="92" x2="${X(v)}" y2="116" stroke="${IC.navy}" stroke-width="1"/>`+svgT(X(v),88,(4+v*0.16)+' mA',{a:'middle',s:9,c:IC.navy,w:600})+svgT(X(v),142,v+'%',{a:'middle',s:9}); });
+  s+=`<path d="M${X(pc)} 116 l-6 10 h12 z" fill="${IC.navy}"/>`;
+  s+=svgT(40,168,'LRV = '+F(lrv)+' '+un,{w:700,c:IC.navy,s:10})+svgT(300,168,'URV = '+F(urv)+' '+un,{w:700,c:IC.navy,s:10,a:'end'});
+  return wrapSvg(s,178);
+}
+function svgCal(errs,tol){
+  const X=i=>50+i*62, Y=e=>90-e*(60/Math.max(tol*2,Math.max(...errs.map(v=>isFinite(v)?Math.abs(v):0),tol)*1.2||1));
+  let s=`<rect x="40" y="${Y(tol)}" width="268" height="${Y(-tol)-Y(tol)}" fill="${IC.green||'#1f9d61'}" opacity=".12"/>`;
+  s+=`<line x1="40" y1="${Y(tol)}" x2="308" y2="${Y(tol)}" stroke="#1f9d61" stroke-dasharray="4 3"/><line x1="40" y1="${Y(-tol)}" x2="308" y2="${Y(-tol)}" stroke="#1f9d61" stroke-dasharray="4 3"/>`;
+  s+=`<line x1="40" y1="90" x2="308" y2="90" stroke="${IC.navy}"/><line x1="40" y1="20" x2="40" y2="160" stroke="${IC.navy}"/>`;
+  s+=svgT(312,Y(tol)+3,'+tol',{s:9,c:'#1f9d61',w:600})+svgT(312,Y(-tol)+3,'−tol',{s:9,c:'#1f9d61',w:600})+svgT(34,93,'0',{a:'end',s:9});
+  let path=''; errs.forEach((e,i)=>{ s+=svgT(X(i),176,[0,25,50,75,100][i]+'%',{a:'middle',s:9}); if(isFinite(e)){ const ok=Math.abs(e)<=tol; path+=(path?' L':'M')+X(i)+' '+Y(e); s+=`<circle cx="${X(i)}" cy="${Y(e)}" r="5" fill="${ok?'#1f9d61':'#d2453a'}"/>`; } });
+  if(path) s=s.replace(/^/,'')+`<path d="${path}" fill="none" stroke="${IC.navy}" stroke-width="1.5"/>`;
+  s+=svgT(46,16,'erro (% do span)',{s:9,w:600});
+  if(!errs.some(isFinite)) s+=svgT(174,60,'preencha os mA medidos',{a:'middle',s:10,c:IC.mut});
+  return wrapSvg(s,184);
+}
+function svgPt(T,R,R0){
+  let s=`<rect x="20" y="40" width="120" height="18" rx="9" fill="#e9eef3" stroke="${IC.navy}" stroke-width="1.5"/><path d="M34 49 q6 -8 12 0 t12 0 t12 0 t12 0 t12 0 t12 0" fill="none" stroke="${IC.or}" stroke-width="2"/>`;
+  s+=svgT(80,32,'elemento Pt'+R0,{a:'middle',s:10,w:700,c:IC.navy})+svgT(80,76,'R = '+F(R,3)+' Ω',{a:'middle',s:10,w:600,c:IC.or});
+  s+=`<path d="M140 44 H220 M140 49 H220 M140 54 H220" stroke="${IC.navy}" stroke-width="1.3"/>`+svgT(180,38,'3 fios',{a:'middle',s:9});
+  s+=`<rect x="220" y="30" width="56" height="38" rx="7" fill="#fff" stroke="${IC.navy}" stroke-width="1.6"/>`+svgT(248,53,'TT',{a:'middle',w:700,c:IC.navy,s:12})+`<path d="M276 49 H320" stroke="${IC.cyan}" stroke-width="2" marker-end="url(#af)"/>`+svgT(300,42,'4-20',{a:'middle',s:9,c:IC.cyan,w:600});
+  const X=t=>40+(t+50)*0.9, Y=r=>190-(r/R0-0.8)*95; let d='';
+  for(let t=-50;t<=250;t+=10){ d+=(d?' L':'M')+X(t)+' '+Y(cvdR(t,R0)); }
+  s+=`<line x1="40" y1="190" x2="315" y2="190" stroke="${IC.navy}"/><line x1="40" y1="100" x2="40" y2="190" stroke="${IC.navy}"/><path d="${d}" fill="none" stroke="${IC.or}" stroke-width="2"/>`;
+  [0,100,200].forEach(t=>s+=svgT(X(t),202,t+' °C',{a:'middle',s:9}));
+  if(isFinite(T)&&T>=-50&&T<=250) s+=`<circle cx="${X(T)}" cy="${Y(R)}" r="5" fill="${IC.navy}"/>`;
+  s+=svgT(46,110,'R (Ω)',{s:9,w:600});
+  return wrapSvg(s,210);
+}
+function svgAbs(abs,atm){
+  const mx=Math.max(abs,atm)*1.15||1, Y=v=>170-v/mx*140;
+  let s=`<line x1="40" y1="170" x2="310" y2="170" stroke="${IC.navy}" stroke-width="2"/>`+svgT(310,186,'zero absoluto (vácuo total)',{s:9,a:'end'});
+  s+=`<rect x="70" y="${Y(atm)}" width="60" height="${170-Y(atm)}" fill="#e6ebf0"/>`+svgT(100,Y(atm)-6,'Patm',{a:'middle',w:700,c:IC.navy});
+  s+=`<rect x="190" y="${Y(abs)}" width="60" height="${170-Y(abs)}" fill="${IC.wat}"/>`+svgT(220,Y(abs)-6,'Pabs',{a:'middle',w:700,c:IC.navy});
+  s+=`<line x1="40" y1="${Y(atm)}" x2="300" y2="${Y(atm)}" stroke="${IC.or}" stroke-dasharray="5 3"/>`;
+  s+=dimV(270,Y(atm),Y(abs),'Pman');
+  return wrapSvg(s,194);
+}
+function svgColuna(){
+  let s=`<rect x="40" y="20" width="100" height="70" rx="5" fill="#fff" stroke="${IC.navy}" stroke-width="2"/><rect x="42" y="45" width="96" height="43" fill="${IC.wat}"/>`;
+  s+=`<path d="M140 80 H200 V160" fill="none" stroke="${IC.wat2}" stroke-width="5"/>`+tx(200,174,'PT','none');
+  s+=`<line x1="150" y1="80" x2="250" y2="80" stroke="${IC.line}" stroke-dasharray="2 2"/>`+dimV(240,80,160,'h');
+  s+=svgT(206,120,'ρ',{w:700,c:'#0b5d73',s:12})+svgT(290,120,'P = ρ·g·h',{a:'middle',w:700,c:IC.navy,s:11});
+  return wrapSvg(s,195);
+}
+function svgVel(v){
+  let s=`<rect x="20" y="40" width="300" height="70" fill="#eef7fa"/><line x1="20" y1="40" x2="320" y2="40" stroke="${IC.navy}" stroke-width="2.5"/><line x1="20" y1="110" x2="320" y2="110" stroke="${IC.navy}" stroke-width="2.5"/>`;
+  [55,75,95].forEach((y,i)=>s+=`<path d="M${50+i*10} ${y} H${230+(i===1?30:0)}" stroke="${IC.cyan}" stroke-width="2" marker-end="url(#af)"/>`);
+  s+=dimV(300,40,110,'D',-1)+svgT(150,30,'v = Q / A',{a:'middle',w:700,c:IC.navy,s:11})+svgT(150,132,'v = '+F(v,2)+' m/s',{a:'middle',w:600,c:IC.cyan,s:11});
+  return wrapSvg(s,140);
+}
+function svgGas(){
+  let s=`<rect x="30" y="30" width="110" height="80" rx="8" fill="#eef3f8" stroke="${IC.navy}" stroke-width="1.5"/>`+svgT(85,58,'Nm³',{a:'middle',w:700,c:IC.navy,s:13})+svgT(85,78,'0 °C · 1,01325 bar',{a:'middle',s:9})+svgT(85,92,'(condição normal)',{a:'middle',s:9});
+  s+=`<path d="M145 70 H195" stroke="${IC.cyan}" stroke-width="2" marker-end="url(#af)"/><path d="M195 80 H145" stroke="${IC.cyan}" stroke-width="2" marker-end="url(#af)"/>`;
+  s+=`<rect x="200" y="45" width="110" height="55" rx="8" fill="${IC.wat}" stroke="${IC.navy}" stroke-width="1.5"/>`+svgT(255,68,'m³ real',{a:'middle',w:700,c:IC.navy,s:13})+svgT(255,86,'P, T, Z de operação',{a:'middle',s:9,c:'#0b5d73'});
+  s+=svgT(170,128,'gás comprimido ocupa menos volume',{a:'middle',s:9});
+  return wrapSvg(s,138);
+}
+function svgMassa(){
+  let s=`<rect x="120" y="40" width="80" height="60" rx="6" fill="${IC.wat}" stroke="${IC.navy}" stroke-width="2"/>`+svgT(160,76,'m',{a:'middle',w:700,c:IC.navy,s:16});
+  s+=`<path d="M160 104 V150" stroke="${IC.or}" stroke-width="3" marker-end="url(#af)"/>`+svgT(170,135,'P = m·g',{w:700,c:IC.or,s:11});
+  s+=`<rect x="90" y="156" width="140" height="10" rx="3" fill="${IC.navy}"/>`+svgT(240,40,'g = 9,80665 m/s²',{s:9})+svgT(240,54,'1 kgf = 9,80665 N',{s:9});
+  return wrapSvg(s,175);
+}
+function svgMassVol(){
+  let s=`<rect x="40" y="30" width="80" height="80" fill="${IC.wat}" stroke="${IC.navy}" stroke-width="1.5"/>`+svgT(80,75,'V',{a:'middle',w:700,c:IC.navy,s:16})+svgT(80,126,'volume (m³)',{a:'middle',s:9});
+  s+=svgT(170,66,'× ρ',{a:'middle',w:700,c:IC.cyan,s:14})+`<path d="M140 76 H200" stroke="${IC.cyan}" stroke-width="2" marker-end="url(#af)"/>`;
+  s+=`<rect x="220" y="40" width="70" height="70" rx="6" fill="#e6ebf0" stroke="${IC.navy}" stroke-width="1.5"/>`+svgT(255,80,'m',{a:'middle',w:700,c:IC.navy,s:16})+svgT(255,126,'massa (kg)',{a:'middle',s:9});
+  return wrapSvg(s,138);
+}
+
+
+// ---------- Termopar (NIST ITS-90) ----------
+const TC={"B": [[0.0, 630.615, [6.2990347094e-19, -1.694452924e-15, 1.5668291901e-12, -1.3257931636e-09, 5.9040421171e-06, -0.00024650818346, 0.0], null], [630.615, 1820.0, [-9.3791330289e-25, 9.8975640821e-21, -4.4515431033e-17, 1.1109794013e-13, -1.6835344864e-10, 1.5785280164e-07, -8.4885104785e-05, 0.02857174747, -3.8938168621], null]], "E": [[-270.0, 0.0, [-3.4657842013e-29, -5.5827328721e-26, -3.9673619516e-23, -1.6414776355e-20, -4.3979497391e-18, -8.0370123621e-16, -1.0287605534e-13, -9.3214058667e-12, -5.9452583057e-10, -2.5800160843e-08, -7.7998048686e-07, 4.5410977124e-05, 0.058665508708, 0.0], null], [0.0, 1000.0, [3.5960899481e-28, -1.4388041782e-24, 2.1489217569e-21, -1.2536600497e-18, -1.9197495504e-16, 6.502440327e-13, -3.3056896652e-10, 2.8908407212e-08, 4.5032275582e-05, 0.05866550871, 0.0], null]], "J": [[-210.0, 760.0, [1.5631725697e-23, -1.2538395336e-19, 2.0948090697e-16, -1.7052958337e-13, 1.3228195295e-10, -8.568106572e-08, 3.047583693e-05, 0.050381187815, 0.0], null], [760.0, 1200.0, [-3.0691369056e-13, 1.5720819004e-09, -3.1847686701e-06, 0.0031787103924, -1.4976127786, 296.45625681], null]], "K": [[-270.0, 0.0, [-1.6322697486e-23, -1.9889266878e-20, -1.0451609365e-17, -3.1088872894e-15, -5.7410327428e-13, -6.7509059173e-11, -4.9904828777e-09, -3.2858906784e-07, 2.3622373598e-05, 0.039450128025, 0.0], null], [0.0, 1372.0, [-1.2104721275e-26, 9.7151147152e-23, -3.2020720003e-19, 5.6075059059e-16, -5.6072844889e-13, 3.1840945719e-10, -9.9457592874e-08, 1.8558770032e-05, 0.038921204975, -0.017600413686], [0.1185976, -0.0001183432, 126.9686]]], "N": [[-270.0, 0.0, [-9.3419667835e-20, -7.6089300791e-17, -2.2653438003e-14, -2.6303357716e-12, -4.6412039759e-11, -9.3841111554e-08, 1.0957484228e-05, 0.026159105962, 0.0], null], [0.0, 1300.0, [-3.0682196151e-29, 2.0849229339e-25, -6.0863245607e-22, 9.9745338992e-19, -1.0063471519e-15, 6.4311819339e-13, -2.5261169794e-10, 4.3825627237e-08, 1.571014188e-05, 0.025929394601, 0.0], null]], "R": [[-50.0, 1064.18, [-2.81038625251e-27, 1.57716482367e-23, -3.73105886191e-20, 5.00777441034e-17, -4.62347666298e-14, 3.56916001063e-11, -2.38855693017e-08, 1.39166589782e-05, 0.00528961729765, 0.0], null], [1064.18, 1664.5, [-2.93359668173e-16, 2.05305291024e-12, -7.64085947576e-09, 1.59564501865e-05, -0.00252061251332, 2.95157925316], null], [1664.5, 1768.1, [-9.34633971046e-15, -3.45895706453e-08, 0.000171280280471, -0.268819888545, 152.232118209], null]], "S": [[-50.0, 1064.18, [2.71443176145e-24, -1.25068871393e-20, 2.55744251786e-17, -3.31465196389e-14, 3.22028823036e-11, -2.32477968689e-08, 1.2593428974e-05, 0.00540313308631, 0.0], null], [1064.18, 1664.5, [1.29989605174e-14, -1.64856259209e-09, 6.54805192818e-06, 0.00334509311344, 1.32900444085], null], [1664.5, 1768.1, [-9.43223690612e-15, -3.30439046987e-08, 0.000163693574641, -0.258430516752, 146.628232636], null]], "T": [[-270.0, 0.0, [7.9795153927e-31, 1.3945027062e-27, 1.079553927e-24, 4.8768662286e-22, 1.4251594779e-19, 2.8213521925e-17, 3.8493939883e-15, 3.6071154205e-13, 2.2651156593e-11, 9.0138019559e-10, 2.0032973554e-08, 1.1844323105e-07, 4.4194434347e-05, 0.038748106364, 0.0], null], [0.0, 400.0, [-2.7512901673e-20, 4.547913529e-17, -3.0815758772e-14, 1.0996880928e-11, -2.1882256846e-09, 2.0618243404e-07, 3.329222788e-05, 0.038748106364, 0.0], null]]};
+function tcE(k,T){ const t=TC[k]; for(const [a,b,pc,ec] of t){ if(T>=a-1e-9&&T<=b+1e-9){ let v=0; for(const c of pc) v=v*T+c; if(ec) v+=ec[0]*Math.exp(ec[1]*(T-ec[2])**2); return v; } } return NaN; }
+function tcT(k,mv){ const t=TC[k]; let lo=t[0][0], hi=t[t.length-1][1]; if(k==='B') lo=250; const f=T=>tcE(k,T)-mv;
+  if(f(lo)>0||f(hi)<0) return NaN; for(let i=0;i<80;i++){ const m=(lo+hi)/2; f(m)>0?hi=m:lo=m; } return (lo+hi)/2; }
+function svgTc(T,Tref,mv,k){
+  let s=`<circle cx="40" cy="80" r="7" fill="${IC.or}"/>`+svgT(40,108,'junta quente',{a:'middle',s:9,w:600,c:IC.or})+svgT(40,122,'T = '+F(T,1)+' °C',{a:'middle',s:10,w:700,c:IC.navy});
+  s+=`<path d="M46 76 Q120 50 200 64" fill="none" stroke="#c0392b" stroke-width="2.5"/><path d="M46 84 Q120 110 200 96" fill="none" stroke="#2b6cb0" stroke-width="2.5"/>`;
+  s+=svgT(120,52,'+',{a:'middle',s:12,w:700,c:'#c0392b'})+svgT(120,118,'−',{a:'middle',s:14,w:700,c:'#2b6cb0'})+svgT(120,86,'tipo '+k,{a:'middle',s:10,w:700,c:IC.navy});
+  s+=`<rect x="200" y="54" width="14" height="52" rx="2" fill="#e6ebf0" stroke="${IC.navy}"/>`+svgT(207,140,'borne',{a:'middle',s:9})+svgT(207,152,'Tref = '+F(Tref,1)+' °C',{a:'middle',s:9,w:700,c:IC.navy});
+  s+=`<path d="M214 64 H246 M214 96 H246" stroke="${IC.navy}" stroke-width="1.5"/><rect x="246" y="56" width="62" height="48" rx="7" fill="#fff" stroke="${IC.navy}" stroke-width="1.6"/>`+svgT(277,78,'TT',{a:'middle',s:12,w:700,c:IC.navy})+svgT(277,94,'CJC',{a:'middle',s:9,c:IC.cyan,w:600});
+  s+=svgT(230,40,F(mv,3)+' mV',{a:'middle',s:11,w:700,c:IC.cyan});
+  return wrapSvg(s,165);
+}
+function runTc(){
+  const k=V('tc-tipo'), m=V('tc-m'), x=N('tc-x'), tr=N('tc-ref'), lrv=N('tc-lrv'), urv=N('tc-urv');
+  $('tc-l').textContent= m==='t'?'Temperatura da junta quente (°C)':'Tensão medida nos bornes (mV)'; $('tc-sym').textContent= m==='t'?'T':'mV';
+  const Eref=tcE(k,tr); let T, Eabs, Emed;
+  if(m==='t'){ T=x; Eabs=tcE(k,T); Emed=Eabs-Eref; } else { Emed=x; Eabs=Emed+Eref; T=tcT(k,Eabs); }
+  const w=$('tc-warn'); const notes=[];
+  if(!isFinite(Eabs)||!isFinite(T)||!isFinite(Eref)){ $('tc-res').innerHTML=''; $('tc-steps').textContent='Valor fora da faixa do tipo '+k+'.'; $('tc-tab').innerHTML=''; w.classList.add('hidden'); return; }
+  const f=(T-lrv)/(urv-lrv);
+  $('tc-res').innerHTML=stat(F(T,2),'°C')+stat(F(Emed,3),'mV nos bornes')+stat(F(4+16*f,2),'mA (range)');
+  setIll('tc-ill', svgTc(T,tr,Emed,k));
+  $('tc-steps').textContent=`E(T) tabela, referência 0 °C = ${F(Eabs,4)} mV\nE(Tref = ${F(tr,1)} °C) = ${F(Eref,4)} mV\nTensão nos bornes = E(T) − E(Tref) = ${F(Emed,4)} mV\n\n${m==='t'?'Para simular no calibrador sem CJC: '+F(Eabs,3)+' mV · com CJC ligada: digite '+F(T,1)+' °C':'Temperatura com compensação: '+F(T,2)+' °C'}\nSensibilidade local ≈ ${F((tcE(k,T+0.5)-tcE(k,T-0.5))*1000,1)} µV/°C`;
+  $('tc-tab').innerHTML=table(['%','°C','mV (ref 0 °C)','mV (ref '+F(tr,0)+' °C)','mA'],[0,25,50,75,100].map(p=>{const t=lrv+(urv-lrv)*p/100,e=tcE(k,t);return [p+'%',F(t,1),F(e,3),F(e-Eref,3),F(4+16*p/100,2)];}));
+  if(k==='B' && T<50) notes.push('Tipo B tem tensão quase nula abaixo de ~50 °C: a compensação de junta fria praticamente não influi, mas também não mede bem baixas temperaturas.');
+  notes.push('Use cabo de extensão ou compensação do mesmo tipo até o transmissor: cobre comum no meio do caminho cria uma nova junção e gera erro.');
+  notes.push('Polaridade invertida faz a leitura cair quando a temperatura sobe. No tipo K, o fio negativo (Alumel) é levemente magnético.');
+  w.innerHTML=notes.join('<br><br>'); w.classList.remove('hidden');
+}
+
+
+// ---------- pH ----------
+const NERN=T=>Math.LN10*8.314462618*(T+273.15)/96485.33212*1000; // mV/pH
+function svgPh(ph,e,e0,sl,T){
+  let s=`<path d="M30 40 V150 Q30 168 48 168 H112 Q130 168 130 150 V40" fill="none" stroke="${IC.navy}" stroke-width="2"/><rect x="32" y="${92}" width="96" height="74" fill="${IC.wat}" opacity=".8"/>`;
+  s+=`<rect x="70" y="18" width="20" height="110" rx="4" fill="#fff" stroke="${IC.navy}" stroke-width="1.5"/><circle cx="80" cy="134" r="11" fill="#e8f6fa" stroke="${IC.navy}" stroke-width="1.5"/>`;
+  s+=svgT(80,186,'eletrodo de vidro',{a:'middle',s:9})+`<path d="M80 18 V8 H160" fill="none" stroke="${IC.navy}" stroke-width="1.5"/>`+tx(185,10+14,'AT','none');
+  // gráfico
+  const X=v=>215+v*8.5, Y=mv=>115-mv*0.12;
+  s+=`<line x1="215" y1="115" x2="334" y2="115" stroke="${IC.line}"/><line x1="${X(7)}" y1="50" x2="${X(7)}" y2="175" stroke="${IC.line}" stroke-dasharray="2 2"/>`;
+  const S=NERN(T); s+=`<line x1="${X(0)}" y1="${Y(S*7)}" x2="${X(14)}" y2="${Y(-S*7)}" stroke="${IC.or}" stroke-dasharray="4 3"/>`;
+  s+=`<line x1="${X(0)}" y1="${Y(e0+sl*S*7)}" x2="${X(14)}" y2="${Y(e0-sl*S*7)}" stroke="${IC.cyan}" stroke-width="2"/>`;
+  if(isFinite(ph)&&ph>=0&&ph<=14) s+=`<circle cx="${X(ph)}" cy="${Y(e)}" r="5" fill="${IC.navy}"/>`;
+  s+=svgT(X(0),188,'0',{a:'middle',s:9})+svgT(X(7),188,'7',{a:'middle',s:9})+svgT(X(14),188,'14',{a:'middle',s:9})+svgT(334,200,'pH',{a:'end',s:9,w:600})+svgT(206,62,'mV',{s:9,w:600,a:'end'});
+  s+=svgT(236,58,'teórico',{s:9,c:IC.or,w:600})+svgT(300,176,'eletrodo',{s:9,c:IC.cyan,w:600,a:'middle'});
+  return wrapSvg(s,205);
+}
+function runPh(){
+  const m=V('phx-m'), x=N('phx-x'), T=N('phx-t'), e0=N('phx-e0'), sp=N('phx-s')/100, lrv=N('phx-lrv'), urv=N('phx-urv');
+  $('phx-l').textContent= m==='mv'?'Tensão do eletrodo (mV)':'pH da amostra'; $('phx-sym').textContent= m==='mv'?'E':'pH';
+  const S=NERN(T); let ph,e;
+  if(m==='mv'){ e=x; ph=7-(e-e0)/(sp*S); } else { ph=x; e=e0-sp*S*(ph-7); }
+  const f=(ph-lrv)/(urv-lrv);
+  $('phm-res').innerHTML=stat(F(ph,2),'pH')+stat(F(e,1),'mV')+stat(F(4+16*f,2),'mA (range)');
+  setIll('phm-ill', svgPh(ph,e,e0,sp,T));
+  $('phx-steps').textContent=`Inclinação teórica a ${F(T,1)} °C = 0,19842 × (T + 273,15) = ${F(S,3)} mV/pH\nInclinação do eletrodo = ${F(sp*100,1)}% × ${F(S,3)} = ${F(sp*S,3)} mV/pH\npH = 7 − (E − E₀)/inclinação = 7 − (${F(e,1)} − ${F(e0,1)})/${F(sp*S,3)} = ${F(ph,3)}`;
+  $('phx-tab').innerHTML=table(['pH','mV (eletrodo)','mV a 25 °C ideal','mA'],[0,2,4,7,10,12,14].map(p=>[F(p,0),F(e0-sp*S*(p-7),1),F(-NERN(25)*(p-7),1),F(4+16*(p-lrv)/(urv-lrv),2)]));
+  // calibração
+  const pa=N('phx-pa'), ea=N('phx-ea'), pb=N('phx-pb'), eb=N('phx-eb');
+  const sl=(ea-eb)/(pa-pb), slp=Math.abs(sl)/S*100, E7=ea+sl*(7-pa);
+  let diag= slp>=95&&slp<=102 ? 'Eletrodo BOM' : slp>=90&&slp<95 ? 'Eletrodo envelhecendo: limpar e recalibrar' : slp>102&&slp<=105 ? 'Slope alto: confira os buffers' : 'Eletrodo RUIM ou buffer errado: limpar, regenerar ou trocar';
+  let doff= Math.abs(E7)<=15 ? 'offset ótimo' : Math.abs(E7)<=30 ? 'offset aceitável' : 'offset alto: verifique a referência (junção entupida, KCl contaminado)';
+  $('phx-cal').textContent = isFinite(sl)&&pa!==pb ? `Inclinação medida = (EA − EB)/(pHA − pHB) = (${F(ea,1)} − ${F(eb,1)})/(${F(pa,2)} − ${F(pb,2)}) = ${F(sl,3)} mV/pH\nSlope = ${F(slp,1)}% do teórico (${F(S,2)} mV/pH a ${F(T,1)} °C)\nOffset E₀ (mV em pH 7) = ${F(E7,1)} mV\n\nDiagnóstico: ${diag}; ${doff}.\nReferência típica: slope 95–102% e offset dentro de ±30 mV.` : 'Informe dois buffers diferentes.';
+  $('phx-use').onclick=()=>{ if(isFinite(slp)){ $('phx-e0').value=F(E7,1); $('phx-s').value=F(slp,1); runPh(); flash('phm-res'); } };
+}
+
+
+// ---------- Brix ----------
+// Ajuste polinomial da tabela NBS Circular 457 (sacarose, 20 °C), erro < 0,00001 de SG entre 0 e 95 °Bx
+const BXA=[4.172237926474706e-15, -1.6253241800320844e-12, -4.827806942481018e-11, 5.564973200826482e-08, 1.2972433837847364e-05, 0.003867457706606246, 1.0000033126482217], BXT=[6.383392411149049e-15, -2.2656257011010245e-12, 2.3321517779173263e-11, 5.179561566644299e-08, 1.3049445461827896e-05, 0.0038620666398572205, 1.000002140316206];
+const pv=(c,x)=>c.reduce((a,k)=>a*x+k,0);
+const W20=998.203;
+const bxSG=B=>pv(BXA,B);            // SG aparente 20/20 °C
+const bxRho=B=>pv(BXT,B)*W20;       // massa específica verdadeira a 20 °C (kg/m³)
+function invBx(f,y){ let lo=0,hi=95; if(y<f(lo)-1e-6||y>f(hi)) return NaN; for(let i=0;i<70;i++){ const m=(lo+hi)/2; f(m)<y?lo=m:hi=m; } return Math.max(0,(lo+hi)/2); }
+const sgBx=sg=>invBx(bxSG,sg);
+function svgBx(B,sg,rho){
+  const b=Math.max(0,Math.min(85,isFinite(B)?B:0));
+  let s=`<path d="M40 40 V160 Q40 176 56 176 H124 Q140 176 140 160 V40" fill="none" stroke="${IC.navy}" stroke-width="2"/>`;
+  const col=`hsl(42,${Math.min(90,20+b)}%,${Math.max(45,92-b*0.5)}%)`; s+=`<rect x="42" y="80" width="96" height="94" fill="${col}"/>`;
+  s+=svgT(90,130,F(B,1)+' °Bx',{a:'middle',w:700,c:IC.navy,s:13})+svgT(90,194,'solução de sacarose',{a:'middle',s:9});
+  const X=v=>170+v*1.85; s+=`<rect x="170" y="90" width="${85*1.85}" height="12" rx="6" fill="#f3e7c9"/><rect x="170" y="90" width="${b*1.85}" height="12" rx="6" fill="#d9a43b"/>`;
+  [0,20,40,60,80].forEach(v=>s+=svgT(X(v),120,v,{a:'middle',s:9})); s+=`<path d="M${X(b)} 86 l-5 -9 h10 z" fill="${IC.navy}"/>`+svgT(170,72,'°Brix',{s:9,w:600});
+  s+=svgT(170,150,'SG 20/20 = '+F(sg,4),{w:700,c:IC.navy,s:10})+svgT(170,166,'ρ = '+F(rho,1)+' kg/m³',{w:600,c:IC.mut,s:10});
+  return wrapSvg(s,202);
+}
+function runBx(){
+  const m=V('bx-m'), x=N('bx-x');
+  const L={bx:['Bx','°Brix'],sg:['SG','Densidade relativa (20/20 °C)'],rho:['ρ','Massa específica (kg/m³ a 20 °C)'],be:['°Bé','°Baumé']}[m];
+  $('bx-sym').textContent=L[0]; $('bx-l').textContent=L[1];
+  let B= m==='bx'?x: m==='sg'?sgBx(x): m==='rho'?invBx(bxRho,x) : sgBx(145/(145-x));
+  const sg=bxSG(B), rho=bxRho(B), be=145*(1-1/sg);
+  if(!isFinite(B)||!isFinite(sg)){ $('bx-res').innerHTML=''; $('bx-steps').textContent='Valor fora da faixa (0 a ~90 °Bx).'; return; }
+  $('bx-res').innerHTML=stat(F(B,2),'°Brix')+stat(F(sg,4),'SG 20/20')+stat(F(be,2),'°Baumé');
+  setIll('bx-ill', svgBx(B,sg,rho));
+  $('bx-steps').textContent=`°Brix = ${F(B,2)}  (g de sólidos solúveis em 100 g de solução)\nSG aparente (20/20 °C) = ${F(sg,5)}\nMassa específica verdadeira a 20 °C = ${F(rho,2)} kg/m³\n°Baumé = 145 × (1 − 1/SG) = ${F(be,2)}\nÁgua na solução = ${F(100-B,2)}%`;
+  const pol=N('bx-pol'); $('bx-pur').textContent=`Pureza aparente = Pol / Brix × 100 = ${F(pol,2)} / ${F(B,2)} × 100 = ${F(pol/B*100,2)}%\nNão-açúcares (aprox.) = ${F(B-pol,2)} pontos de Brix`;
+  const f=N('bx-f'), be1=N('bx-be'), bs=N('bx-bs'), sol=f*be1/100, out=sol/(bs/100), ev=f-out;
+  $('bx-ev').textContent=`Sólidos = F × Bxe = ${F(f)} × ${F(be1,2)}% = ${F(sol)} t/h\nSaída = sólidos / Bxs = ${F(sol)} / ${F(bs,2)}% = ${F(out)} t/h\nÁgua evaporada = F × (1 − Bxe/Bxs) = ${F(ev)} t/h`;
+  $('bx-tab').innerHTML=table(['°Brix','SG ap. 20/20','kg/m³ a 20 °C','°Baumé'],[0,10,15,20,30,40,50,60,65,70,80,90].map(b=>{const g=bxSG(b);return [F(b,0),F(g,5),F(bxRho(b),1),F(145*(1-1/g),2)];}));
+}
+
+// ---------- Densidade ----------
+function dnToSG(v,u){ return u==='sg'?v: u==='rho'?v/W20: bxRho(v)/W20; }
+function svgDens(sgp,sgf){
+  let s=`<rect x="60" y="20" width="70" height="170" fill="#f3e7c9" stroke="${IC.navy}" stroke-width="2"/>`+svgT(95,105,'processo',{a:'middle',s:9,c:'#8a6514',w:600})+svgT(95,118,'SG '+F(sgp,3),{a:'middle',s:10,c:IC.navy,w:700});
+  s+=`<rect x="130" y="${150-9}" width="8" height="18" fill="${IC.or}"/><rect x="130" y="${60-9}" width="8" height="18" fill="${IC.or}"/>`;
+  s+=`<path d="M138 150 H226 V128" fill="none" stroke="${IC.or}" stroke-width="2.2" stroke-dasharray="5 3"/><path d="M138 60 H254 V100" fill="none" stroke="${IC.or}" stroke-width="2.2" stroke-dasharray="5 3"/>`;
+  s+=tx(240,114,'DT')+dimV(40,150,60,'H',-1)+svgT(262,60,'capilares',{s:9,c:IC.or,w:600})+svgT(262,72,'SG '+F(sgf,3),{s:9,c:IC.or});
+  s+=svgT(240,170,'ΔP = (SGp − SGf)·H',{a:'middle',w:700,c:IC.navy,s:10});
+  return wrapSvg(s,200);
+}
+function runDens(){
+  const u=V('dn-u'), mn=N('dn-min'), mx=N('dn-max'), H=N('dn-h'), pu=V('dn-pu'), flv=V('dn-fl');
+  $('dn-fsgw').classList.toggle('hidden',flv!=='sg'); const sgf= flv==='sg'?N('dn-fsg'):parseFloat(flv);
+  const s1=dnToSG(mn,u), s2=dnToSG(mx,u), cv=mm=>mm*G/PU[pu];
+  const dp=sg=>(sg-sgf)*H, lrv=cv(dp(s1)), urv=cv(dp(s2)), span=urv-lrv;
+  $('dn-res').innerHTML=stat(F(lrv),'LRV · 4 mA')+stat(F(urv),'URV · 20 mA')+stat(F(span),'span '+pu);
+  setIll('dn-ill', svgDens((s1+s2)/2,sgf));
+  $('dn-steps').textContent=`SG mínimo = ${F(s1,4)} · SG máximo = ${F(s2,4)} · fluido SG ${F(sgf,3)}\nLRV = (${F(s1,4)} − ${F(sgf,3)}) × ${F(H)} = ${F(dp(s1))} mmH2O = ${F(lrv)} ${pu}\nURV = (${F(s2,4)} − ${F(sgf,3)}) × ${F(H)} = ${F(dp(s2))} mmH2O = ${F(urv)} ${pu}\nSensibilidade: ${F(H/1000*1000*0.01)} mmH2O a cada 0,01 de SG${span<200&&pu==='mmH2O'?'\n\nSpan pequeno: aumente H para ganhar resolução (span mínimo do transmissor e estabilidade do zero importam).':''}`;
+  $('dn-tab').innerHTML=table(['%',u==='bx'?'°Brix':u==='rho'?'kg/m³':'SG','SG','ΔP '+pu,'mA'],[0,25,50,75,100].map(p=>{const v=mn+(mx-mn)*p/100, g=dnToSG(v,u);return [p+'%',F(v,3),F(g,4),F(cv(dp(g))),F(4+16*p/100,2)];}));
+  // calibração 2 pontos
+  const l1=N('dc-l1'), i1=N('dc-i1'), l2=N('dc-l2'), i2=N('dc-i2'), tol=N('dc-tol');
+  const a=(l2-l1)/(i2-i1), b=l1-a*i1, e1=i1-l1, e2=i2-l2;
+  if(!isFinite(a)){ $('dc-out').textContent='Informe duas amostras diferentes.'; return; }
+  const nL=(mn-b)/a, nU=(mx-b)/a, ok=Math.abs(e1)<=tol&&Math.abs(e2)<=tol;
+  $('dc-out').textContent=`Erro amostra 1 = ${F(i1,4)} − ${F(l1,4)} = ${e1>=0?'+':''}${F(e1,4)}\nErro amostra 2 = ${F(i2,4)} − ${F(l2,4)} = ${e2>=0?'+':''}${F(e2,4)}\n→ ${ok?'DENTRO da tolerância: não precisa ajustar':'FORA da tolerância: corrigir'}\n\nCorreção: valor real = ${F(a,5)} × leitura ${b>=0?'+':'−'} ${F(Math.abs(b),5)}\nGanho (span) = ${F(a,5)} · offset (zero) = ${F(b,5)}\n${Math.abs(a-1)<0.01?'Erro quase constante → ajuste de ZERO.':'Erro muda ao longo da faixa → ajuste de ZERO e SPAN.'}\n\nPara a saída representar ${F(mn,3)} a ${F(mx,3)} de verdade, configure o range do transmissor em leitura do instrumento:\nLRV = ${F(nL,4)}  ·  URV = ${F(nU,4)}${u==='sg'||u==='rho'||u==='bx'?' ('+(u==='bx'?'°Brix':u==='rho'?'kg/m³':'SG')+')':''}\n(ou aplique o ganho e o offset no CLP/DCS)`;
+}
+fill('dn-pu',PU,'mmH2O');
 
 // ---------- ISO 5167-2 ----------
 function isoC(beta,Re,Dmm,tap){
@@ -1227,6 +1741,7 @@ function runOrif(){
   if(kT!==1) s+=`\n\nCorreção térmica: D e d × ${F(kT,6)} (λ = ${F(lam*1e6,1)}×10⁻⁶/°C, ${F(T,1)} °C)`;
   if(gas) s+=`\np1 = ${F(p1/1e5,4)} bar abs · p2/p1 = ${F(1-dp/p1,4)}`;
   st.textContent=s;
+  setIll('or-ill', svgOrif(N('or-D'), dd*1000/kT, r.beta, o.tap, fl));
   if(r.beta<0.1||r.beta>0.75) warns.push('β fora da faixa da ISO 5167-2 (0,10 a 0,75).');
   if(D*1000<50||D*1000>1000) warns.push('D fora da faixa da norma (50 a 1000 mm).');
   if(dd*1000<12.5) warns.push('d menor que 12,5 mm: fora da norma.');
@@ -1249,6 +1764,7 @@ function runRaiz(){
   else if(inp==='dp') fq=Math.sqrt(Math.max(0,x/dpmax));
   else fq=x/qmax;
   const fdp=fq*fq, ma= sq? 4+16*fq : 4+16*fdp;
+  setIll('rz-ill', svgRaiz(fq));
   $('rz-res').innerHTML=stat(F(fq*qmax),'vazão '+qu)+stat(F(fdp*dpmax),'ΔP '+u)+stat(F(ma,2),'mA');
   $('rz-steps').textContent=`Vazão = ${F(fq*100,2)}% → ΔP = (${F(fq,4)})² = ${F(fdp*100,2)}% do ΔPmáx\nSaída ${sq?'com extração de raiz: mA = 4 + 16 × %vazão':'linear em ΔP: mA = 4 + 16 × %ΔP'} = ${F(ma,2)} mA`;
   const pts=[0,10,20,25,30,40,50,60,70,75,80,90,100];
@@ -1284,6 +1800,8 @@ function runNivel(){
   const t=V('nv-tipo'), u=V('nv-u'), lmin=N('nv-lmin'), lmax=N('nv-lmax'), h0=N('nv-h0'), ht=N('nv-ht'), L=N('nv-l');
   const drum=t==='drum';
   $('nv-hint').textContent=NV_HINT[t];
+  { const fr=isFinite(L)? (L)/Math.max(1, t==='aberto'?lmax:ht) : 0.5; setIll('nv-ill', svgNivel(t,fr,h0>0)); }
+  $('nv-title').textContent={aberto:'Nível — tanque aberto',umida:'Nível — perna úmida',selos:'Nível — selos remotos',drum:'Nível de caldeira (tambor)'}[t];
   $('nv-prod-w').classList.toggle('hidden',drum); $('nv-drum-w').classList.toggle('hidden',!drum);
   $('nv-prod-t').textContent= drum?'2 · Condições do tambor':'2 · Produto';
   $('nv-h0w').classList.toggle('hidden',t==='selos'||drum); $('nv-h0-note').classList.toggle('hidden',t==='selos'||drum);
@@ -1344,6 +1862,7 @@ function runPres(){
   $('pr-tab').innerHTML=table(['Unidade','Valor'],Object.keys(PU).map(k=>[k,`<span class="mono">${F(pa/PU[k])}</span>`]));
   const a=N('pa-v')*PU[V('pa-u')], atm=N('pa-atm')*1e5, ua=V('pa-u');
   const abs = V('pa-t')==='g'? a+atm : a, man = abs-atm;
+  setIll('pa-ill', svgAbs(abs,atm)); setIll('ph-ill', svgColuna());
   $('pa-out').textContent=`Absoluta: ${F(abs/PU[ua])} ${ua}(a)  ·  ${F(abs/1e5)} bar(a)\nManométrica: ${F(man/PU[ua])} ${ua}(g)  ·  ${F(man/1e5)} bar(g)${man<0?'\n(negativo = vácuo em relação à atmosfera)':''}`;
   const ph=N('ph-r')*G*N('ph-h'), uh=V('ph-u');
   $('ph-out').textContent=`P = ρ·g·h = ${F(N('ph-r'))} × 9,80665 × ${F(N('ph-h'))} = ${F(ph)} Pa\n= ${F(ph/PU[uh])} ${uh}\nO transmissor lê ${F(ph/PU[uh])} ${uh} a mais. Compense: LRV e URV deslocados em +${F(ph/PU[uh])} ${uh}, ou faça o ajuste de zero com a linha cheia.`;
@@ -1374,6 +1893,7 @@ function runCal(){
     const ok=isFinite(e)?Math.abs(e)<=tol:null; if(isFinite(e)) maxE=Math.max(maxE,Math.abs(e));
     $('cl-ok'+i).innerHTML= ok===null?'':ok?'<span style="color:var(--green)">✔</span>':'<span style="color:var(--red)">✘</span>';
   });
+  setIll('cl-ill', svgCal(CLP.map((_,i)=>parseNum($('cl-er'+i).textContent)), tol));
   if(!any){ $('cl-sum').textContent=`Preencha os mA medidos.\n${sq?'Na função raiz quadrada, a entrada de cada ponto é o ΔP que gera aquele % de vazão (ex.: 50% → 25% do ΔP).':'Entrada = LRV + span × %.'}`; return; }
   const mean=errs.reduce((a,b)=>a+b,0)/errs.length, spread=Math.max(...errs)-Math.min(...errs);
   let s=`Maior erro: ${F(maxE,3)}% do span (tolerância ±${F(tol,3)}%) → ${maxE<=tol?'CONFORME':'FORA DO CRITÉRIO'}`;
@@ -1401,6 +1921,7 @@ function runTemp(){
   const R0=+V('tp-r0'), m=V('tp-m'), x=N('tp-x'), lrv=N('tp-lrv'), urv=N('tp-urv');
   $('tp-l').textContent= m==='t'?'Temperatura (°C)':'Resistência (Ω)';
   const T= m==='t'? x : cvdT(x,R0), R= m==='t'? cvdR(x,R0) : x, f=(T-lrv)/(urv-lrv);
+  setIll('tp-ill', svgPt(T,R,R0));
   $('tp-res').innerHTML=stat(F(T,2),'°C')+stat(F(R,3),'Ω')+stat(F(4+16*f,3),'mA (range)');
   $('tp-tab').innerHTML=table(['%','°C','Ω','mA'],[0,25,50,75,100].map(p=>{const t=lrv+(urv-lrv)*p/100;return [p+'%',F(t,2),F(cvdR(t,R0),3),F(4+16*p/100,2)];}));
 }
@@ -1410,6 +1931,7 @@ function runVaz(){
   const q=N('vz-q'), u=V('vz-qu'), r=N('vz-r'), m=toKgS(q,u,r);
   $('vz-tab').innerHTML=table(['Unidade','Valor'],Object.keys(FU).map(k=>[k,`<span class="mono">${F(fromKgS(m,k,r))}</span>`]));
   const Q=N('vv-q')/3600, D=N('vv-d')/1000, rv=N('vv-r'), mu=N('vv-mu')/1000, A=Math.PI/4*D*D, v=Q/A, Re=rv*v*D/mu;
+  setIll('vz-ill', svgMassVol()); setIll('vv-ill', svgVel(v)); setIll('gn-ill', svgGas());
   $('vv-out').textContent=`Área = π/4 × D² = ${F(A,5)} m²\nv = Q/A = ${F(v,3)} m/s\nRe = ρ·v·D/μ = ${F(Re,0)} (${Re<2300?'laminar':Re<4000?'transição':'turbulento'})`;
   const p=(N('gn-p')+N('gn-a'))*1e5, T=N('gn-t')+273.15, z=N('gn-z'), qg=N('gn-q'), fac=(101325/p)*(T/273.15)*z;
   $('gn-out').textContent = V('gn-m')==='n'
@@ -1423,12 +1945,13 @@ fill('vz-qu',FU,'t/h');
 function segArea(R,h){ h=Math.max(0,Math.min(2*R,h)); return R*R*Math.acos((R-h)/R)-(R-h)*Math.sqrt(2*R*h-h*h); }
 function runTanque(){
   const f=V('tq-f'), r=N('tq-r'), a=N('tq-a'), b=N('tq-b'), c=N('tq-c'), hm=N('tq-hm'), h=N('tq-h');
-  $('tq-al').textContent= f==='r'?'Comprimento (m)':'Diâmetro (m)';
-  $('tq-bw').classList.toggle('hidden',f==='v'); $('tq-cw').classList.toggle('hidden',f!=='r');
+  $('tq-al').textContent= f==='r'?'Comprimento (m)':'Diâmetro (m)'; $('tq-al').previousElementSibling.textContent= f==='r'?'C':'D';
+  $('tq-bw').classList.toggle('hidden',f!=='h'); $('tq-cw').classList.toggle('hidden',f!=='r');
   $('tq-bl').textContent='Comprimento (m)';
   const vol = x => f==='v'? Math.PI/4*a*a*x : f==='h'? segArea(a/2,x)*b : a*c*x;
   const hmax = f==='h'? Math.min(hm,a) : hm;
   const Vt=vol(hmax), Vh=vol(h);
+  setIll('tq-ill', svgTanque(f, h/hmax));
   $('tq-res').innerHTML=stat(F(Vh),'m³ atuais')+stat(F(Vh*r/1000),'t atuais')+stat(F(Vh/Vt*100,2)+'%','do volume útil');
   let s= f==='v'?'V = π/4 × D² × h':f==='h'?'V = A_segmento(h) × L,  A = R²·acos((R−h)/R) − (R−h)·√(2Rh − h²)':'V = comprimento × largura × h';
   s+=`
@@ -1444,6 +1967,7 @@ Nível ${F(h/hmax*100,2)}% da altura ≠ volume ${F(Vh/Vt*100,2)}%`;
 function runPeso(){
   const cap=N('lc-cap'), n=N('lc-n'), s=N('lc-s'), e=N('lc-e'), t=N('lc-t'), w=N('lc-w'), lrv=N('lc-lrv'), urv=N('lc-urv');
   const capT=cap*n, full=s*e, tot=t+w, mv=full*tot/capT, mvT=full*t/capT, f=(w-lrv)/(urv-lrv);
+  setIll('lc-ill', svgPeso(n, w/Math.max(1,urv)));
   $('lc-res').innerHTML=stat(F(mv,3),'mV no somador')+stat(F(tot/capT*100,1)+'%','da capacidade')+stat(F(4+16*f,2),'mA (range)');
   $('lc-steps').textContent=`Capacidade total = ${F(cap)} × ${F(n,0)} = ${F(capT)} kg
 Fundo de escala = ${F(s,3)} mV/V × ${F(e,2)} V = ${F(full,3)} mV
@@ -1459,19 +1983,41 @@ Range: ${F(lrv)} a ${F(urv)} kg líquido → ${F(mvT+full*lrv/capT,3)} a ${F(mvT
 
 // ---------- Massa e força ----------
 const MU={'kg':1,'g':1e-3,'t':1000,'lb':0.45359237,'oz':0.028349523,'kgf (força)':1,'N (força)':1/9.80665,'kN (força)':1000/9.80665,'lbf (força)':0.45359237};
-function runMassa(){ const v=N('ms-v'), kg=v*MU[V('ms-u')];
+function runMassa(){ const v=N('ms-v'), kg=v*MU[V('ms-u')]; setIll('ms-ill', svgMassa());
   $('ms-tab').innerHTML=table(['Unidade','Valor'],Object.keys(MU).map(k=>[k,`<span class="mono">${F(kg/MU[k])}</span>`])); }
 fill('ms-u',MU,'kg');
 
-const RUN={tanque:runTanque,peso:runPeso,massa:runMassa,orif:runOrif,raiz:runRaiz,nivel:runNivel,pres:runPres,cal:buildCal,temp:runTemp,vaz:runVaz,escala:()=>calc()};
-const MAP={tanque:'tq-',peso:'lc-',massa:'ms-',orif:'or-',raiz:'rz-',nivel:'nv-',pres:['pr-','pa-','ph-'],temp:'tp-',vaz:['vz-','vv-','gn-']};
+function drawEscala(){ setIll('es-ill', svgEscala(N('c-lrv'),N('c-urv'),V('c-un'),parseNum($('o-p').textContent))); }
+['c-lrv','c-urv','c-un','c-in','c-mode'].forEach(i=>{ $(i).addEventListener('input',()=>setTimeout(drawEscala,0)); $(i).addEventListener('change',()=>setTimeout(drawEscala,0)); });
+const RUN={bx:runBx,dens:runDens,ph:runPh,tc:runTc,tanque:runTanque,peso:runPeso,massa:runMassa,orif:runOrif,raiz:runRaiz,nivel:runNivel,pres:runPres,cal:buildCal,temp:runTemp,vaz:runVaz,escala:()=>{calc(); drawEscala();}};
+const MAP={bx:'bx-',dens:['dn-','dc-'],ph:'phx-',tc:'tc-',tanque:'tq-',peso:'lc-',massa:'ms-',orif:'or-',raiz:'rz-',nivel:'nv-',pres:['pr-','pa-','ph-'],temp:'tp-',vaz:['vz-','vv-','gn-']};
 Object.entries(MAP).forEach(([k,pre])=>{ [].concat(pre).forEach(px=>{
-  const OUT={orif:'or-out',raiz:'rz-res',nivel:'nv-res',tanque:'tq-res',peso:'lc-res',temp:'tp-res'}[k];
+  const OUT={bx:'bx-res',dens:'dn-res',ph:'phm-res',tc:'tc-res',orif:'or-out',raiz:'rz-res',nivel:'nv-res',tanque:'tq-res',peso:'lc-res',temp:'tp-res'}[k];
   const h=()=>{ RUN[k](); OUT&&flash(OUT); };
   document.querySelectorAll(`#p-${k} input[id^="${px}"], #p-${k} select[id^="${px}"]`).forEach(e=>{ e.addEventListener('input',h); e.addEventListener('change',h); e.addEventListener('keyup',h); });
 });});
+
+// ---------- Menus no lugar das listas nativas ----------
+const CHEV='<svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>';
+function splitTxt(t){ const m=t.match(/^(.*?)\s*\(([^()]*)\)\s*$/); return m?[m[1],m[2]]:[t,'']; }
+function lblFor(sel){ if(sel.dataset.title) return sel.dataset.title; const pv=sel.previousElementSibling; if(pv&&pv.matches('label')) return pv.textContent; const par=sel.parentElement; const l=par&&par.querySelector(':scope > label.lbl'); if(l&&(l.compareDocumentPosition(sel)&Node.DOCUMENT_POSITION_FOLLOWING)) return l.textContent; return 'Selecione'; }
+function syncPick(sel){ if(!sel._btn) return; const o=sel.selectedOptions[0]; if(!o) return; const [a,b]=splitTxt(o.textContent); sel._btn.querySelector('.pv').innerHTML=a+(b&&!sel._compact?`<small>${b}</small>`:''); }
+function enhance(sel){ if(sel._btn||sel.id==='') return; const b=document.createElement('button'); b.type='button'; b.className='psel'; b.innerHTML='<span class="pv"></span>'+CHEV;
+  sel._compact = sel.style.width==='auto'; sel.style.display='none'; sel.after(b); sel._btn=b; syncPick(sel);
+  b.addEventListener('click',()=>openPick(sel)); sel.addEventListener('change',()=>syncPick(sel)); }
+let PICK=null;
+function openPick(sel){ PICK=sel; $('pick-title').textContent=lblFor(sel).replace(/\s*\(.*\)$/,'')||'Selecione';
+  let html='';
+  [...sel.children].forEach(ch=>{ if(ch.tagName==='OPTGROUP'){ html+=`<div class="og">${ch.label}</div>`; [...ch.children].forEach(o=>html+=optHtml(sel,o)); } else html+=optHtml(sel,ch); });
+  $('pick-list').innerHTML=html; $('pick-sheet').classList.remove('hidden'); document.body.style.overflow='hidden';
+  const on=$('pick-list').querySelector('.on'); if(on) on.scrollIntoView({block:'center'}); }
+function optHtml(sel,o){ const [a,b]=splitTxt(o.textContent); return `<button type="button" class="opt-it${o.value===sel.value?' on':''}" data-v="${o.value.replace(/"/g,'&quot;')}"><span class="ot"><b>${a}</b>${b?`<small>${b}</small>`:''}</span><span class="ck"></span></button>`; }
+$('pick-sheet').addEventListener('click',e=>{ const it=e.target.closest('.opt-it'); if(it&&PICK){ PICK.value=it.dataset.v; PICK.dispatchEvent(new Event('input',{bubbles:true})); PICK.dispatchEvent(new Event('change',{bubbles:true})); syncPick(PICK); }
+  if(it||e.target.closest('[data-close]')){ $('pick-sheet').classList.add('hidden'); document.body.style.overflow=''; } });
+function enhanceAll(){ document.querySelectorAll('main select').forEach(enhance); document.querySelectorAll('main select').forEach(syncPick); }
+
 buildCal();
-try{const k=localStorage.getItem('instr-calc'); showPanel(k&&$('p-'+k)?k:'escala'); }catch(e){ showPanel('escala'); }
+try{const k=localStorage.getItem('instr-calc'); showPanel(k&&findCalc(k)?k:'escala'); }catch(e){ showPanel('escala'); }
 window.__calcTest={orDP,orQ,orSize,isoC,cvdR,cvdT};
 })();
 </script>
