@@ -1,0 +1,1295 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Estudo de Elétrica Industrial</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#ffffff">
+<script>try{localStorage.setItem("gauto-area","eletrica.html")}catch(e){}</script>
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#0f2a44; --navy2:#173a5e; --cyan:#0aa5c2; --cyan-soft:#e3f6fa;
+  --green:#1f9d61; --green-soft:#e4f5ec; --red:#d2453a; --red-soft:#fbe9e7;
+  --orange:#e08a1e; --orange-soft:#fdf1e1;
+  --bg:#f3f5f8; --card:#fff; --ink:#14212e; --muted:#5c6b7a; --line:#dde3ea;
+  --r:14px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:'IBM Plex Sans',system-ui,sans-serif;font-size:16px;line-height:1.45}
+.mono{font-family:'IBM Plex Mono',ui-monospace,monospace}
+header{background:#fff;position:sticky;top:0;z-index:5;border-bottom:3px solid var(--navy);box-shadow:0 2px 8px rgba(15,42,68,.08)}
+header .brand{max-width:760px;margin:0 auto;padding:10px 14px 8px;display:flex;align-items:center;gap:12px}
+header .brand img{height:52px;width:auto;display:block}
+header .brand .txt{border-left:1px solid var(--line);padding-left:12px;min-width:0}
+header h1{margin:0;font-size:.98rem;font-weight:600;color:var(--navy);line-height:1.2}
+header .sub{font-size:.74rem;color:var(--muted);margin-top:2px}
+@media (max-width:420px){header .brand{flex-direction:column;align-items:flex-start;gap:4px}header .brand img{height:62px}header .brand .txt{border-left:0;padding-left:0}}
+main{max-width:760px;margin:0 auto;padding:16px 14px 96px}
+nav.tabs{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--line);display:flex;z-index:6;padding-bottom:env(safe-area-inset-bottom)}
+nav.tabs button{flex:1;border:0;background:none;padding:9px 2px 10px;font:inherit;font-size:.72rem;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer}
+nav.tabs button svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8}
+nav.tabs button.on{color:var(--cyan);font-weight:600}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px;margin-bottom:12px}
+h2{font-size:1.15rem;margin:4px 0 12px}
+h3{font-size:.95rem;margin:0 0 8px}
+.muted{color:var(--muted)}
+.small{font-size:.85rem}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 12px}
+.chip{border:1px solid var(--line);background:#fff;border-radius:999px;padding:6px 11px;font:inherit;font-size:.82rem;cursor:pointer;color:var(--ink)}
+.chip.on{background:var(--navy);border-color:var(--navy);color:#fff}
+.btn{border:0;border-radius:10px;padding:12px 16px;font:inherit;font-weight:600;cursor:pointer;background:var(--cyan);color:#fff}
+.btn.sec{background:#fff;color:var(--navy);border:1px solid var(--line)}
+.btn.block{width:100%}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.row>.btn{flex:1}
+.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.stat{background:var(--bg);border-radius:10px;padding:10px;text-align:center}
+.stat b{display:block;font-size:1.35rem;font-family:'IBM Plex Mono',monospace}
+.stat span{font-size:.74rem;color:var(--muted)}
+.bar{height:7px;background:var(--line);border-radius:9px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--cyan)}
+.topic-row{display:grid;grid-template-columns:1fr auto;gap:4px 10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line);font-size:.88rem}
+.topic-row:last-child{border-bottom:0}
+.topic-row .bar{grid-column:1/-1}
+/* quiz */
+.qmeta{display:flex;justify-content:space-between;font-size:.78rem;color:var(--muted);margin-bottom:8px}
+.tag{display:inline-block;background:var(--cyan-soft);color:#076f84;border-radius:6px;padding:2px 7px;font-size:.74rem;font-weight:600}
+.qtext{font-size:1.02rem;font-weight:500;margin:6px 0 14px}
+.opt{display:block;width:100%;text-align:left;border:1.5px solid var(--line);background:#fff;border-radius:11px;padding:12px 13px;margin-bottom:8px;font:inherit;cursor:pointer;color:var(--ink)}
+.opt:disabled{cursor:default}
+.opt.ok{border-color:var(--green);background:var(--green-soft)}
+.opt.bad{border-color:var(--red);background:var(--red-soft)}
+.numwrap{display:flex;gap:8px;align-items:center}
+.numwrap input{flex:1;min-width:0}
+input,select{font:inherit;padding:11px 12px;border:1.5px solid var(--line);border-radius:10px;background:#fff;width:100%;color:var(--ink)}
+input:focus,select:focus{outline:none;border-color:var(--cyan)}
+.unit{font-family:'IBM Plex Mono',monospace;color:var(--muted);white-space:nowrap}
+.fb{border-radius:11px;padding:12px 13px;margin-top:12px;font-size:.92rem}
+.fb.ok{background:var(--green-soft);border-left:4px solid var(--green)}
+.fb.bad{background:var(--red-soft);border-left:4px solid var(--red)}
+.fb b{display:block;margin-bottom:3px}
+.progress-q{height:4px;background:var(--line);border-radius:4px;margin-bottom:12px;overflow:hidden}
+.progress-q i{display:block;height:100%;background:var(--cyan);transition:width .2s}
+/* flashcards */
+.flash{perspective:1000px;margin-bottom:12px;cursor:pointer;user-select:none}
+.flash-inner{position:relative;min-height:230px;transition:transform .45s;transform-style:preserve-3d}
+.flash.flip .flash-inner{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:var(--r);padding:22px 18px;display:flex;flex-direction:column;justify-content:center;border:1px solid var(--line)}
+.face.front{background:var(--navy);color:#fff;text-align:center}
+.face.front .term{font-size:1.4rem;font-weight:600}
+.face.front .hint{font-size:.75rem;color:#9fc3d9;margin-top:12px}
+.face.back{background:#fff;transform:rotateY(180deg)}
+.face.back .def{font-size:.98rem}
+.face.back .key{margin-top:10px;font-size:.84rem;background:var(--orange-soft);border-radius:8px;padding:8px 10px}
+/* formulas */
+.f{border-left:4px solid var(--cyan);padding:2px 0 2px 12px;margin:12px 0}
+.f .eq{font-family:'IBM Plex Mono',monospace;font-size:1rem;font-weight:600;color:var(--navy);margin:3px 0}
+.f .ex{font-size:.84rem;color:var(--muted)}
+.ruler{display:grid;grid-template-columns:repeat(5,1fr);text-align:center;font-family:'IBM Plex Mono',monospace;font-size:.85rem;margin-top:6px}
+.ruler div{padding:8px 2px;border-right:1px solid var(--line)}
+.ruler div:last-child{border-right:0}
+.ruler b{display:block;color:var(--navy)}
+.warn{background:var(--orange-soft);border-radius:10px;padding:10px 12px;font-size:.85rem;margin-top:8px}
+/* calc */
+.grid2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}
+label.lbl{font-size:.78rem;color:var(--muted);display:block;margin-bottom:4px}
+.out{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+.out .stat b{font-size:1.1rem}
+.steps{font-family:'IBM Plex Mono',monospace;font-size:.82rem;background:var(--bg);border-radius:10px;padding:10px 12px;margin-top:10px;white-space:pre-wrap}
+.gauge{margin-top:12px}
+.gauge .track{position:relative;height:12px;background:linear-gradient(90deg,#d8eef3,#0aa5c2);border-radius:8px}
+.gauge .pin{position:absolute;top:-5px;width:4px;height:22px;background:var(--navy);border-radius:2px;transform:translateX(-2px)}
+.gauge .lbls{display:flex;justify-content:space-between;font-size:.72rem;color:var(--muted);margin-top:4px;font-family:'IBM Plex Mono',monospace}
+.tb{width:100%;border-collapse:collapse;font-size:.82rem}
+.tb th{text-align:left;color:var(--muted);font-weight:600;font-size:.74rem;padding:6px 6px;border-bottom:1px solid var(--line);white-space:nowrap}
+.tb td{padding:6px 6px;border-bottom:1px solid var(--line);font-family:'IBM Plex Mono',monospace;white-space:nowrap}
+.tb tr:last-child td{border-bottom:0}
+input.mini{padding:6px 8px;width:76px;font-size:.85rem}
+#tp-tab,#rz-tab,#tq-tab,#pr-tab,#vz-tab,#ms-tab{overflow-x:auto}
+optgroup{font-weight:700;color:var(--navy)}
+
+.picker{padding:10px;position:relative}
+.pick-btn{width:100%;display:flex;align-items:center;gap:12px;border:1.5px solid var(--line);background:#fff;border-radius:12px;padding:10px 12px;font:inherit;cursor:pointer;text-align:left;color:var(--ink)}
+.pick-btn:active{background:var(--bg)}
+.pick-txt{flex:1;min-width:0;display:flex;flex-direction:column}
+.pick-txt small{font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;font-weight:600}
+.pick-txt b{font-size:1rem;font-weight:600}
+.chev{width:22px;height:22px;stroke:var(--muted);fill:none;stroke-width:2}
+.badge{flex:none;width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:1rem;color:#fff;background:var(--navy)}
+.b-M{background:#2563a8}.b-C{background:#e07a1e}.b-kW{background:#1f9d61}.b-TR{background:#6b4fbb}.b-O{background:#0f2a44;font-size:1.15rem}
+.b-L{background:#2563a8}.b-F{background:#0aa5c2}.b-T{background:#e07a1e}.b-P{background:#0f2a44}.b-W{background:#1f9d61}.b-mA{background:#6b4fbb}.b-A{background:#b0397a}
+.sheet{position:fixed;inset:0;z-index:20;display:flex;align-items:flex-end;justify-content:center}
+.sheet-bg{position:absolute;inset:0;background:rgba(15,42,68,.45)}
+.sheet-box{position:relative;background:#fff;width:100%;max-width:760px;max-height:86vh;overflow-y:auto;border-radius:18px 18px 0 0;padding:6px 14px calc(18px + env(safe-area-inset-bottom));animation:up .2s ease-out}
+@keyframes up{from{transform:translateY(40px);opacity:.4}to{transform:none;opacity:1}}
+.sheet-head{display:flex;justify-content:space-between;align-items:center;padding:12px 2px 6px;position:sticky;top:0;background:#fff;z-index:1}
+.sheet-head b{font-size:1.05rem;color:var(--navy)}
+.sheet-x{border:0;background:var(--bg);width:34px;height:34px;border-radius:50%;font-size:1rem;cursor:pointer;color:var(--muted)}
+.grp{display:flex;align-items:center;gap:10px;margin:14px 2px 6px}
+.grp .badge{width:30px;height:30px;font-size:.8rem;border-radius:8px}
+.grp span{font-weight:700;color:var(--navy);font-size:.92rem}
+.grp span.badge{color:#fff}
+.item{display:block;width:100%;text-align:left;border:1px solid var(--line);background:#fff;border-radius:12px;padding:11px 13px;margin:0 0 7px;font:inherit;cursor:pointer;color:var(--ink)}
+.item b{display:block;font-weight:600;font-size:.95rem}
+.item small{color:var(--muted);font-size:.8rem}
+.item.on{border-color:var(--cyan);background:var(--cyan-soft)}
+.sticky-out{position:sticky;top:var(--hh,0px);z-index:3;background:var(--card);margin:8px -4px 12px;padding:6px 4px;border-radius:12px}
+.sticky-out .stat{background:var(--cyan-soft);transition:background .4s}
+.sticky-out.flash .stat{background:#bfeef7}
+.out.sticky-out{margin-top:8px}
+.sec-t{font-size:.74rem;font-weight:700;color:var(--cyan);text-transform:uppercase;letter-spacing:.7px;margin:18px 0 8px;padding-top:12px;border-top:1px solid var(--line)}
+.hint{font-size:.82rem;color:var(--muted);background:var(--bg);border-radius:10px;padding:8px 10px;margin-top:8px}
+.tagline{font-size:.8rem;color:#076f84;background:var(--cyan-soft);border-radius:8px;padding:7px 10px;margin-top:8px;font-family:'IBM Plex Mono',monospace}
+pre.steps{margin:0}
+.psel{width:100%;min-width:0;display:flex;align-items:center;gap:8px;border:1.5px solid var(--line);background:#fff;border-radius:10px;padding:10px 12px;font:inherit;cursor:pointer;text-align:left;color:var(--ink);min-height:46px}
+.psel:active{background:var(--bg)}
+.psel .pv{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.psel .pv small{color:var(--muted);font-size:.78rem;margin-left:6px}
+.psel svg{width:18px;height:18px;flex:none;stroke:var(--muted);fill:none;stroke-width:2}
+.numwrap .psel{width:auto;flex:none;max-width:52%}
+.opt-it{display:flex;align-items:center;gap:10px;width:100%;text-align:left;border:1px solid var(--line);background:#fff;border-radius:12px;padding:11px 13px;margin:0 0 7px;font:inherit;cursor:pointer;color:var(--ink)}
+.opt-it .ot{flex:1}
+.opt-it b{display:block;font-weight:600;font-size:.95rem}
+.opt-it small{color:var(--muted);font-size:.8rem}
+.opt-it .ck{width:20px;height:20px;border-radius:50%;border:2px solid var(--line);flex:none}
+.opt-it.on{border-color:var(--cyan);background:var(--cyan-soft)}
+.opt-it.on .ck{border-color:var(--cyan);background:var(--cyan);box-shadow:inset 0 0 0 3px #fff}
+.og{font-size:.74rem;font-weight:700;color:var(--cyan);text-transform:uppercase;letter-spacing:.7px;margin:14px 2px 8px}
+.illus{margin:4px 0 12px;background:#fbfcfd;border:1px solid var(--line);border-radius:12px;padding:6px 4px}
+.illus svg{width:100%;height:auto;display:block;max-height:260px}
+.sym{display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:18px;padding:0 5px;margin-right:6px;border-radius:5px;background:var(--navy);color:#fff;font-family:'IBM Plex Mono',monospace;font-size:.72rem;font-weight:600;vertical-align:1px}
+.sym sub{font-size:.6rem;margin-left:1px}
+#p-escala .gauge{display:none}
+.hidden{display:none !important}
+
+.center{text-align:center}
+.big{font-size:2.2rem;font-weight:700;font-family:'IBM Plex Mono',monospace}
+.tb tr.hl td{background:var(--green-soft);font-weight:600}
+.badge{font-size:.92rem}
+.fab{border:1px solid var(--line);border-radius:12px;margin-bottom:8px;background:#fff}
+.fab summary{list-style:none;cursor:pointer;padding:12px 13px;display:flex;align-items:center;gap:10px}
+.fab summary::-webkit-details-marker{display:none}
+.fab summary .fl{width:34px;height:34px;border-radius:9px;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.8rem;flex:none}
+.fab summary b{display:block;font-weight:600}
+.fab summary small{color:var(--muted);font-size:.78rem}
+.fab[open] summary{border-bottom:1px solid var(--line)}
+.man{display:flex;gap:10px;align-items:flex-start;padding:10px 13px;border-bottom:1px solid var(--line);text-decoration:none;color:var(--ink)}
+.man:last-child{border-bottom:0}
+.man .md{flex:none;font-family:'IBM Plex Mono',monospace;font-size:.72rem;font-weight:600;background:var(--cyan-soft);color:#076f84;border-radius:6px;padding:3px 6px;margin-top:1px}
+.man span.t{font-size:.9rem}
+nav.tabs button{font-size:.66rem}
+.tb td:last-child{white-space:normal}
+#yd-tab,#rt-tab{overflow-x:auto}
+header .brand{position:relative}
+.home-lnk{position:absolute;right:14px;top:12px;display:flex;align-items:center;gap:4px;text-decoration:none;font-size:.8rem;font-weight:600;color:var(--navy);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:6px 11px 6px 8px}
+.home-lnk svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2.2}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">
+    <img src="logo.png" alt="G Automation — special industrial automations">
+    <div class="txt">
+      <h1>Estudo de Elétrica Industrial</h1>
+      <div class="sub">NR-10 · Motores · Comandos · Inversores · NBR 5410</div>
+    </div>
+<a class="home-lnk" href="index.html" title="Escolher área"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg>Áreas</a>
+  </div>
+</header>
+
+<main>
+  <!-- INÍCIO -->
+  <section id="v-inicio">
+    <div class="card">
+      <h2 style="margin-top:0">Seu progresso</h2>
+      <div class="stat-grid">
+        <div class="stat"><b id="s-feitas">0</b><span>questões feitas</span></div>
+        <div class="stat"><b id="s-acerto">–</b><span>de acerto</span></div>
+        <div class="stat"><b id="s-erros">0</b><span>para revisar</span></div>
+      </div>
+      <div class="row" style="margin-top:12px">
+        <button class="btn" onclick="go('treinar')">Treinar agora</button>
+        <button class="btn sec" id="btn-rev-home" onclick="startQuiz('erros')">Revisar erros</button>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Manuais de inversores</h3>
+      <div class="small muted" style="margin-bottom:10px">Links oficiais de <span id="man-n"></span> fabricantes: WEG, Siemens, ABB, Schneider, Danfoss e outros.</div>
+      <button class="btn sec block" onclick="go('manuais')">Abrir biblioteca de manuais</button>
+    </div>
+    <div class="card">
+      <h3>Desempenho por tema</h3>
+      <div id="topic-list"></div>
+    </div>
+    <div class="card small muted">
+      <b style="color:var(--ink)">Antes de calcular:</b> identifique se o circuito é monofásico ou trifásico, se a potência é do eixo ou da rede e qual norma se aplica.
+      <div style="margin-top:8px">Conteúdo baseado na NR-10, na ABNT NBR 5410 (Tabela 36, fatores de correção), em catálogos e manuais de fabricantes. A NR-10 tem nova redação (Portaria MTE nº 737/2026) com vigência a partir de junho de 2027; as questões indicam quando o item é da redação de 2004. Material educacional: serviços reais seguem procedimentos, projeto e normas oficiais.</div>
+      <button class="chip" style="margin-top:10px" onclick="resetAll()">Zerar progresso</button>
+    </div>
+  </section>
+
+  <!-- TREINAR -->
+  <section id="v-treinar" class="hidden">
+    <div id="quiz-setup">
+      <div class="card">
+        <h2 style="margin-top:0">Treinar</h2>
+        <div class="small muted">Escolha os temas</div>
+        <div class="chips" id="topic-chips"></div>
+        <div class="small muted">Modo</div>
+        <div class="chips" id="mode-chips"></div>
+        <button class="btn block" onclick="startQuiz()">Começar (<span id="pool-n">0</span> questões)</button>
+      </div>
+    </div>
+    <div id="quiz-run" class="hidden">
+      <div class="progress-q"><i id="qprog"></i></div>
+      <div class="card" id="qcard"></div>
+      <div class="row">
+        <button class="btn sec" onclick="endQuiz()">Sair</button>
+        <button class="btn hidden" id="btn-next" onclick="nextQ()">Próxima →</button>
+      </div>
+    </div>
+    <div id="quiz-end" class="hidden">
+      <div class="card center">
+        <div class="muted small">Resultado da rodada</div>
+        <div class="big" id="end-score"></div>
+        <div id="end-msg" class="muted" style="margin:6px 0 14px"></div>
+        <div class="row">
+          <button class="btn sec" onclick="endQuiz()">Voltar</button>
+          <button class="btn" id="btn-redo-err" onclick="startQuiz('rodada')">Refazer os que errei</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CARTÕES -->
+  <section id="v-cartoes" class="hidden">
+    <div class="chips" id="deck-chips"></div>
+    <div class="flash" id="flash" onclick="flip()">
+      <div class="flash-inner">
+        <div class="face front"><div class="term" id="fc-term"></div><div class="hint">toque para virar</div></div>
+        <div class="face back"><div class="def" id="fc-def"></div><div class="key" id="fc-key"></div></div>
+      </div>
+    </div>
+    <div class="qmeta"><span id="fc-pos"></span><span id="fc-deck"></span></div>
+    <div class="row">
+      <button class="btn sec" onclick="moveCard(-1)">← Anterior</button>
+      <button class="btn sec" onclick="shuffleDeck()">Embaralhar</button>
+      <button class="btn" onclick="moveCard(1)">Próximo →</button>
+    </div>
+  </section>
+
+  <!-- FÓRMULAS -->
+  <section id="v-formulas" class="hidden">
+    <div class="card">
+      <h2 style="margin-top:0">Básico</h2>
+      <div class="f"><h3>Lei de Ohm</h3><div class="eq">V = R × I</div><div class="ex">220 V em 44 Ω → I = 5 A</div></div>
+      <div class="f"><h3>Potência (CC ou resistiva)</h3><div class="eq">P = V × I = R × I² = V² / R</div></div>
+      <div class="f"><h3>Monofásico (CA)</h3><div class="eq">P = V × I × cos φ</div></div>
+      <div class="f"><h3>Trifásico equilibrado</h3><div class="eq">P = √3 × V × I × cos φ</div><div class="ex">V e I de linha. Sem o cos φ → S em VA.</div></div>
+      <div class="f"><h3>Estrela × triângulo</h3><div class="eq">Y: V_L = √3·V_F · I_L = I_F</div><div class="eq">Δ: V_L = V_F · I_L = √3·I_F</div><div class="ex">380 V de linha em Y → 220 V por fase</div></div>
+    </div>
+    <div class="card">
+      <h2 style="margin-top:0">Potências e fator de potência</h2>
+      <div class="f"><div class="eq">S² = P² + Q²</div><div class="ex">S (kVA) · P (kW) · Q (kvar)</div></div>
+      <div class="f"><div class="eq">FP = cos φ = P / S</div><div class="ex">Referência mínima: 0,92</div></div>
+      <div class="f"><h3>Banco de capacitores</h3><div class="eq">Qc = P × (tan φ₁ − tan φ₂)</div><div class="ex">100 kW, 0,80 → 0,92: Qc ≈ 32,4 kvar</div></div>
+      <div class="f"><h3>Capacitância por fase</h3><div class="eq">Δ: C = Qc / (3 · 2πf · V²)</div><div class="eq">Y: C = Qc / (2πf · V²)</div><div class="ex">V = tensão de linha</div></div>
+    </div>
+    <div class="card">
+      <h2 style="margin-top:0">Motores</h2>
+      <div class="f"><h3>Velocidade síncrona</h3><div class="eq">Ns = 120 × f / p</div><div class="ex">p = número de polos · 4 polos em 60 Hz = 1800 rpm</div></div>
+      <div class="f"><h3>Escorregamento</h3><div class="eq">s = (Ns − n) / Ns</div><div class="ex">1800 e 1755 rpm → 2,5%</div></div>
+      <div class="f"><h3>Corrente nominal</h3><div class="eq">In = P_eixo / (√3 × V × η × cos φ)</div><div class="ex">1 cv = 735,5 W · 1 hp = 745,7 W</div></div>
+      <div class="f"><h3>Conjugado</h3><div class="eq">T (N·m) = 9550 × P (kW) / n (rpm)</div></div>
+      <table class="tb" style="margin-top:8px"><thead><tr><th>Polos</th><th>60 Hz</th><th>50 Hz</th></tr></thead><tbody>
+        <tr><td>2</td><td>3600</td><td>3000</td></tr><tr><td>4</td><td>1800</td><td>1500</td></tr><tr><td>6</td><td>1200</td><td>1000</td></tr><tr><td>8</td><td>900</td><td>750</td></tr></tbody></table>
+    </div>
+    <div class="card">
+      <h2 style="margin-top:0">Partidas</h2>
+      <div class="f"><h3>Estrela-triângulo</h3><div class="eq">Ip(Y) ≈ Ip / 3 · T(Y) ≈ T / 3</div><div class="eq">K1 = K2 = 0,58 In · K3 = 0,33 In · relé = 0,58 In</div></div>
+      <div class="f"><h3>Compensadora (autotransformador)</h3><div class="eq">I_linha e T ∝ (tap)²</div><div class="ex">50% → 25% · 65% → 42% · 80% → 64%</div></div>
+      <div class="warn">Estrela-triângulo: motor com 6 pontas e tensão de triângulo = tensão da rede (rede 380 V → placa 380/660 V).</div>
+    </div>
+    <div class="card">
+      <h2 style="margin-top:0">Inversor de frequência</h2>
+      <div class="f"><h3>Relação V/f</h3><div class="eq">V = Vn × f / fn  (f ≤ fn)</div><div class="ex">380 V / 60 Hz → 190 V em 30 Hz</div></div>
+      <div class="f"><h3>Frequência para uma rotação</h3><div class="eq">f ≈ (n + escorregamento em rpm) × p / 120</div></div>
+      <div class="f"><h3>Acima de fn</h3><div class="eq">T_disp ≈ Tn × fn / f</div><div class="ex">Enfraquecimento de campo: potência ≈ constante</div></div>
+    </div>
+    <div class="card">
+      <h2 style="margin-top:0">Cabos (NBR 5410)</h2>
+      <div class="f"><h3>Corrente corrigida</h3><div class="eq">I' = Ib / (FCT × FCA)</div></div>
+      <div class="f"><h3>Coordenação com a proteção</h3><div class="eq">Ib ≤ In ≤ Iz  e  I2 ≤ 1,45 × Iz</div></div>
+      <div class="f"><h3>Queda de tensão</h3><div class="eq">ΔV = k × ρ × L × I / S</div><div class="ex">k = 2 (mono) ou √3 (tri) · L só ida (m) · S em mm²</div></div>
+      <div class="f"><h3>Resistividade × temperatura</h3><div class="eq">ρθ = ρ20 × [1 + α (θ − 20)]</div><div class="ex">Cu: ρ20 = 0,01724 Ω·mm²/m, α = 0,00393 · Al: 0,02826 e 0,00403</div></div>
+      <table class="tb" style="margin-top:8px"><thead><tr><th>Limite</th><th>Valor</th></tr></thead><tbody>
+        <tr><td>Iluminação (Cu)</td><td>1,5 mm²</td></tr><tr><td>Força (Cu)</td><td>2,5 mm²</td></tr><tr><td>Queda em circuito terminal</td><td>4%</td></tr><tr><td>Neutro</td><td>azul-claro</td></tr><tr><td>PE</td><td>verde-amarelo</td></tr>
+        <tr><td>PE: S ≤ 16</td><td>= S</td></tr><tr><td>PE: 16 &lt; S ≤ 35</td><td>16 mm²</td></tr><tr><td>PE: S &gt; 35</td><td>S / 2</td></tr></tbody></table>
+    </div>
+    <div class="card">
+      <h2 style="margin-top:0">Transformador e proteção</h2>
+      <div class="f"><h3>Corrente nominal</h3><div class="eq">In = S / (√3 × V)</div><div class="ex">500 kVA, 380 V → 759,7 A</div></div>
+      <div class="f"><h3>Curto nos terminais</h3><div class="eq">Icc = In × 100 / Z%</div><div class="ex">759,7 A, Z = 5% → 15,2 kA</div></div>
+      <div class="f"><h3>Curvas de disjuntor</h3><div class="eq">B 3–5·In · C 5–10·In · D 10–20·In</div></div>
+      <div class="f"><h3>DR</h3><div class="eq">IΔn ≤ 30 mA → proteção de pessoas</div></div>
+    </div>
+    <div class="card">
+      <h3>Erros comuns</h3>
+      <ol class="small" style="margin:0;padding-left:20px">
+        <li>Esquecer o √3 no trifásico (ou usá-lo no monofásico).</li>
+        <li>Usar a potência do eixo do motor como potência elétrica (falta o rendimento).</li>
+        <li>Dimensionar o cabo sem FCT e FCA.</li>
+        <li>Escolher disjuntor maior que a capacidade corrigida do cabo.</li>
+        <li>Ligar em estrela-triângulo um motor cuja tensão de triângulo não é a da rede.</li>
+      </ol>
+    </div>
+
+  </section>
+
+  <section id="v-calc" class="hidden">
+    <div class="card picker">
+      <button class="pick-btn" id="calc-btn" type="button">
+        <span class="badge b-M" id="calc-badge">M</span>
+        <span class="pick-txt"><small id="calc-grp">Motores</small><b id="calc-name">Corrente do motor</b></span>
+        <svg viewBox="0 0 24 24" class="chev"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+    </div>
+    <div class="sheet hidden" id="pick-sheet">
+      <div class="sheet-bg" data-close></div>
+      <div class="sheet-box">
+        <div class="sheet-head"><b id="pick-title">Selecione</b><button class="sheet-x" data-close type="button">✕</button></div>
+        <div id="pick-list"></div>
+      </div>
+    </div>
+    <div class="sheet hidden" id="calc-sheet">
+      <div class="sheet-bg" data-close></div>
+      <div class="sheet-box">
+        <div class="sheet-head"><b>Escolha o cálculo</b><button class="sheet-x" data-close type="button">✕</button></div>
+        <div id="calc-list"></div>
+      </div>
+    </div>
+
+    <!-- CORRENTE DO MOTOR -->
+    <div class="cpanel" id="p-mot">
+    <div class="card">
+      <h2 style="margin-top:0">Corrente do motor</h2>
+      <div class="out sticky-out" id="mt-res"></div>
+      <div class="illus" id="mt-ill"></div>
+      <div class="grid2">
+        <div><label class="lbl"><span class="sym">P</span>Potência no eixo</label>
+          <div class="numwrap"><input id="mt-p" inputmode="decimal" value="10"><select id="mt-pu" data-title="Unidade" style="width:auto"><option value="735.4988" selected>cv</option><option value="745.6999">hp</option><option value="1000">kW</option></select></div></div>
+        <div><label class="lbl">Sistema</label><select id="mt-sis"><option value="3" selected>Trifásico</option><option value="1">Monofásico</option></select></div>
+        <div><label class="lbl"><span class="sym">V</span>Tensão (V)</label><input id="mt-v" inputmode="decimal" value="380"></div>
+        <div><label class="lbl"><span class="sym">η</span>Rendimento (%)</label><input id="mt-ef" inputmode="decimal" value="89"></div>
+        <div><label class="lbl"><span class="sym">FP</span>Fator de potência (cos φ)</label><input id="mt-fp" inputmode="decimal" value="0,85"></div>
+        <div><label class="lbl"><span class="sym">Ip/In</span>Relação de partida</label><input id="mt-ipin" inputmode="decimal" value="7,5"></div>
+      </div>
+      <div class="hint">η, FP e Ip/In estão na placa ou no catálogo do motor. Sem esses dados, use valores típicos e confira depois na placa.</div>
+      <div class="steps" id="mt-steps"></div>
+      <div class="warn hidden" id="mt-warn"></div>
+    </div>
+    </div>
+
+    <!-- ROTAÇÃO / V/f -->
+    <div class="cpanel hidden" id="p-rot">
+    <div class="card">
+      <h2 style="margin-top:0">Rotação, escorregamento e V/f</h2>
+      <div class="out sticky-out" id="rt-res"></div>
+      <div class="out" id="rt-res2" style="margin-top:0"></div>
+      <div class="illus" id="rt-ill"></div>
+      <div class="grid2">
+        <div><label class="lbl"><span class="sym">p</span>Número de polos</label><select id="rt-pol"><option>2</option><option selected>4</option><option>6</option><option>8</option><option>10</option><option>12</option></select></div>
+        <div><label class="lbl"><span class="sym">n<sub>n</sub></span>Rotação nominal da placa (rpm)</label><input id="rt-n" inputmode="decimal" value="1760"></div>
+        <div><label class="lbl"><span class="sym">f<sub>n</sub></span>Frequência nominal (Hz)</label><input id="rt-fn" inputmode="decimal" value="60"></div>
+        <div><label class="lbl"><span class="sym">V<sub>n</sub></span>Tensão nominal (V)</label><input id="rt-vn" inputmode="decimal" value="380"></div>
+        <div><label class="lbl"><span class="sym">f</span>Frequência no inversor (Hz)</label><input id="rt-f" inputmode="decimal" value="45"></div>
+        <div><label class="lbl"><span class="sym">n<sub>d</sub></span>Rotação desejada (rpm)</label><input id="rt-nd" inputmode="decimal" value="1200"></div>
+      </div>
+      <div class="sec-t">Frequência × rotação</div>
+      <div id="rt-tab"></div>
+      <div class="steps" id="rt-steps"></div>
+      <div class="warn hidden" id="rt-warn"></div>
+    </div>
+    </div>
+
+    <!-- ESTRELA-TRIÂNGULO -->
+    <div class="cpanel hidden" id="p-yd">
+    <div class="card">
+      <h2 style="margin-top:0">Partida estrela-triângulo</h2>
+      <div class="out sticky-out" id="yd-res"></div>
+      <div class="illus" id="yd-ill"></div>
+      <div class="grid2">
+        <div><label class="lbl"><span class="sym">In</span>Corrente nominal do motor (A)</label><input id="yd-in" inputmode="decimal" value="28"></div>
+        <div><label class="lbl"><span class="sym">Ip/In</span>Relação de partida</label><input id="yd-ipin" inputmode="decimal" value="7"></div>
+        <div><label class="lbl"><span class="sym">V</span>Tensão da rede (V)</label><input id="yd-v" inputmode="decimal" value="380"></div>
+        <div><label class="lbl"><span class="sym">T<sub>p</sub></span>Conjugado de partida direta (% Tn)</label><input id="yd-tp" inputmode="decimal" value="220"></div>
+      </div>
+      <div class="sec-t">Componentes</div>
+      <div id="yd-tab"></div>
+      <div class="steps" id="yd-steps"></div>
+      <div class="warn" id="yd-warn"></div>
+    </div>
+    </div>
+
+    <!-- DIMENSIONAR CABO -->
+    <div class="cpanel hidden" id="p-cabo">
+    <div class="card">
+      <h2 style="margin-top:0">Dimensionar cabo e disjuntor</h2>
+      <div class="out sticky-out" id="cb-res"></div>
+      <div class="illus" id="cb-ill"></div>
+      <div class="small muted">NBR 5410, cobre, isolação PVC 70 °C, critério da capacidade de corrente (Tabela 36) e coordenação Ib ≤ In ≤ Iz.</div>
+      <div class="grid2" style="margin-top:10px">
+        <div><label class="lbl"><span class="sym">Ib</span>Corrente de projeto (A)</label><input id="cb-ib" inputmode="decimal" value="22"></div>
+        <div><label class="lbl">Tipo de circuito</label><select id="cb-tipo"><option value="1.5">Iluminação (mín. 1,5 mm²)</option><option value="2.5" selected>Força ou motor (mín. 2,5 mm²)</option></select></div>
+        <div><label class="lbl">Método de instalação</label><select id="cb-met">
+          <option value="A1">A1 (condutores isolados em eletroduto em parede isolante)</option>
+          <option value="A2">A2 (cabo multipolar em eletroduto em parede isolante)</option>
+          <option value="B1" selected>B1 (condutores isolados em eletroduto aparente ou embutido em alvenaria)</option>
+          <option value="B2">B2 (cabo multipolar em eletroduto aparente ou embutido em alvenaria)</option></select></div>
+        <div><label class="lbl">Condutores carregados</label><select id="cb-nc"><option value="2">2 (monofásico / bifásico sem N)</option><option value="3" selected>3 (trifásico)</option></select></div>
+        <div><label class="lbl"><span class="sym">FCT</span>Temperatura ambiente</label><select id="cb-temp">
+          <option value="1.22">10 °C (1,22)</option><option value="1.17">15 °C (1,17)</option><option value="1.12">20 °C (1,12)</option><option value="1.06">25 °C (1,06)</option><option value="1" selected>30 °C (1,00)</option><option value="0.94">35 °C (0,94)</option><option value="0.87">40 °C (0,87)</option><option value="0.79">45 °C (0,79)</option><option value="0.71">50 °C (0,71)</option></select></div>
+        <div><label class="lbl"><span class="sym">FCA</span>Circuitos agrupados</label><select id="cb-ag">
+          <option value="1" selected>1 circuito (1,00)</option><option value="0.8">2 circuitos (0,80)</option><option value="0.7">3 circuitos (0,70)</option><option value="0.65">4 circuitos (0,65)</option><option value="0.6">5 circuitos (0,60)</option><option value="0.57">6 circuitos (0,57)</option><option value="0.54">7 circuitos (0,54)</option></select></div>
+      </div>
+      <div class="sec-t">Tabela do método escolhido (Iz corrigida)</div>
+      <div id="cb-tab" style="overflow-x:auto"></div>
+      <div class="steps" id="cb-steps"></div>
+      <div class="warn hidden" id="cb-warn"></div>
+      <div class="hint">Confira também a queda de tensão (outra calculadora) e o curto-circuito. Valores da Tabela 36 conferidos até 95 mm².</div>
+    </div>
+    </div>
+
+    <!-- QUEDA DE TENSÃO -->
+    <div class="cpanel hidden" id="p-qt">
+    <div class="card">
+      <h2 style="margin-top:0">Queda de tensão</h2>
+      <div class="out sticky-out" id="qt-res"></div>
+      <div class="illus" id="qt-ill"></div>
+      <div class="grid2">
+        <div><label class="lbl">Sistema</label><select id="qt-sis"><option value="2">Monofásico / bifásico (k = 2)</option><option value="1.7320508" selected>Trifásico (k = √3)</option></select></div>
+        <div><label class="lbl"><span class="sym">V</span>Tensão (V)</label><input id="qt-v" inputmode="decimal" value="380"></div>
+        <div><label class="lbl"><span class="sym">I</span>Corrente (A)</label><input id="qt-i" inputmode="decimal" value="30"></div>
+        <div><label class="lbl"><span class="sym">L</span>Comprimento do circuito (m, só ida)</label><input id="qt-l" inputmode="decimal" value="80"></div>
+        <div><label class="lbl"><span class="sym">S</span>Seção (mm²)</label><select id="qt-s"><option>1.5</option><option>2.5</option><option>4</option><option selected>6</option><option>10</option><option>16</option><option>25</option><option>35</option><option>50</option><option>70</option><option>95</option><option>120</option><option>150</option><option>185</option><option>240</option></select></div>
+        <div><label class="lbl">Material</label><select id="qt-mat"><option value="cu" selected>Cobre</option><option value="al">Alumínio</option></select></div>
+        <div><label class="lbl"><span class="sym">θ</span>Temperatura do condutor</label><select id="qt-t"><option value="20">20 °C (sem carga)</option><option value="70" selected>70 °C (PVC em plena carga)</option><option value="90">90 °C (EPR/XLPE em plena carga)</option></select></div>
+        <div><label class="lbl"><span class="sym">ΔV<sub>máx</sub></span>Limite (%)</label><input id="qt-lim" inputmode="decimal" value="4"></div>
+      </div>
+      <div class="steps" id="qt-steps"></div>
+      <div class="warn hidden" id="qt-warn"></div>
+      <div class="hint">Cálculo resistivo: ΔV = k·ρ·L·I/S. Em seções grandes (≳ 50 mm²) a reatância do cabo passa a pesar; nesses casos use o método com R e X do fabricante.</div>
+    </div>
+    </div>
+
+    <!-- TRIÂNGULO DE POTÊNCIAS -->
+    <div class="cpanel hidden" id="p-pot">
+    <div class="card">
+      <h2 style="margin-top:0">Triângulo de potências</h2>
+      <div class="out sticky-out" id="pt-res"></div>
+      <div class="out" id="pt-res2" style="margin-top:0"></div>
+      <div class="illus" id="pt-ill"></div>
+      <div class="grid2">
+        <div><label class="lbl">Eu tenho</label><select id="pt-mode"><option value="vi" selected>Tensão, corrente e FP</option><option value="pf">P (kW) e FP</option><option value="pq">P (kW) e Q (kvar)</option></select></div>
+        <div><label class="lbl">Sistema</label><select id="pt-sis"><option value="3" selected>Trifásico</option><option value="1">Monofásico</option></select></div>
+        <div><label class="lbl"><span class="sym">V</span>Tensão (V)</label><input id="pt-v" inputmode="decimal" value="380"></div>
+        <div class="pt-vi"><label class="lbl"><span class="sym">I</span>Corrente (A)</label><input id="pt-i" inputmode="decimal" value="50"></div>
+        <div class="pt-fp"><label class="lbl"><span class="sym">FP</span>Fator de potência</label><input id="pt-fp" inputmode="decimal" value="0,82"></div>
+        <div class="pt-p"><label class="lbl"><span class="sym">P</span>Potência ativa (kW)</label><input id="pt-p" inputmode="decimal" value="27"></div>
+        <div class="pt-q"><label class="lbl"><span class="sym">Q</span>Potência reativa (kvar)</label><input id="pt-q" inputmode="decimal" value="18,8"></div>
+      </div>
+      <div class="steps" id="pt-steps"></div>
+    </div>
+    </div>
+
+    <!-- CORREÇÃO DO FP -->
+    <div class="cpanel hidden" id="p-fp">
+    <div class="card">
+      <h2 style="margin-top:0">Correção do fator de potência</h2>
+      <div class="out sticky-out" id="fc-res"></div>
+      <div class="illus" id="fc-ill"></div>
+      <div class="grid2">
+        <div><label class="lbl"><span class="sym">P</span>Potência ativa (kW)</label><input id="fc-p" inputmode="decimal" value="100"></div>
+        <div><label class="lbl"><span class="sym">V</span>Tensão de linha (V)</label><input id="fc-v" inputmode="decimal" value="380"></div>
+        <div><label class="lbl"><span class="sym">FP<sub>1</sub></span>FP atual</label><input id="fc-fp1" inputmode="decimal" value="0,80"></div>
+        <div><label class="lbl"><span class="sym">FP<sub>2</sub></span>FP desejado</label><input id="fc-fp2" inputmode="decimal" value="0,95"></div>
+        <div><label class="lbl"><span class="sym">f</span>Frequência (Hz)</label><input id="fc-f" inputmode="decimal" value="60"></div>
+        <div><label class="lbl">Ligação do banco</label><select id="fc-lig"><option value="d" selected>Triângulo (Δ)</option><option value="y">Estrela (Y)</option></select></div>
+      </div>
+      <div class="steps" id="fc-steps"></div>
+      <div class="warn hidden" id="fc-warn"></div>
+    </div>
+    </div>
+
+    <!-- TRANSFORMADOR -->
+    <div class="cpanel hidden" id="p-trafo">
+    <div class="card">
+      <h2 style="margin-top:0">Transformador: corrente nominal e curto</h2>
+      <div class="out sticky-out" id="tr-res"></div>
+      <div class="illus" id="tr-ill"></div>
+      <div class="grid2">
+        <div><label class="lbl"><span class="sym">S</span>Potência (kVA)</label><input id="tr-s" inputmode="decimal" value="500"></div>
+        <div><label class="lbl">Sistema</label><select id="tr-sis"><option value="3" selected>Trifásico</option><option value="1">Monofásico</option></select></div>
+        <div><label class="lbl"><span class="sym">V<sub>1</sub></span>Tensão do primário (V)</label><input id="tr-v1" inputmode="decimal" value="13800"></div>
+        <div><label class="lbl"><span class="sym">V<sub>2</sub></span>Tensão do secundário (V)</label><input id="tr-v2" inputmode="decimal" value="380"></div>
+        <div><label class="lbl"><span class="sym">Z%</span>Impedância percentual</label><input id="tr-z" inputmode="decimal" value="5"></div>
+      </div>
+      <div class="hint">Icc calculada com fonte infinita (potência de curto da rede ilimitada): é o valor máximo nos terminais do secundário, útil para escolher a capacidade de interrupção dos disjuntores.</div>
+      <div class="steps" id="tr-steps"></div>
+    </div>
+    </div>
+
+    <!-- OHM -->
+    <div class="cpanel hidden" id="p-ohm">
+    <div class="card">
+      <h2 style="margin-top:0">Lei de Ohm e potência</h2>
+      <div class="out sticky-out" id="oh-res" style="grid-template-columns:repeat(4,1fr)"></div>
+      <div class="illus" id="oh-ill"></div>
+      <div><label class="lbl">Eu tenho</label><select id="oh-mode"><option value="VI" selected>Tensão e corrente</option><option value="VR">Tensão e resistência</option><option value="IR">Corrente e resistência</option><option value="PV">Potência e tensão</option><option value="PI">Potência e corrente</option><option value="PR">Potência e resistência</option></select></div>
+      <div class="grid2" style="margin-top:10px">
+        <div><label class="lbl" id="oh-la"></label><input id="oh-a" inputmode="decimal" value="220"></div>
+        <div><label class="lbl" id="oh-lb"></label><input id="oh-b" inputmode="decimal" value="10"></div>
+      </div>
+      <div class="hint">Para corrente contínua ou cargas resistivas em CA (FP = 1).</div>
+      <div class="steps" id="oh-steps"></div>
+    </div>
+    </div>
+  </section>
+
+  <!-- MANUAIS -->
+  <section id="v-manuais" class="hidden">
+    <div class="card">
+      <h2 style="margin-top:0">Manuais de inversores de frequência</h2>
+      <div class="small muted">Links para as páginas e PDFs oficiais de cada fabricante (abrem no navegador, precisa de internet). Confirme sempre a versão do firmware do seu equipamento.</div>
+      <input id="man-q" placeholder="Buscar modelo ou fabricante (ex.: CFW500, G120, ACS580)" style="margin-top:10px">
+    </div>
+    <div id="man-list"></div>
+  </section>
+</main>
+
+<nav class="tabs">
+  <button data-v="inicio" class="on" onclick="go('inicio')"><svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>Início</button>
+  <button data-v="treinar" onclick="go('treinar')"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/></svg>Treinar</button>
+  <button data-v="cartoes" onclick="go('cartoes')"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="14" height="12" rx="2"/><path d="M7 3h12a2 2 0 0 1 2 2v11"/></svg>Cartões</button>
+  <button data-v="formulas" onclick="go('formulas')"><svg viewBox="0 0 24 24"><path d="M5 5h14M5 12h8M5 19h11"/></svg>Fórmulas</button>
+  <button data-v="calc" onclick="go('calc')"><svg viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8 7h8M8 11h2M12 11h2M8 15h2M12 15h2M16 11v6"/></svg>Calcular</button>
+  <button data-v="manuais" onclick="go('manuais')"><svg viewBox="0 0 24 24"><path d="M4 5a2 2 0 0 1 2-2h12v16H6a2 2 0 0 0-2 2z"/><path d="M4 21V5M9 7h6M9 11h6"/></svg>Manuais</button>
+</nav>
+
+<script>
+const TOPICS = {
+  fund:'Fundamentos', nr10:'NR-10', mot:'Motores', part:'Partida de motores', cmd:'Comandos elétricos',
+  prot:'Proteção', nbr:'NBR 5410 e cabos', inv:'Inversores', fp:'Fator de potência', trafo:'Transformadores', ater:'Aterramento'
+};
+const VF = ['Verdadeiro','Falso'];
+
+// Questões — n = resposta numérica; o/a = múltipla escolha
+const Q = [
+// ---------- FUNDAMENTOS ----------
+{id:'f01',t:'fund',q:'Um resistor de 44 Ω está ligado em 220 V. Qual é a corrente?',n:5,u:'A',x:'I = V / R = 220 / 44 = 5 A.'},
+{id:'f02',t:'fund',q:'Um chuveiro resistivo puxa 10 A em 127 V. Qual é a potência?',n:1270,u:'W',x:'Carga resistiva (FP = 1): P = V × I = 127 × 10 = 1270 W.'},
+{id:'f03',t:'fund',q:'Em uma ligação estrela (Y) equilibrada com tensão de linha de 380 V, qual é a tensão de fase aproximada?',o:['380 V','220 V','127 V','660 V'],a:1,x:'Na estrela, V_linha = √3 × V_fase → V_fase = 380 / 1,732 ≈ 219 V (≈ 220 V).'},
+{id:'f04',t:'fund',q:'Na ligação triângulo (Δ) equilibrada, qual relação está correta?',o:['V_linha = √3 × V_fase','I_linha = √3 × I_fase','I_linha = I_fase / √3','V_fase = V_linha / √3'],a:1,x:'No triângulo a tensão de fase é igual à de linha, e a corrente de linha é √3 vezes a corrente de fase.'},
+{id:'f05',t:'fund',q:'Qual fórmula dá a potência ativa de uma carga trifásica equilibrada?',o:['P = V × I','P = √3 × V × I','P = √3 × V × I × cos φ','P = 3 × V × I × cos φ, com V de linha'],a:2,x:'Com V e I de linha: P = √3 · V · I · cos φ. Sem o cos φ, o resultado é a potência aparente S (VA).'},
+{id:'f06',t:'fund',q:'Motor trifásico absorve 10 kW da rede em 380 V com fator de potência 0,80. Qual é a corrente de linha?',n:18.99,u:'A',x:'I = P / (√3 · V · FP) = 10 000 / (1,732 × 380 × 0,80) ≈ 18,99 A.'},
+{id:'f07',t:'fund',q:'Verdadeiro ou falso: um multímetro na escala de tensão (V) deve ser ligado em série com a carga.',o:VF,a:1,x:'Voltímetro em paralelo; amperímetro em série. Para corrente em campo, prefira o alicate amperímetro, que não exige abrir o circuito.'},
+{id:'f08',t:'fund',q:'Três resistores de 30 Ω ligados em paralelo resultam em:',n:10,u:'Ω',x:'Iguais em paralelo: R_eq = R / n = 30 / 3 = 10 Ω.'},
+// ---------- NR-10 ----------
+{id:'n01',t:'nr10',q:'Pela NR-10 (redação de 2004, vigente até a nova entrar em vigor), qual faixa é Baixa Tensão (BT)?',o:['Até 50 V CA','Acima de 50 V e até 1000 V CA (acima de 120 V e até 1500 V CC)','Acima de 1000 V CA','Entre 1000 V e 36,2 kV'],a:1,x:'BT: >50 V CA ou >120 V CC e ≤1000 V CA ou ≤1500 V CC. EBT: ≤50 V CA ou ≤120 V CC. AT: >1000 V CA ou >1500 V CC.'},
+{id:'n02',t:'nr10',q:'Pela NR-10 (redação de 2004), Extra Baixa Tensão (EBT) é a tensão não superior a:',o:['24 V CA ou 60 V CC','50 V CA ou 120 V CC','127 V CA ou 220 V CC','12 V CA ou CC'],a:1,x:'EBT: até 50 V em corrente alternada ou 120 V em corrente contínua, entre fases ou entre fase e terra.'},
+{id:'n03',t:'nr10',q:'Qual é o PRIMEIRO passo da sequência de desenergização da NR-10?',o:['Constatação da ausência de tensão','Seccionamento','Instalação de aterramento temporário','Sinalização de impedimento'],a:1,x:'Sequência: seccionamento → impedimento de reenergização → constatação da ausência de tensão → aterramento temporário com equipotencialização → proteção dos elementos energizados na zona controlada → sinalização de impedimento de reenergização.'},
+{id:'n04',t:'nr10',q:'Na sequência de desenergização, o que vem logo DEPOIS da constatação da ausência de tensão?',o:['Seccionamento','Impedimento de reenergização','Instalação de aterramento temporário com equipotencialização','Liberação para o serviço'],a:2,x:'Só se aterra depois de confirmar com o detector que não há tensão. Aterrar um circuito energizado provoca curto-circuito e arco.'},
+{id:'n05',t:'nr10',q:'Qual é a carga horária mínima do curso básico de segurança em instalações e serviços com eletricidade (Anexo da NR-10, redação de 2004)?',o:['8 horas','16 horas','40 horas','80 horas'],a:2,x:'Curso básico: 40 h. Quem trabalha no SEP (Sistema Elétrico de Potência) faz também o curso complementar de 40 h.'},
+{id:'n06',t:'nr10',q:'Pela redação de 2004, com que periodicidade mínima deve ocorrer a reciclagem do treinamento NR-10?',o:['Anual','Bienal (a cada 2 anos)','A cada 5 anos','Somente na admissão'],a:1,x:'Reciclagem bienal, e também na troca de função ou empresa, no retorno de afastamento superior a 3 meses e em modificações significativas nas instalações.'},
+{id:'n07',t:'nr10',q:'Pela redação de 2004, o Prontuário de Instalações Elétricas era obrigatório para estabelecimentos com carga instalada superior a:',o:['25 kW','50 kW','75 kW','112,5 kVA'],a:2,x:'Critério de 75 kW (item 10.2.4). Atenção: a nova NR-10 (Portaria MTE nº 737/2026) muda esse critério do PIE.'},
+{id:'n08',t:'nr10',q:'Profissional que comprovou conclusão de curso específico da área elétrica reconhecido pelo sistema oficial de ensino é chamado de:',o:['Capacitado','Qualificado','Autorizado','Habilitado'],a:1,x:'Qualificado = formação reconhecida. Habilitado = qualificado + registro no conselho de classe. Capacitado = treinado sob orientação de profissional habilitado. Autorizado = qualificado/capacitado/habilitado com anuência formal da empresa.'},
+{id:'n09',t:'nr10',q:'Profissional previamente qualificado e com registro no competente conselho de classe (ex.: CREA/CFT) é:',o:['Habilitado','Capacitado','Autorizado','Supervisor'],a:0,x:'Habilitado = qualificado + registro no conselho de classe.'},
+{id:'n10',t:'nr10',q:'Verdadeiro ou falso: estar treinado na NR-10 basta para executar qualquer serviço em eletricidade, sem autorização formal da empresa.',o:VF,a:1,x:'Além de qualificado, habilitado ou capacitado, o trabalhador precisa estar AUTORIZADO formalmente pela empresa.'},
+{id:'n11',t:'nr10',q:'Pela tabela de zonas de risco e controlada da NR-10 (Anexo, redação de 2004), para tensões abaixo de 1 kV os raios Rr e Rc são:',o:['Rr 0,20 m e Rc 0,70 m','Rr 0,50 m e Rc 1,00 m','Rr 0,70 m e Rc 2,00 m','Rr 0,10 m e Rc 0,30 m'],a:0,x:'Faixa < 1 kV: zona de risco até 0,20 m e zona controlada até 0,70 m do ponto energizado.'},
+{id:'n12',t:'nr10',q:'Sobre a nova NR-10 publicada pela Portaria MTE nº 737/2026, qual afirmação está correta?',o:['Já estava em vigor desde janeiro de 2026','Entra em vigor 1 ano após a publicação (junho de 2027) e integra o risco elétrico ao GRO/PGR','Revoga apenas o anexo de treinamentos','Vale só para alta tensão'],a:1,x:'A nova redação foi publicada em junho de 2026, entra em vigor um ano depois e passa a tratar o risco elétrico dentro do Gerenciamento de Riscos Ocupacionais, com mais ênfase em arco elétrico.'},
+{id:'n13',t:'nr10',q:'Qual medida tem prioridade na hierarquia de proteção contra choque em serviços de eletricidade?',o:['Uso de luvas isolantes','Desenergização','Sinalização','Uso de tapete isolante'],a:1,x:'A desenergização é a medida prioritária. EPI e sinalização complementam — não substituem.'},
+// ---------- MOTORES ----------
+{id:'m01',t:'mot',q:'Qual é a velocidade síncrona de um motor de 4 polos em 60 Hz?',n:1800,u:'rpm',x:'Ns = 120 × f / p = 120 × 60 / 4 = 1800 rpm.'},
+{id:'m02',t:'mot',q:'Qual é a velocidade síncrona de um motor de 2 polos em 50 Hz?',n:3000,u:'rpm',x:'Ns = 120 × 50 / 2 = 3000 rpm.'},
+{id:'m03',t:'mot',q:'Motor de 4 polos em 60 Hz gira a 1755 rpm em carga nominal. Qual é o escorregamento?',n:2.5,u:'%',x:'s = (Ns − n) / Ns = (1800 − 1755) / 1800 = 0,025 = 2,5%.'},
+{id:'m04',t:'mot',q:'Um motor de placa 220/380 V vai ser ligado em rede de 380 V. Qual ligação usar?',o:['Triângulo (Δ)','Estrela (Y)','Dupla estrela (YY)','Tanto faz'],a:1,x:'A tensão menor da placa corresponde ao triângulo; a maior (√3 vezes), à estrela. 380 V → estrela.'},
+{id:'m05',t:'mot',q:'Como inverter o sentido de rotação de um motor de indução trifásico?',o:['Inverter o neutro com o terra','Trocar duas fases quaisquer entre si','Trocar as três fases de posição em sequência','Inverter a ligação estrela por triângulo'],a:1,x:'Trocar duas fases inverte a sequência de fases e, com ela, o sentido do campo girante.'},
+{id:'m06',t:'mot',q:'Qual temperatura máxima corresponde à classe de isolamento F?',o:['105 °C','130 °C','155 °C','180 °C'],a:2,x:'Classes térmicas: A 105 °C, E 120 °C, B 130 °C, F 155 °C, H 180 °C.'},
+{id:'m07',t:'mot',q:'No grau de proteção IP55, o que indica o segundo algarismo (5)?',o:['Proteção contra poeira','Proteção contra jatos de água','Proteção contra imersão temporária','Proteção contra impacto mecânico'],a:1,x:'1º dígito = sólidos/poeira (5 = protegido contra poeira). 2º dígito = líquidos (5 = jatos de água).'},
+{id:'m08',t:'mot',q:'Um motor de 10 cv corresponde a aproximadamente:',o:['7,36 kW','10 kW','13,6 kW','5 kW'],a:0,x:'1 cv = 735,5 W → 10 cv ≈ 7,36 kW. (1 hp = 745,7 W.)'},
+{id:'m09',t:'mot',q:'Motor de 7,5 kW a 1760 rpm. Qual é o conjugado nominal aproximado?',n:40.7,u:'N·m',x:'T = 9550 × P(kW) / n = 9550 × 7,5 / 1760 ≈ 40,7 N·m.'},
+{id:'m10',t:'mot',q:'O que significa Fator de Serviço (FS) 1,15 na placa do motor?',o:['O motor pode operar continuamente com 15% de sobrecarga nas condições nominais','O rendimento é 115%','A corrente de partida é 1,15 × In','O motor aceita 15% de sobretensão'],a:0,x:'FS é a reserva de potência para sobrecarga contínua nas condições nominais. Não é para ser usado como regime normal de projeto.'},
+{id:'m11',t:'mot',q:'Verdadeiro ou falso: a relação Ip/In indica quantas vezes a corrente de partida direta é maior que a corrente nominal.',o:VF,a:0,x:'Motores de indução costumam ter Ip/In entre 6 e 9. Esse dado vem na placa e no catálogo.'},
+// ---------- PARTIDAS ----------
+{id:'p01',t:'part',q:'Na partida estrela-triângulo, a corrente de partida e o conjugado de partida ficam reduzidos a aproximadamente:',o:['1/2','1/3','58%','1/√3 e 1/3, respectivamente'],a:1,x:'Em estrela, cada bobina recebe V/√3. A corrente de linha e o conjugado caem para 1/3 dos valores da partida direta.'},
+{id:'p02',t:'part',q:'Motor com corrente de partida direta de 120 A. Qual a corrente de partida aproximada em estrela-triângulo?',n:40,u:'A',x:'Ip(Y) ≈ Ip(direta) / 3 = 120 / 3 = 40 A.'},
+{id:'p03',t:'part',q:'Para usar partida estrela-triângulo em rede de 380 V, o motor deve ter:',o:['3 terminais e placa 380 V','6 terminais e placa 380/660 V','6 terminais e placa 220/380 V','12 terminais obrigatoriamente'],a:1,x:'O motor trabalha em triângulo na tensão da rede: em 380 V, a placa precisa ser 380/660 V (triângulo = 380 V).'},
+{id:'p04',t:'part',q:'Na estrela-triângulo, os contatores K1 (rede) e K2 (triângulo) são dimensionados para cerca de:',o:['1,0 × In','0,58 × In','0,33 × In','1,5 × In'],a:1,x:'K1 e K2 conduzem a corrente de fase do triângulo: In/√3 ≈ 0,58 × In. K3 (estrela) ≈ 0,33 × In. O relé térmico, na linha de K1, é ajustado em 0,58 × In.'},
+{id:'p05',t:'part',q:'Na chave compensadora (autotransformador) no tap de 65%, a corrente de linha e o conjugado ficam em torno de:',o:['65% dos valores de partida direta','42% dos valores de partida direta','81%','33%'],a:1,x:'Corrente de linha e conjugado variam com o quadrado do tap: 0,65² ≈ 0,42.'},
+{id:'p06',t:'part',q:'Qual dispositivo eletrônico faz partida suave controlando a tensão por tiristores, sem variar a frequência?',o:['Inversor de frequência','Soft-starter','Chave estrela-triângulo','Relé de tempo'],a:1,x:'O soft-starter rampa a tensão. Para variar a velocidade em regime, é preciso inversor de frequência.'},
+{id:'p07',t:'part',q:'Verdadeiro ou falso: a partida estrela-triângulo é boa para cargas com alto conjugado de partida, como britadores carregados.',o:VF,a:1,x:'Com 1/3 do conjugado, a estrela-triângulo serve para partidas em vazio ou com carga leve (bombas centrífugas com válvula fechada, ventiladores).'},
+// ---------- COMANDOS ----------
+{id:'c01',t:'cmd',q:'Em contatores, quais terminais identificam a bobina?',o:['1 e 2','13 e 14','A1 e A2','95 e 96'],a:2,x:'Bobina: A1-A2. Principais: 1-2, 3-4, 5-6 (L1-T1, L2-T2, L3-T3).'},
+{id:'c02',t:'cmd',q:'Um contato auxiliar numerado 13-14 é:',o:['Normalmente aberto (NA)','Normalmente fechado (NF)','Contato de bobina','Contato do relé térmico'],a:0,x:'Final 3-4 = NA; final 1-2 = NF. O primeiro dígito é a posição (1º contato, 2º contato…).'},
+{id:'c03',t:'cmd',q:'No relé de sobrecarga, o contato 95-96 é usado para:',o:['Ligar a sinalização de motor ligado','Desligar o comando (em série com a bobina) quando atua','Alimentar a bobina do relé','Medir a corrente'],a:1,x:'95-96 é NF: abre na sobrecarga e desliga o contator. 97-98 é NA, usado para sinalizar o defeito.'},
+{id:'c04',t:'cmd',q:'O contato de selo (autorretenção) é:',o:['Um NF do contator em série com o botão desliga','Um NA do próprio contator em paralelo com o botão liga','Um NF do outro contator em série com a bobina','O contato 95-96'],a:1,x:'O NA do contator, em paralelo com o botão pulsador liga, mantém a bobina energizada depois que o botão é solto.'},
+{id:'c05',t:'cmd',q:'Na reversão de motor, o intertravamento elétrico é feito com:',o:['NA de K1 em série com a bobina de K2','NF de K2 em série com a bobina de K1 (e vice-versa)','Dois selos em paralelo','Relé de tempo'],a:1,x:'O NF de um contator em série com a bobina do outro impede que os dois liguem juntos (curto entre fases).'},
+{id:'c06',t:'cmd',q:'Na estrela-triângulo automática, qual elemento comanda a troca de estrela para triângulo?',o:['Relé térmico','Relé de tempo (temporizador)','Botão de emergência','Disjuntor-motor'],a:1,x:'O temporizador conta o tempo de aceleração em estrela e então desliga K3 e liga K2.'},
+{id:'c07',t:'cmd',q:'Verdadeiro ou falso: o botão de emergência deve ser do tipo cogumelo, vermelho sobre fundo amarelo, com contato NF de abertura positiva.',o:VF,a:0,x:'É a prática exigida para parada de emergência (NR-12 e IEC 60204-1 / ISO 13850). Ao ser acionado, permanece travado até o rearme manual.'},
+{id:'c08',t:'cmd',q:'O relé de falta de fase protege o motor contra:',o:['Curto-circuito','Operação em duas fases e sequência de fases errada','Sobretensão atmosférica','Fuga de corrente para a terra'],a:1,x:'Monitora as três fases e desliga o comando se faltar uma fase ou se a sequência estiver invertida (conforme o modelo).'},
+// ---------- PROTEÇÃO ----------
+{id:'r01',t:'prot',q:'No disjuntor termomagnético, o disparador térmico protege principalmente contra:',o:['Curto-circuito','Sobrecarga','Fuga à terra','Surto de tensão'],a:1,x:'Térmico (bimetálico): sobrecarga, com tempo inverso. Magnético: curto-circuito, disparo instantâneo.'},
+{id:'r02',t:'prot',q:'Um disjuntor de curva C dispara no magnético na faixa de:',o:['3 a 5 × In','5 a 10 × In','10 a 20 × In','1,13 a 1,45 × In'],a:1,x:'NBR NM 60898: curva B 3–5 × In; C 5–10 × In; D 10–20 × In.'},
+{id:'r03',t:'prot',q:'Para circuito de motor com corrente de partida elevada, a curva de disjuntor mais adequada costuma ser:',o:['B','C ou D','Qualquer uma','Curva Z'],a:1,x:'Motores com Ip alto pedem curva C ou D para não disparar na partida. Curva B é para cargas resistivas e cabos longos.'},
+{id:'r04',t:'prot',q:'O DR (dispositivo diferencial-residual) de 30 mA serve principalmente para:',o:['Proteger contra sobrecarga','Proteger pessoas contra choque por contato direto e indireto','Proteger contra surtos de raio','Corrigir o fator de potência'],a:1,x:'O DR compara a corrente que vai com a que volta. Uma diferença ≥ 30 mA (fuga pelo corpo ou pela massa) faz o dispositivo desligar.'},
+{id:'r05',t:'prot',q:'Qual dispositivo protege contra sobretensões transitórias (descargas atmosféricas, manobras)?',o:['DR','DPS','Relé térmico','Fusível NH'],a:1,x:'DPS = Dispositivo de Proteção contra Surtos.'},
+{id:'r06',t:'prot',q:'Disjuntor de 25 A, curva C. Em que faixa de corrente atua o disparo magnético?',o:['75 a 125 A','125 a 250 A','250 a 500 A','28 a 36 A'],a:1,x:'Curva C: 5 a 10 × In = 125 a 250 A.'},
+{id:'r07',t:'prot',q:'Qual condição de coordenação entre condutor e proteção contra sobrecarga a NBR 5410 exige?',o:['In ≥ Iz','Ib ≤ In ≤ Iz e I2 ≤ 1,45 × Iz','Ib = Iz','In ≤ Ib'],a:1,x:'Ib (projeto) ≤ In (dispositivo) ≤ Iz (capacidade do cabo corrigida), e a corrente de atuação convencional I2 ≤ 1,45 × Iz.'},
+{id:'r08',t:'prot',q:'Fusíveis tipo aR (ultrarrápidos) são indicados para proteger:',o:['Cabos de iluminação','Semicondutores (inversores, soft-starters, retificadores)','Motores em partida direta','Transformadores de distribuição'],a:1,x:'aR é ultrarrápido, para semicondutores. gL/gG é de uso geral (cabos); aM é para motores.'},
+// ---------- NBR 5410 ----------
+{id:'b01',t:'nbr',q:'Seção mínima de condutor de cobre para circuitos de iluminação (NBR 5410):',o:['0,75 mm²','1,0 mm²','1,5 mm²','2,5 mm²'],a:2,x:'Iluminação: 1,5 mm². Força (tomadas): 2,5 mm². Sinalização e controle: 0,5 mm².'},
+{id:'b02',t:'nbr',q:'Seção mínima de condutor de cobre para circuitos de força (tomadas):',o:['1,5 mm²','2,5 mm²','4 mm²','6 mm²'],a:1,x:'Circuitos de força: 2,5 mm² de cobre.'},
+{id:'b03',t:'nbr',q:'Qual cor a NBR 5410 reserva para o condutor de proteção (PE)?',o:['Azul-claro','Preto','Verde-amarelo (ou verde)','Vermelho'],a:2,x:'PE: verde-amarelo ou verde. Neutro: azul-claro. Fases: as demais cores (preto, vermelho, branco, cinza…).'},
+{id:'b04',t:'nbr',q:'Qual cor identifica o condutor neutro?',o:['Azul-claro','Verde','Preto','Branco'],a:0,x:'Neutro: azul-claro.'},
+{id:'b05',t:'nbr',q:'Cabo de 2,5 mm² (B1, 2 condutores carregados, PVC) tem Iz = 24 A. Com 3 circuitos no mesmo eletroduto (FCA = 0,70), qual a nova capacidade?',n:16.8,u:'A',x:'Iz corrigida = 24 × 0,70 = 16,8 A.'},
+{id:'b06',t:'nbr',q:'Ib = 30 A, temperatura ambiente 35 °C (FCT = 0,94) e 2 circuitos agrupados (FCA = 0,80). Qual a corrente corrigida para entrar na tabela?',n:39.89,u:'A',x:"I' = Ib / (FCT × FCA) = 30 / (0,94 × 0,80) ≈ 39,89 A."},
+{id:'b07',t:'nbr',q:'Para circuitos terminais, qual é a queda de tensão máxima admitida pela NBR 5410?',o:['2%','4%','7%','10%'],a:1,x:'Circuitos terminais: até 4%. Do ponto de entrega até a carga: 5% (alimentação em BT pela concessionária) ou 7% (subestação própria).'},
+{id:'b08',t:'nbr',q:'Circuito de 220 V com queda de tensão calculada de 6,6 V. Quanto isso representa?',n:3,u:'%',x:'ΔV% = 6,6 / 220 × 100 = 3%.'},
+{id:'b09',t:'nbr',q:'Condutor de fase de 50 mm² (cobre). Qual a seção mínima do condutor de proteção PE pela regra simplificada?',n:25,u:'mm²',x:'S ≤ 16 → PE = S; 16 < S ≤ 35 → PE = 16; S > 35 → PE = S/2 = 25 mm².'},
+{id:'b10',t:'nbr',q:'Condutor de fase de 25 mm² (cobre). Qual a seção mínima do PE?',n:16,u:'mm²',x:'Entre 16 e 35 mm²: PE = 16 mm².'},
+{id:'b11',t:'nbr',q:'Um circuito trifásico equilibrado sem neutro tem quantos condutores carregados?',o:['2','3','4','1'],a:1,x:'Trifásico (com ou sem neutro, equilibrado e sem harmônicas relevantes): 3 carregados. Monofásico a 2 fios: 2 carregados.'},
+{id:'b12',t:'nbr',q:'Temperatura máxima de operação contínua do condutor com isolação de PVC:',o:['60 °C','70 °C','90 °C','105 °C'],a:1,x:'PVC: 70 °C contínuo (160 °C em curto). EPR/XLPE: 90 °C contínuo (250 °C em curto).'},
+// ---------- INVERSORES ----------
+{id:'i01',t:'inv',q:'Por que o inversor mantém a relação V/f constante abaixo da frequência nominal?',o:['Para reduzir o ruído','Para manter o fluxo magnético e o conjugado disponíveis','Para aumentar a velocidade','Para corrigir o fator de potência'],a:1,x:'Fluxo ∝ V/f. Mantendo V/f, o motor conserva o fluxo e pode entregar conjugado nominal em velocidades menores.'},
+{id:'i02',t:'inv',q:'Motor 380 V / 60 Hz em controle V/f linear. Qual tensão aproximada o inversor aplica em 30 Hz?',n:190,u:'V',x:'V = 380 × 30/60 = 190 V (desconsiderando o boost de torque em baixa frequência).'},
+{id:'i03',t:'inv',q:'Motor de 4 polos acionado por inversor. Qual frequência dá 900 rpm síncronos?',n:30,u:'Hz',x:'f = Ns × p / 120 = 900 × 4 / 120 = 30 Hz.'},
+{id:'i04',t:'inv',q:'Acima da frequência nominal (enfraquecimento de campo), o motor opera com:',o:['Conjugado constante','Potência aproximadamente constante e conjugado decrescente','Tensão crescente','Corrente nula'],a:1,x:'A tensão já está no máximo; o fluxo cai com 1/f e o conjugado disponível também. A potência fica aproximadamente constante.'},
+{id:'i05',t:'inv',q:'Na desaceleração rápida de uma carga de alta inércia, o inversor dá falha de sobretensão no barramento CC. Qual a solução típica?',o:['Diminuir o tempo de aceleração','Instalar resistor de frenagem (ou aumentar o tempo de desaceleração)','Instalar capacitores na saída','Trocar a curva do disjuntor'],a:1,x:'A energia regenerada volta ao barramento CC. O resistor de frenagem dissipa essa energia; uma rampa de desaceleração mais longa também ajuda.'},
+{id:'i06',t:'inv',q:'Verdadeiro ou falso: é recomendado instalar capacitores de correção de fator de potência na saída do inversor, entre ele e o motor.',o:VF,a:1,x:'Nunca. Capacitores na saída PWM provocam picos de corrente e danificam o inversor.'},
+{id:'i07',t:'inv',q:'Nos inversores WEG CFW500/CFW11, o parâmetro P0100 é:',o:['Tempo de aceleração','Velocidade máxima','Corrente nominal do motor','Tipo de controle'],a:0,x:'P0100 aceleração · P0101 desaceleração · P0133 velocidade mínima · P0134 velocidade máxima · P0202 tipo de controle · P0401 corrente nominal do motor.'},
+{id:'i08',t:'inv',q:'Nos inversores WEG, qual valor de P0204 carrega o padrão de fábrica de 60 Hz?',o:['0','1','5','10'],a:2,x:'P0204 = 5 carrega o padrão WEG 60 Hz; 6 = padrão 50 Hz. Os valores 7–10 carregam ou salvam as memórias de usuário (conforme o modelo).'},
+{id:'i09',t:'inv',q:'Aumentar a frequência de chaveamento (portadora PWM) do inversor geralmente:',o:['Reduz o ruído acústico do motor, mas aumenta as perdas e pode exigir redução de corrente','Aumenta o conjugado','Reduz o aquecimento do inversor','Elimina harmônicas na rede'],a:0,x:'Portadora alta = motor mais silencioso, mas com mais perdas de comutação, mais corrente de fuga e possível derating do inversor.'},
+{id:'i10',t:'inv',q:'Qual parâmetro WEG define a corrente nominal do motor (usada na proteção de sobrecarga)?',o:['P0133','P0401','P0100','P0204'],a:1,x:'P0401 = corrente nominal do motor. P0402 = rotação nominal; P0403 = frequência nominal; P0400 = tensão nominal.'},
+// ---------- FATOR DE POTÊNCIA ----------
+{id:'q01',t:'fp',q:'Qual é o fator de potência de referência mínimo usado no faturamento de energia reativa no Brasil?',o:['0,85','0,90','0,92','0,95'],a:2,x:'Referência de 0,92. Abaixo disso, o consumo de reativo excedente é faturado.'},
+{id:'q02',t:'fp',q:'Carga com P = 80 kW e FP = 0,80. Qual a potência aparente?',n:100,u:'kVA',x:'S = P / FP = 80 / 0,8 = 100 kVA. Q = √(100² − 80²) = 60 kvar.'},
+{id:'q03',t:'fp',q:'Carga com P = 80 kW e S = 100 kVA. Qual a potência reativa?',n:60,u:'kvar',x:'Q = √(S² − P²) = √(10 000 − 6 400) = 60 kvar.'},
+{id:'q04',t:'fp',q:'Carga de 100 kW com FP 0,80. Quantos kvar de capacitores para corrigir para 0,92?',n:32.4,u:'kvar',x:'Qc = P × (tan φ1 − tan φ2) = 100 × (0,750 − 0,426) ≈ 32,4 kvar.'},
+{id:'q05',t:'fp',q:'Motor de indução operando em vazio ou com pouca carga tem fator de potência:',o:['Mais alto que em plena carga','Baixo','Sempre igual a 1','Capacitivo'],a:1,x:'Em vazio, a corrente é quase toda de magnetização (reativa). Por isso motores superdimensionados pioram o FP da instalação.'},
+{id:'q06',t:'fp',q:'Verdadeiro ou falso: corrigir o fator de potência reduz a corrente na instalação para a mesma potência ativa.',o:VF,a:0,x:'I = P / (√3 · V · FP). FP maior → corrente menor → menos perdas e queda de tensão nos cabos e no transformador.'},
+{id:'q07',t:'fp',q:'Banco de capacitores em triângulo: qual fórmula dá a capacitância por fase?',o:['C = Q / (2πf · V²)','C = Q / (3 · 2πf · V²), com V de linha','C = 3Q / (2πf · V)','C = Q · 2πf / V²'],a:1,x:'Em Δ cada capacitor recebe a tensão de linha e fornece Q/3: C = Q / (3 · ω · V²). Em Y, cada capacitor recebe V/√3: C = Q / (ω · V²).'},
+// ---------- TRANSFORMADORES ----------
+{id:'t01',t:'trafo',q:'Transformador de 225 kVA, secundário 380 V. Qual a corrente nominal no secundário?',n:341.9,u:'A',x:'In = S / (√3 · V) = 225 000 / (1,732 × 380) ≈ 341,9 A.'},
+{id:'t02',t:'trafo',q:'O mesmo transformador (In = 341,9 A) tem impedância de 5%. Qual a corrente de curto trifásico nos terminais (fonte infinita)?',n:6.84,u:'kA',x:'Icc = In × 100 / Z% = 341,9 × 20 ≈ 6838 A ≈ 6,84 kA.'},
+{id:'t03',t:'trafo',q:'Um transformador 13 800 / 380 V tem relação de transformação de aproximadamente:',n:36.3,u:'',x:'a = 13 800 / 380 ≈ 36,3.'},
+{id:'t04',t:'trafo',q:'Na designação Dyn1, o que significa o "n"?',o:['Neutro do secundário acessível','Núcleo envolvido','Número de espiras','Nível de isolamento'],a:0,x:'D = primário em triângulo; y = secundário em estrela; n = neutro do secundário acessível; 1 = deslocamento angular de 30°.'},
+{id:'t05',t:'trafo',q:'Quanto MENOR a impedância percentual (Z%) do transformador:',o:['Menor a corrente de curto-circuito','Maior a corrente de curto-circuito','Maior a corrente nominal','Menor a relação de transformação'],a:1,x:'Icc = In × 100 / Z%. Z% menor → curto maior, o que exige disjuntores com maior capacidade de interrupção.'},
+{id:'t06',t:'trafo',q:'Verdadeiro ou falso: a potência de um transformador é especificada em kW.',o:VF,a:1,x:'Em kVA (potência aparente), porque o aquecimento depende da corrente, independentemente do fator de potência da carga.'},
+// ---------- ATERRAMENTO ----------
+{id:'a01',t:'ater',q:'No esquema TN-S:',o:['Neutro e proteção são o mesmo condutor (PEN) em toda a instalação','Neutro (N) e proteção (PE) são condutores distintos','As massas são aterradas em eletrodo independente do neutro da fonte','A fonte é isolada da terra'],a:1,x:'TN-S: N e PE separados. TN-C: PEN único. TN-C-S: PEN no início, separado depois.'},
+{id:'a02',t:'ater',q:'No esquema TT:',o:['As massas são ligadas ao neutro da fonte','As massas são ligadas a um eletrodo de aterramento independente do eletrodo da fonte','Não existe aterramento','O neutro é isolado'],a:1,x:'No TT a corrente de falta é limitada pela resistência de terra; por isso o uso de DR é praticamente obrigatório para seccionamento automático.'},
+{id:'a03',t:'ater',q:'O esquema IT caracteriza-se por:',o:['Fonte isolada da terra ou aterrada por impedância elevada','PEN em toda a instalação','Neutro solidamente aterrado e massas no neutro','Duas fontes em paralelo'],a:0,x:'No IT, a primeira falta à terra não desliga o circuito (só sinaliza, via DSI). Usado onde a continuidade é crítica (salas cirúrgicas, alguns processos).'},
+{id:'a04',t:'ater',q:'Verdadeiro ou falso: no esquema TN-C, o condutor PEN pode ser seccionado por um disjuntor junto com as fases.',o:VF,a:1,x:'O PEN nunca pode ser seccionado: ao abri-lo, as massas ficam sem proteção e podem ficar energizadas.'},
+{id:'a05',t:'ater',q:'Qual é a função da equipotencialização principal (BEP)?',o:['Aumentar a tensão de toque','Interligar massas, elementos condutores e o aterramento, reduzindo diferenças de potencial','Corrigir o fator de potência','Substituir o DR'],a:1,x:'O BEP (barramento de equipotencialização principal) reúne PE, eletrodo de aterramento, tubulações metálicas e estruturas.'}
+];
+
+const DECKS = {
+ 'NR-10 e segurança':[
+  ['Faixas de tensão (NR-10/2004)','EBT ≤ 50 V CA / 120 V CC · BT até 1000 V CA / 1500 V CC · AT acima disso.','Entre fases ou entre fase e terra.'],
+  ['Desenergização (6 passos)','Seccionamento → impedimento de reenergização → ausência de tensão → aterramento temporário → proteção dos energizados → sinalização.','Só aterrar depois de testar.'],
+  ['Qualificado · Habilitado · Capacitado','Qualificado: curso reconhecido. Habilitado: + registro no conselho. Capacitado: treinado sob responsável habilitado.','Todos precisam ser AUTORIZADOS pela empresa.'],
+  ['Zonas (< 1 kV)','Zona de risco até 0,20 m; zona controlada até 0,70 m.','Valores do anexo da NR-10/2004.'],
+  ['Nova NR-10','Portaria MTE nº 737/2026, em vigor a partir de junho de 2027. Risco elétrico no GRO/PGR, ênfase em arco elétrico, matriz de treinamentos.','Até lá vale a redação de 2004.'],
+  ['LOTO','Bloqueio e etiquetagem: cadeado pessoal no dispositivo de seccionamento + etiqueta com nome e motivo.','Um cadeado por executante.']
+ ],
+ 'Motores e partidas':[
+  ['Velocidade síncrona','Ns = 120 · f / p','4 polos 60 Hz = 1800 rpm.'],
+  ['Escorregamento','s = (Ns − n) / Ns','Típico 1–5% em carga nominal.'],
+  ['220/380 V','220 V → triângulo; 380 V → estrela.','A tensão maior é √3 vezes a menor.'],
+  ['Conjugado','T (N·m) = 9550 · P(kW) / n(rpm)','Ou T (kgf·m) = 716 · P(cv) / n.'],
+  ['Estrela-triângulo','Corrente e conjugado de partida ≈ 1/3. K1 = K2 = 0,58·In; K3 = 0,33·In; relé 0,58·In.','Motor precisa de 6 pontas e Δ = tensão da rede.'],
+  ['Compensadora','Corrente de linha e conjugado ∝ tap²: 50% → 25%, 65% → 42%, 80% → 64%.','Mais conjugado que a Y-Δ no tap de 80%.'],
+  ['Soft-starter','Rampa de tensão por tiristores; reduz corrente e golpe mecânico.','Não varia a velocidade em regime.'],
+  ['Classes de isolamento','B 130 °C · F 155 °C · H 180 °C.','Motores modernos: classe F com elevação B.']
+ ],
+ 'Comandos':[
+  ['Numeração de contatos','Final 1-2 = NF · final 3-4 = NA · A1-A2 = bobina · 95-96 / 97-98 = relé térmico.','13-14 = 1º contato NA.'],
+  ['Selo','NA do contator em paralelo com o botão liga.','Mantém a bobina depois de soltar o botão.'],
+  ['Intertravamento','NF de K2 em série com a bobina de K1 (e vice-versa).','Impede curto na reversão.'],
+  ['Relé de sobrecarga','Protege o motor contra sobrecarga; ajuste na corrente nominal (ou 0,58·In na Y-Δ).','Não protege contra curto.'],
+  ['Emergência','Cogumelo vermelho sobre fundo amarelo, NF com abertura positiva, retenção.','Rearme manual.']
+ ],
+ 'Proteção':[
+  ['Curvas de disjuntor','B 3–5·In · C 5–10·In · D 10–20·In.','Motor → C ou D.'],
+  ['Ib ≤ In ≤ Iz','Corrente de projeto ≤ nominal do disjuntor ≤ capacidade corrigida do cabo.','E I2 ≤ 1,45·Iz.'],
+  ['DR','Desliga com corrente diferencial residual; 30 mA protege pessoas.','Não protege contra sobrecarga.'],
+  ['DPS','Protege contra surtos (raios, manobras).','Classe I, II ou III conforme o ponto.'],
+  ['Fusíveis','gL/gG uso geral · aM motores · aR semicondutores.','aR para inversores e soft-starters.']
+ ],
+ 'Inversores':[
+  ['V/f','Tensão proporcional à frequência até a nominal, para manter o fluxo.','380 V/60 Hz → 190 V em 30 Hz.'],
+  ['Enfraquecimento de campo','Acima de fn: tensão máxima, conjugado cai ≈ fn/f.','Potência ≈ constante.'],
+  ['Rampas','Aceleração (P0100) e desaceleração (P0101) nos WEG.','Rampa curta + inércia alta = sobrecorrente ou sobretensão.'],
+  ['Resistor de frenagem','Dissipa a energia regenerada no barramento CC.','Evita falha de sobretensão CC.'],
+  ['Parâmetros WEG','P0133/P0134 vel. mín./máx. · P0202 controle · P0204=5 padrão 60 Hz · P0400–P0404 dados do motor.','Confira no manual do modelo.'],
+  ['Saída do inversor','Sem capacitores na saída; contator de saída só com o inversor desabilitado.','Cabos longos → filtro dV/dt.']
+ ],
+ 'Instalações (NBR 5410)':[
+  ['Seções mínimas (Cu)','Iluminação 1,5 · força 2,5 · sinalização/controle 0,5 mm².','Tabela 47.'],
+  ['Cores','Neutro azul-claro · PE verde-amarelo ou verde.','Fases: outras cores.'],
+  ['Queda de tensão','Terminais ≤ 4% · total 5% (BT da concessionária) ou 7% (subestação própria).','ΔV = k·ρ·L·I / S.'],
+  ['Corrente corrigida',"I' = Ib / (FCT · FCA)",'Depois procure na tabela de Iz.'],
+  ['FCT (PVC)','30 °C = 1,00 · 35 °C = 0,94 · 40 °C = 0,87 · 45 °C = 0,79.','Referência 30 °C no ar.'],
+  ['FCA (feixe/eletroduto)','1 = 1,00 · 2 = 0,80 · 3 = 0,70 · 4 = 0,65 · 5 = 0,60 · 6 = 0,57.','Circuitos agrupados.'],
+  ['Seção do PE','S ≤ 16 → S · 16 < S ≤ 35 → 16 · S > 35 → S/2.','Mesmo material da fase.'],
+  ['Esquemas de aterramento','TN-S, TN-C, TN-C-S, TT, IT.','1ª letra: fonte; 2ª: massas.']
+ ]
+};
+
+const MANUAIS = [{"fab": "WEG", "pais": "Brasil", "central": "https://www.weg.net", "itens": [["CFW100", "Manual de programação (PT)", "https://static.weg.net/medias/downloadcenter/haf/h1f/WEG-CFW100-manual-programacao-10008008404-pt.pdf"], ["CFW100", "Guia de instalação (EN/ES/PT)", "https://static.weg.net/medias/downloadcenter/h5f/hb8/WEG-CFW100-installation-guide-10007639387-en-es-pt.pdf"], ["CFW300", "Manual de programação V13.1X (PT)", "https://static.weg.net/medias/downloadcenter/h3d/h96/WEG-Inversor-de-Frequencia-cfw300-programming-manuals-10010915230-pt.pdf"], ["CFW500", "Manual Ethernet: Modbus TCP, EtherNet/IP, PROFINET (PT)", "https://static.weg.net/medias/downloadcenter/hcf/hd8/WEG-cfw500-manual-ethernet-modbus-tcp-ethernet-ip-profinet-i-o-10003256298-manual-portugues-br-dc.pdf"], ["CFW500", "Adendo do manual de programação, mecânica E ND/HD", "https://static.weg.net/medias/downloadcenter/he0/h9d/WEG-CFW500-programming-manual-addendum-10009591988-en-es-pt.pdf"], ["CFW500", "Manual de suporte técnico: atualização de firmware (PT)", "https://static.weg.net/medias/downloadcenter/hd6/haf/WEG-CFW500-manual-de-suporte-tecnico-10008154848-pt.pdf"], ["CFW11", "Manual de programação V6.0X (PT)", "https://static.weg.net/medias/downloadcenter/h9c/hca/WEG-CFW11-manual-de-programacao-0899.5664-pt.pdf"], ["CFW11M/W G2", "Manual de programação (PT)", "https://static.weg.net/medias/downloadcenter/h04/h03/WEG-CFW11M-W-manual-de-programacao-10006315850-pt.pdf"]]}, {"fab": "Siemens", "pais": "Alemanha", "central": "https://support.industry.siemens.com", "itens": [["SINAMICS V20", "Operating Instructions 05/2022 (EN)", "https://support.industry.siemens.com/cs/attachments/109811111/V20_op_instr_0522_en-US.pdf"], ["SINAMICS G120", "Manuais e listas de parâmetros no portal de suporte", "https://support.industry.siemens.com"]]}, {"fab": "ABB", "pais": "Suíça", "central": "https://library.e.abb.com", "itens": [["ACS580-01", "Hardware manual (EN)", "https://library.e.abb.com/public/16c1a57244ef499b8e9a1895982771ac/ACS580_01drivesHW_revC_screen_A5.pdf"], ["ACS580", "Firmware manual 3AXD50000016097 (EN)", "http://search.abb.com/library/ABBLibrary.asp?DocumentID=3AXD50000016097&LanguageCode=en&DocumentPartId=1&Action=Launch"], ["ACS355 IP66", "Manual suplementar (EN)", "https://library.e.abb.com/public/74b79f522b99077dc125771c002d645b/ACS355_IP66_B_scr.pdf"]]}, {"fab": "Schneider Electric", "pais": "França", "central": "https://www.se.com", "itens": [["Altivar ATV320", "Programming Manual NVE41295 (EN)", "https://www.se.com/ca/en/download/document/NVE41295"], ["Altivar ATV320", "Manual de programación NVE41298 (ES)", "https://se.com/pe/es/download/document/NVE41298"]]}, {"fab": "Danfoss", "pais": "Dinamarca", "central": "https://www.danfoss.com", "itens": [["VLT FC 301/302", "Programming Guide (EN)", "https://assets.danfoss.com/documents/271681/AU275636650261en-US3101.pdf"], ["VLT FC 301/302", "Operating Guide 0,25–75 kW (EN)", "https://files.danfoss.com/test/Drives/MG33AR02.pdf"]]}, {"fab": "Yaskawa", "pais": "Japão", "central": "https://solutioncenter.yaskawa.com", "itens": [["GA500", "Página oficial de manuais (programação, manutenção)", "https://yaskawa.com/products/drives/industrial-ac-drives/microdrives/ga500-drive-product-instructions"]]}, {"fab": "Mitsubishi Electric", "pais": "Japão", "central": "https://www.mitsubishielectric.com/fa/", "itens": [["FR-E800", "Instruction Manual: funções (EN)", "https://www.mitsubishielectric.com/fa/products/drv/inv/support/e800/doc_pdf/ib0600953enga.pdf"], ["FR-E800", "Instruction Manual: conexão (EN)", "https://eu-assets.contentstack.com/v3/assets/blt5412ff9af9aef77f/blt45e2f3922a086c8e/6172b59eb04cff6af9e6a2aa/6442e518-18ed-11eb-901c-b8ca3a62a094_ib0600865engc.pdf"], ["FR-D700/E700/F700/A700", "Beginner's Guide (EN)", "https://eu-assets.contentstack.com/v3/assets/blt5412ff9af9aef77f/blt08b460f7390937b0/6171833c99d38b0f5a49511f/203603.pdf"]]}, {"fab": "Delta", "pais": "Taiwan", "central": "https://downloadcenter.deltaww.com", "itens": [["MS300 / VFD-E / C2000", "Central de downloads oficial (manuais e software VFDSoft)", "https://downloadcenter.deltaww.com"]]}, {"fab": "Rockwell (Allen-Bradley)", "pais": "EUA", "central": "https://www.rockwellautomation.com/en-us/support/documentation/literature-library.html", "itens": [["PowerFlex 525", "Página do produto com o User Manual 520-UM001", "https://www.rockwellautomation.com/en-us/products/details.25B-A011N114.html"]]}];
+function esc(s){ return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function renderManuais(){
+  const q=(document.getElementById('man-q').value||'').toLowerCase().trim();
+  const box=document.getElementById('man-list');
+  box.innerHTML=MANUAIS.map(m=>{
+    const its=m.itens.filter(it=>!q||(m.fab+' '+it.join(' ')).toLowerCase().includes(q));
+    if(q && !its.length && !m.fab.toLowerCase().includes(q)) return '';
+    const ini=m.fab.replace(/[^A-Za-z]/g,'').slice(0,3).toUpperCase();
+    return `<details class="fab"${q?' open':''}><summary><span class="fl">${ini}</span><span style="flex:1"><b>${esc(m.fab)}</b><small>${esc(m.pais||'')} · ${m.itens.length} link(s)</small></span><svg viewBox="0 0 24 24" class="chev"><path d="M6 9l6 6 6-6"/></svg></summary>`+
+      its.map(([mod,d,u])=>`<a class="man" href="${esc(u)}" target="_blank" rel="noopener"><span class="md">${esc(mod)}</span><span class="t">${esc(d)}</span></a>`).join('')+
+      (m.central?`<a class="man" href="${esc(m.central)}" target="_blank" rel="noopener"><span class="md">site</span><span class="t">Central de downloads do fabricante</span></a>`:'')+`</details>`;
+  }).join('') || '<div class="card small muted">Nada encontrado.</div>';
+}
+document.getElementById('man-q').addEventListener('input',renderManuais);
+document.getElementById('man-n').textContent=MANUAIS.length;
+// ---------- STATE ----------
+const KEY='elet-study-v1';
+let S={ans:{}}; // ans[id] = {ok:bool, n:tries}
+try{ const r=localStorage.getItem(KEY); if(r) S=JSON.parse(r)||S; }catch(e){}
+function save(){ try{ localStorage.setItem(KEY,JSON.stringify(S)); }catch(e){} }
+
+let selTopics=new Set(Object.keys(TOPICS));
+let mode='aleatorio';
+let run={list:[],i:0,ok:0,wrong:[]};
+
+// ---------- NAV ----------
+function go(v){
+  document.querySelectorAll('main>section').forEach(s=>s.classList.add('hidden'));
+  document.getElementById('v-'+v).classList.remove('hidden');
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));
+  if(v==='inicio') renderHome();
+  if(v==='treinar' && document.getElementById('quiz-run').classList.contains('hidden')) renderSetup();
+  if(v==='cartoes') renderCard();
+  if(v==='calc' && window.calcRun) window.calcRun();
+  if(v==='manuais') renderManuais();
+  window.scrollTo(0,0);
+}
+
+// ---------- HOME ----------
+function renderHome(){
+  const ids=Object.keys(S.ans);
+  const ok=ids.filter(i=>S.ans[i].ok).length;
+  document.getElementById('s-feitas').textContent=ids.length+'/'+Q.length;
+  document.getElementById('s-acerto').textContent=ids.length?Math.round(ok/ids.length*100)+'%':'–';
+  document.getElementById('s-erros').textContent=ids.length-ok;
+  document.getElementById('btn-rev-home').disabled=(ids.length-ok)===0;
+  const box=document.getElementById('topic-list'); box.innerHTML='';
+  for(const t in TOPICS){
+    const qs=Q.filter(q=>q.t===t); const done=qs.filter(q=>S.ans[q.id]); const good=done.filter(q=>S.ans[q.id].ok);
+    const pct=qs.length?good.length/qs.length*100:0;
+    const d=document.createElement('div'); d.className='topic-row';
+    d.innerHTML=`<span>${TOPICS[t]}</span><span class="mono small muted">${good.length}/${qs.length}</span><div class="bar"><i style="width:${pct}%"></i></div>`;
+    box.appendChild(d);
+  }
+}
+function resetAll(){
+  const b=event.target;
+  if(b.dataset.c!=='1'){ b.dataset.c='1'; b.textContent='Toque de novo para confirmar'; setTimeout(()=>{b.dataset.c='';b.textContent='Zerar progresso'},3000); return; }
+  S={ans:{}}; save(); renderHome(); b.dataset.c=''; b.textContent='Zerar progresso';
+}
+
+// ---------- SETUP ----------
+function poolFor(m){
+  let p=Q.filter(q=>selTopics.has(q.t));
+  if(m==='erros') p=Q.filter(q=>S.ans[q.id] && !S.ans[q.id].ok);
+  if(m==='novas') p=p.filter(q=>!S.ans[q.id]);
+  return p;
+}
+function renderSetup(){
+  const tc=document.getElementById('topic-chips'); tc.innerHTML='';
+  const all=document.createElement('button'); all.className='chip'+(selTopics.size===Object.keys(TOPICS).length?' on':''); all.textContent='Todos';
+  all.onclick=()=>{ selTopics = selTopics.size===Object.keys(TOPICS).length? new Set(): new Set(Object.keys(TOPICS)); renderSetup(); };
+  tc.appendChild(all);
+  for(const t in TOPICS){
+    const b=document.createElement('button'); b.className='chip'+(selTopics.has(t)?' on':''); b.textContent=TOPICS[t];
+    b.onclick=()=>{ selTopics.has(t)?selTopics.delete(t):selTopics.add(t); renderSetup(); };
+    tc.appendChild(b);
+  }
+  const mc=document.getElementById('mode-chips'); mc.innerHTML='';
+  [['aleatorio','Aleatório'],['ordem','Em ordem'],['novas','Só não feitas'],['erros','Só os que errei']].forEach(([k,l])=>{
+    const b=document.createElement('button'); b.className='chip'+(mode===k?' on':''); b.textContent=l;
+    b.onclick=()=>{mode=k; renderSetup();}; mc.appendChild(b);
+  });
+  document.getElementById('pool-n').textContent=poolFor(mode).length;
+}
+
+// ---------- QUIZ ----------
+function shuffle(a){ for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
+function startQuiz(m){
+  let list;
+  if(m==='rodada') list=run.wrong.slice();
+  else if(m==='erros') list=poolFor('erros');
+  else list=poolFor(mode);
+  if(!list.length){ go('treinar'); return; }
+  if(m!=='rodada' && (m==='erros' || mode!=='ordem')) shuffle(list);
+  run={list,i:0,ok:0,wrong:[]};
+  go('treinar');
+  document.getElementById('quiz-setup').classList.add('hidden');
+  document.getElementById('quiz-end').classList.add('hidden');
+  document.getElementById('quiz-run').classList.remove('hidden');
+  renderQ();
+}
+function endQuiz(){
+  document.getElementById('quiz-run').classList.add('hidden');
+  document.getElementById('quiz-end').classList.add('hidden');
+  document.getElementById('quiz-setup').classList.remove('hidden');
+  renderSetup();
+}
+function fmt(n){ return String(+n.toFixed(3)).replace('.',','); }
+function renderQ(){
+  const q=run.list[run.i];
+  document.getElementById('qprog').style.width=(run.i/run.list.length*100)+'%';
+  document.getElementById('btn-next').classList.add('hidden');
+  const c=document.getElementById('qcard');
+  let h=`<div class="qmeta"><span class="tag">${TOPICS[q.t]}</span><span>${run.i+1} de ${run.list.length}</span></div><div class="qtext">${q.q}</div>`;
+  if(q.o){
+    const order=q.o.map((_,i)=>i); if(q.o!==VF && q.o.length>2) shuffle(order);
+    order.forEach(i=>{ h+=`<button class="opt" data-i="${i}" onclick="answerMC(${i})">${q.o[i]}</button>`; });
+  } else {
+    h+=`<div class="numwrap"><input id="num" inputmode="decimal" placeholder="Sua resposta" onkeydown="if(event.key==='Enter')answerNum()"><span class="unit">${q.u||''}</span></div>
+        <button class="btn block" style="margin-top:10px" id="btn-check" onclick="answerNum()">Conferir</button>`;
+  }
+  h+=`<div id="fb"></div>`;
+  c.innerHTML=h;
+}
+function record(q,ok){
+  const a=S.ans[q.id]||{n:0}; a.n++; a.ok=ok; S.ans[q.id]=a; save();
+  if(ok) run.ok++; else run.wrong.push(q);
+}
+function showFb(ok,q,extra){
+  document.getElementById('fb').innerHTML=`<div class="fb ${ok?'ok':'bad'}"><b>${ok?'Isso!':'Ainda não.'}</b>${extra?extra+'<br>':''}${q.x}</div>`;
+  const nb=document.getElementById('btn-next'); nb.classList.remove('hidden');
+  nb.textContent = run.i===run.list.length-1 ? 'Ver resultado' : 'Próxima →';
+}
+function answerMC(i){
+  const q=run.list[run.i]; const ok=i===q.a;
+  document.querySelectorAll('.opt').forEach(b=>{ b.disabled=true; const k=+b.dataset.i; if(k===q.a) b.classList.add('ok'); else if(k===i) b.classList.add('bad'); });
+  record(q,ok); showFb(ok,q);
+}
+function parseNum(s){ s=String(s).trim().replace(/−/g,'-').replace(/\s/g,'').replace(',','.').replace(/[^0-9.\-+]/g,''); return s===''||s==='-'?NaN:parseFloat(s); }
+function answerNum(){
+  const q=run.list[run.i]; const inp=document.getElementById('num'); const v=parseNum(inp.value);
+  if(isNaN(v)){ inp.focus(); inp.style.borderColor='var(--orange)'; return; }
+  const tol=Math.max(0.011,Math.abs(q.n)*0.005);
+  const ok=Math.abs(v-q.n)<=tol;
+  inp.disabled=true; inp.style.borderColor=ok?'var(--green)':'var(--red)';
+  document.getElementById('btn-check').classList.add('hidden');
+  record(q,ok);
+  showFb(ok,q, ok?'':`Resposta: <span class="mono">${fmt(q.n)} ${q.u||''}</span>`);
+}
+function nextQ(){
+  run.i++;
+  if(run.i>=run.list.length){
+    document.getElementById('quiz-run').classList.add('hidden');
+    document.getElementById('quiz-end').classList.remove('hidden');
+    const p=Math.round(run.ok/run.list.length*100);
+    document.getElementById('end-score').textContent=run.ok+'/'+run.list.length;
+    document.getElementById('end-msg').textContent = p>=90?'Forte domínio deste bloco.':p>=75?'Boa fixação. Revise os erros.':p>=60?'Base em construção.':'Muito conteúdo para revisar — volte às fórmulas e refaça.';
+    document.getElementById('btn-redo-err').classList.toggle('hidden',run.wrong.length===0);
+    return;
+  }
+  renderQ(); window.scrollTo(0,0);
+}
+
+// ---------- CARDS ----------
+let deck='NR-10 e segurança', cards=DECKS[deck].slice(), ci=0;
+function renderDeckChips(){
+  const dc=document.getElementById('deck-chips'); dc.innerHTML='';
+  Object.keys(DECKS).forEach(d=>{ const b=document.createElement('button'); b.className='chip'+(d===deck?' on':''); b.textContent=d;
+    b.onclick=()=>{deck=d;cards=DECKS[d].slice();ci=0;renderCard();}; dc.appendChild(b); });
+}
+function renderCard(){
+  renderDeckChips();
+  const [t,d,k]=cards[ci];
+  document.getElementById('flash').classList.remove('flip');
+  document.getElementById('fc-term').textContent=t;
+  document.getElementById('fc-def').textContent=d;
+  document.getElementById('fc-key').textContent='💡 '+k;
+  document.getElementById('fc-pos').textContent=(ci+1)+' de '+cards.length;
+  document.getElementById('fc-deck').textContent=deck;
+}
+function flip(){ document.getElementById('flash').classList.toggle('flip'); }
+function moveCard(d){ ci=(ci+d+cards.length)%cards.length; renderCard(); }
+function shuffleDeck(){ shuffle(cards); ci=0; renderCard(); }
+
+renderHome();
+if('serviceWorker' in navigator && location.protocol==='https:' && !location.hostname.endsWith('claude.ai')){
+  navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(r=>r.update()).catch(()=>{});
+  let reloaded=false; navigator.serviceWorker.addEventListener('controllerchange',()=>{ if(!reloaded){ reloaded=true; location.reload(); } });
+}
+</script>
+<script>
+// ================= CALCULADORAS DE ELÉTRICA INDUSTRIAL =================
+(function(){
+const $=id=>document.getElementById(id);
+const N=id=>parseNum($(id).value);
+const V=id=>$(id).value;
+const R3=Math.sqrt(3);
+function F(x,d){ if(!isFinite(x)) return '–'; const a=Math.abs(x); if(d===undefined) d=a>=10000?0:a>=1000?1:a>=100?1:a>=10?2:a>=1?2:a>=0.01?3:5;
+  return x.toLocaleString('pt-BR',{maximumFractionDigits:d,minimumFractionDigits:0}); }
+function stat(v,l){ return `<div class="stat"><b>${v}</b><span>${l}</span></div>`; }
+function table(head,rows,hl){ return `<table class="tb"><thead><tr>${head.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${rows.map((r,i)=>`<tr${i===hl?' class="hl"':''}>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table>`; }
+function warn(id,list){ const w=$(id); w.innerHTML=list.join('<br>'); w.classList.toggle('hidden',!list.length); }
+
+// ---------- navegação dos painéis ----------
+const CATS=[
+ ['M','M','Motores',[['mot','Corrente do motor','cv · hp · kW → A · corrente de partida'],['rot','Rotação, escorregamento e V/f','Polos, Hz, rpm e tensão no inversor'],['yd','Partida estrela-triângulo','Contatores K1, K2, K3 e relé térmico']]],
+ ['C','C','Cabos',[['cabo','Dimensionar cabo e disjuntor','NBR 5410 · Iz, FCT, FCA · Ib ≤ In ≤ Iz'],['qt','Queda de tensão','ΔV em V e %, seção mínima']]],
+ ['kW','kW','Potência',[['pot','Triângulo de potências','P, Q, S, FP e corrente'],['fp','Correção do fator de potência','kvar e µF por fase']]],
+ ['TR','TR','Transformador',[['trafo','Corrente nominal e curto-circuito','In primário e secundário, Icc e Scc']]],
+ ['Ω','O','Básico',[['ohm','Lei de Ohm e potência','V, I, R e P']]]
+];
+let CUR='mot';
+function findCalc(k){ for(const [b,c,g,its] of CATS) for(const it of its) if(it[0]===k) return {b,c,g,it}; return null; }
+function renderList(){ $('calc-list').innerHTML=CATS.map(([b,c,g,its])=>`<div class="grp"><span class="badge b-${c}">${b}</span><span>${g}</span></div>`+its.map(([k,t,s])=>`<button type="button" class="item${k===CUR?' on':''}" data-k="${k}"><b>${t}</b><small>${s}</small></button>`).join('')).join(''); }
+function openSheet(){ renderList(); $('calc-sheet').classList.remove('hidden'); document.body.style.overflow='hidden'; }
+function closeSheet(){ $('calc-sheet').classList.add('hidden'); document.body.style.overflow=''; }
+function showPanel(k){ const f=findCalc(k); if(!f) return; CUR=k;
+  $('calc-badge').textContent=f.b; $('calc-badge').className='badge b-'+f.c; $('calc-grp').textContent=f.g; $('calc-name').textContent=f.it[1];
+  document.querySelectorAll('.cpanel').forEach(p=>p.classList.toggle('hidden',p.id!=='p-'+k)); RUN[k]&&RUN[k](); enhanceAll(); try{localStorage.setItem('elet-calc',k);}catch(e){} }
+$('calc-btn').addEventListener('click',openSheet);
+$('calc-sheet').addEventListener('click',e=>{ const it=e.target.closest('.item'); if(it){ showPanel(it.dataset.k); closeSheet(); window.scrollTo(0,0); return; } if(e.target.closest('[data-close]')) closeSheet(); });
+function setHH(){ const hd=document.querySelector('header'); if(hd) document.documentElement.style.setProperty('--hh',hd.offsetHeight+'px'); }
+setHH(); window.addEventListener('resize',setHH);
+function flash(id){ const e=$(id); if(!e) return; e.classList.remove('flash'); void e.offsetWidth; e.classList.add('flash'); clearTimeout(e._t); e._t=setTimeout(()=>e.classList.remove('flash'),450); }
+
+// ---------- SVG ----------
+const IC={navy:'#0f2a44',cyan:'#0aa5c2',line:'#9aa8b6',or:'#e08a1e',mut:'#5c6b7a',green:'#1f9d61',red:'#d2453a',cu:'#c8792f',soft:'#e3f6fa',bg:'#f3f5f8'};
+const svgT=(x,y,t,o={})=>`<text x="${x}" y="${y}" font-size="${o.s||10}" fill="${o.c||IC.mut}" font-weight="${o.w||500}" text-anchor="${o.a||'start'}" font-family="IBM Plex Sans,sans-serif">${t}</text>`;
+const DEFS=`<defs><marker id="ar" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="${IC.mut}"/></marker>
+<marker id="af" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="${IC.cyan}"/></marker>
+<marker id="ao" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="${IC.or}"/></marker></defs>`;
+let SVGN=0;
+const wrapSvg=(inner,h=210)=>{ const k='m'+(++SVGN); const fix=s=>s.replace(/url\(#(ar|af|ao)\)/g,(m,a)=>`url(#${a}${k})`).replace(/id="(ar|af|ao)"/g,(m,a)=>`id="${a}${k}"`);
+  return `<svg viewBox="0 0 340 ${h}" xmlns="http://www.w3.org/2000/svg" role="img">${fix(DEFS)}${fix(inner)}</svg>`; };
+const dimH=(x1,x2,y,lab)=>`<line x1="${x1}" y1="${y}" x2="${x2}" y2="${y}" stroke="${IC.mut}" marker-start="url(#ar)" marker-end="url(#ar)"/>`+svgT((x1+x2)/2,y-5,lab,{a:'middle',w:700,c:IC.navy});
+const tag=(x,y,t,c)=>`<rect x="${x-13}" y="${y-9}" width="26" height="16" rx="4" fill="${c||IC.navy}"/>`+svgT(x,y+3,t,{a:'middle',s:9,w:700,c:'#fff'});
+function setIll(id,svg){ const e=$(id); if(e) e.innerHTML=svg; }
+
+function svgMotor(Pt,I,Vt){
+  let s=`<rect x="92" y="64" width="128" height="86" rx="10" fill="#fff" stroke="${IC.navy}" stroke-width="2"/>`;
+  for(let i=0;i<7;i++) s+=`<line x1="${104+i*17}" y1="68" x2="${104+i*17}" y2="146" stroke="#dde3ea" stroke-width="5"/>`;
+  s+=`<rect x="70" y="72" width="24" height="70" rx="6" fill="#f3f5f8" stroke="${IC.navy}" stroke-width="1.6"/><rect x="220" y="80" width="14" height="54" rx="3" fill="#f3f5f8" stroke="${IC.navy}" stroke-width="1.6"/>`;
+  s+=`<rect x="234" y="102" width="56" height="10" fill="#c9d2db" stroke="${IC.navy}" stroke-width="1.2"/>`;
+  s+=`<path d="M300 92 A16 16 0 0 1 300 122" fill="none" stroke="${IC.or}" stroke-width="2" marker-end="url(#ao)"/>`+tag(318,108,'P',IC.or);
+  s+=`<rect x="130" y="40" width="44" height="24" rx="3" fill="#fff" stroke="${IC.navy}" stroke-width="1.6"/>`+svgT(152,56,'caixa',{a:'middle',s:8});
+  s+=`<path d="M164 40 V12 H40 M152 40 V20 H40 M140 40 V28 H40" fill="none" stroke="${IC.cu}" stroke-width="2"/>`;
+  s+=svgT(36,15,'L1',{s:8,w:700,c:IC.navy,a:'end'})+svgT(36,23,'L2',{s:8,w:700,c:IC.navy,a:'end'})+svgT(36,31,'L3',{s:8,w:700,c:IC.navy,a:'end'});
+  s+=`<path d="M56 44 H100" stroke="${IC.cyan}" stroke-width="2" marker-end="url(#af)"/>`+tag(78,58,'I',IC.cyan)+tag(26,58,'V');
+  s+=tag(120,170,'η')+tag(160,170,'FP');
+  s+=svgT(170,196,`${Pt} · ${Vt} · ${I}`,{a:'middle',s:10,w:600,c:IC.navy});
+  return wrapSvg(s,206);
+}
+function svgVf(fn,Vn,f){
+  const fmax=Math.max(1.5*fn,f*1.1||0), X=v=>46+v/fmax*270, Y=v=>170-v/(Vn*1.15)*140, Vf=v=>v<=fn?Vn*v/fn:Vn;
+  let s=`<rect x="${X(0)}" y="26" width="${X(fn)-X(0)}" height="144" fill="${IC.soft}"/><rect x="${X(fn)}" y="26" width="${X(fmax)-X(fn)}" height="144" fill="#fdf1e1"/>`;
+  s+=svgT((X(0)+X(fn))/2,40,'conjugado constante',{a:'middle',s:9,c:'#076f84',w:600})+svgT((X(fn)+X(fmax))/2,40,'potência constante',{a:'middle',s:9,c:'#a0610f',w:600});
+  s+=`<line x1="${X(0)}" y1="170" x2="${X(fmax)}" y2="170" stroke="${IC.navy}"/><line x1="${X(0)}" y1="170" x2="${X(0)}" y2="22" stroke="${IC.navy}"/>`;
+  s+=`<path d="M${X(0)} ${Y(0)} L${X(fn)} ${Y(Vn)} L${X(fmax)} ${Y(Vn)}" fill="none" stroke="${IC.cyan}" stroke-width="2.6"/>`;
+  s+=`<line x1="${X(fn)}" y1="170" x2="${X(fn)}" y2="${Y(Vn)}" stroke="${IC.line}" stroke-dasharray="3 3"/>`+svgT(X(fn),183,'fn',{a:'middle',s:9,w:700,c:IC.navy})+svgT(X(0)-4,Y(Vn)+3,'Vn',{a:'end',s:9,w:700,c:IC.navy});
+  if(isFinite(f)&&f>=0){ const v=Vf(f); s+=`<line x1="${X(f)}" y1="170" x2="${X(f)}" y2="${Y(v)}" stroke="${IC.navy}" stroke-dasharray="3 3"/><line x1="${X(0)}" y1="${Y(v)}" x2="${X(f)}" y2="${Y(v)}" stroke="${IC.navy}" stroke-dasharray="3 3"/><circle cx="${X(f)}" cy="${Y(v)}" r="5" fill="${IC.navy}"/>`+tag(X(f),Y(v)-16,'f',IC.or); }
+  s+=svgT(X(fmax),198,'frequência (Hz)',{a:'end',s:9,w:600})+svgT(X(0)+4,18,'tensão (V)',{s:9,w:600});
+  return wrapSvg(s,204);
+}
+function svgYD(){
+  let s='';
+  const cx=[150,190,230], lab=['U','V','W'];
+  s+=`<path d="M20 20 H320 M20 30 H320 M20 40 H320" stroke="${IC.cu}" stroke-width="1.6"/>`+svgT(8,23,'L1',{s:8,w:700,c:IC.navy})+svgT(8,33,'L2',{s:8,w:700,c:IC.navy})+svgT(8,43,'L3',{s:8,w:700,c:IC.navy});
+  // K1
+  s+=`<rect x="130" y="52" width="120" height="22" rx="4" fill="#fff" stroke="${IC.navy}" stroke-width="1.6"/>`+svgT(118,67,'K1',{a:'end',w:700,c:IC.navy,s:11})+svgT(258,67,'rede',{s:9});
+  cx.forEach((x,i)=>{ s+=`<line x1="${x}" y1="${20+i*10}" x2="${x}" y2="52" stroke="${IC.cu}" stroke-width="1.6"/><circle cx="${x}" cy="${20+i*10}" r="2.2" fill="${IC.cu}"/>`;
+    s+=`<line x1="${x}" y1="74" x2="${x}" y2="90" stroke="${IC.cu}" stroke-width="1.6"/><rect x="${x-8}" y="90" width="16" height="44" rx="3" fill="${IC.soft}" stroke="${IC.navy}" stroke-width="1.4"/>`;
+    s+=svgT(x,86,lab[i]+'1',{a:'middle',s:8,w:600,c:IC.navy})+svgT(x+11,146,lab[i]+'2',{s:8,w:600,c:IC.navy})+`<line x1="${x}" y1="134" x2="${x}" y2="160" stroke="${IC.cu}" stroke-width="1.6"/>`; });
+  // K3 estrela
+  s+=`<rect x="130" y="160" width="120" height="20" rx="4" fill="#fff" stroke="${IC.or}" stroke-width="1.6"/><line x1="150" y1="186" x2="230" y2="186" stroke="${IC.or}" stroke-width="2"/>`;
+  cx.forEach(x=>{ s+=`<line x1="${x}" y1="180" x2="${x}" y2="186" stroke="${IC.or}" stroke-width="1.6"/>`; });
+  s+=svgT(118,174,'K3',{a:'end',w:700,c:IC.or,s:11})+svgT(258,180,'fecha a estrela',{s:9,c:IC.or});
+  // K2 triângulo
+  s+=`<rect x="40" y="100" width="56" height="20" rx="4" fill="#fff" stroke="${IC.cyan}" stroke-width="1.6"/>`+svgT(68,95,'K2',{a:'middle',w:700,c:IC.cyan,s:11})+svgT(68,134,'liga o Δ',{a:'middle',s:9,c:'#076f84'});
+  s+=`<path d="M150 150 H62 V120 M190 154 H72 V120 M230 158 H82 V120" fill="none" stroke="${IC.cyan}" stroke-width="1.3"/>`;
+  s+=`<path d="M62 100 V40 M72 100 V30 M82 100 V20" fill="none" stroke="${IC.cyan}" stroke-width="1.3" stroke-dasharray="3 2"/>`;
+  s+=svgT(170,204,'Y: K1 + K3  →  Δ: K1 + K2',{a:'middle',s:10,w:700,c:IC.navy});
+  return wrapSvg(s,212);
+}
+function svgPot(P,Q,S,phi,col){
+  const M=Math.max(P,Math.abs(Q),1e-9), k=Math.min(240/M, 140/Math.max(Math.abs(Q),M*0.3)), x0=50, y0=170, xp=x0+P*k, yq=y0-Q*k;
+  let s=`<path d="M${x0} ${y0} L${xp} ${y0} L${xp} ${yq} Z" fill="${IC.soft}" stroke="none"/>`;
+  s+=`<line x1="${x0}" y1="${y0}" x2="${xp}" y2="${y0}" stroke="${IC.navy}" stroke-width="3"/><line x1="${xp}" y1="${y0}" x2="${xp}" y2="${yq}" stroke="${IC.or}" stroke-width="3"/><line x1="${x0}" y1="${y0}" x2="${xp}" y2="${yq}" stroke="${IC.cyan}" stroke-width="3"/>`;
+  s+=`<path d="M${x0+34} ${y0} A34 34 0 0 0 ${x0+34*Math.cos(phi)} ${y0-34*Math.sin(phi)}" fill="none" stroke="${IC.mut}" stroke-width="1.2"/>`+svgT(x0+40,y0-8,'φ',{s:11,w:700,c:IC.navy});
+  s+=tag((x0+xp)/2,y0+16,'P')+tag(xp+18,(y0+yq)/2,'Q',IC.or)+tag((x0+xp)/2-18,(y0+yq)/2-10,'S',IC.cyan);
+  s+=svgT(330,y0+18,'kW',{a:'end',s:9})+svgT(330,24,col||'',{a:'end',s:10,w:600,c:IC.navy});
+  return wrapSvg(s,200);
+}
+function svgFP(P,Q1,Q2){
+  const k=Math.min(240/P, 140/Math.max(Q1,1e-9)), x0=50, y0=170, xp=x0+P*k, y1=y0-Q1*k, y2=y0-Q2*k;
+  let s=`<line x1="${x0}" y1="${y0}" x2="${xp}" y2="${y0}" stroke="${IC.navy}" stroke-width="3"/>`;
+  s+=`<line x1="${x0}" y1="${y0}" x2="${xp}" y2="${y1}" stroke="${IC.red}" stroke-width="2.2" stroke-dasharray="6 4"/><line x1="${x0}" y1="${y0}" x2="${xp}" y2="${y2}" stroke="${IC.green}" stroke-width="3"/>`;
+  s+=`<line x1="${xp}" y1="${y0}" x2="${xp}" y2="${y2}" stroke="${IC.line}" stroke-width="3"/><line x1="${xp}" y1="${y2}" x2="${xp}" y2="${y1}" stroke="${IC.or}" stroke-width="5"/>`;
+  s+=tag((x0+xp)/2,y0+16,'P')+tag(xp+22,(y1+y2)/2,'Qc',IC.or)+svgT((x0+xp)/2-8,(y0+y1)/2-10,'antes (S₁)',{a:'end',s:9,c:IC.red,w:600})+svgT((x0+xp)/2+14,(y0+y2)/2+14,'depois (S₂)',{s:9,c:IC.green,w:600});
+  s+=svgT(xp+8,y0-4,'Q₂',{s:9,w:600})+svgT(xp+8,y1+4,'Q₁',{s:9,w:600});
+  return wrapSvg(s,200);
+}
+function svgQt(pct,lim,S){
+  let s=`<rect x="14" y="40" width="54" height="64" rx="6" fill="#fff" stroke="${IC.navy}" stroke-width="1.8"/>`+svgT(41,70,'fonte',{a:'middle',s:9})+tag(41,88,'V');
+  s+=`<rect x="272" y="40" width="54" height="64" rx="6" fill="#fff" stroke="${IC.navy}" stroke-width="1.8"/>`+svgT(299,70,'carga',{a:'middle',s:9})+svgT(299,88,'V − ΔV',{a:'middle',s:9,w:700,c:IC.navy});
+  s+=`<path d="M68 56 H272 M68 88 H272" stroke="${IC.cu}" stroke-width="3"/><path d="M110 46 H150" stroke="${IC.cyan}" stroke-width="2" marker-end="url(#af)"/>`+tag(170,46,'I',IC.cyan);
+  s+=dimH(68,272,126,'')+tag(170,126,'L')+tag(150,72,'S',IC.cu)+svgT(168,75,S+' mm²',{s:9,w:600,c:IC.cu});
+  const X=v=>30+Math.min(v,Math.max(lim*2,8))/Math.max(lim*2,8)*280, ok=pct<=lim;
+  s+=`<rect x="30" y="152" width="280" height="12" rx="6" fill="#e6ebf0"/><rect x="30" y="152" width="${Math.max(0,X(pct)-30)}" height="12" rx="6" fill="${ok?IC.green:IC.red}"/>`;
+  s+=`<line x1="${X(lim)}" y1="146" x2="${X(lim)}" y2="170" stroke="${IC.navy}" stroke-width="2"/>`+svgT(X(lim),182,'limite '+F(lim)+'%',{a:'middle',s:9,w:700,c:IC.navy})+svgT(30,146,'ΔV = '+F(pct,2)+'%',{s:10,w:700,c:ok?IC.green:IC.red});
+  return wrapSvg(s,190);
+}
+function svgCabo(Ib,In,Iz){
+  const M=Math.max(Ib,In||0,Iz||0)*1.15||1, X=v=>70+v/M*250;
+  const bar=(y,v,l,c)=>`<rect x="70" y="${y}" width="${Math.max(2,X(v)-70)}" height="22" rx="4" fill="${c}"/>`+svgT(62,y+15,l,{a:'end',s:11,w:700,c:IC.navy})+svgT(X(v)+5,y+15,isFinite(v)?F(v)+' A':'–',{s:10,w:600,c:IC.navy});
+  let s=bar(22,Ib,'Ib',IC.line)+bar(58,In,'In',IC.cyan)+bar(94,Iz,"Iz'",IC.green);
+  const ok=isFinite(Iz)&&Ib<=In&&In<=Iz;
+  s+=svgT(170,140,ok?'Ib ≤ In ≤ Iz′  ✓':'Coordenação não atendida',{a:'middle',s:12,w:700,c:ok?IC.green:IC.red});
+  s+=svgT(170,158,'projeto ≤ disjuntor ≤ capacidade corrigida do cabo',{a:'middle',s:9});
+  return wrapSvg(s,166);
+}
+function svgTrafo(){
+  let s=`<circle cx="140" cy="80" r="34" fill="none" stroke="${IC.navy}" stroke-width="2.4"/><circle cx="182" cy="80" r="34" fill="none" stroke="${IC.navy}" stroke-width="2.4"/>`;
+  s+=`<path d="M20 80 H106" stroke="${IC.cu}" stroke-width="2.4"/><path d="M216 80 H300" stroke="${IC.cu}" stroke-width="2.4"/>`+tag(50,64,'V₁')+tag(250,64,'V₂')+tag(161,30,'S')+tag(161,130,'Z%',IC.or);
+  s+=`<path d="M300 80 l10 -14 l-8 0 l10 -14" fill="none" stroke="${IC.red}" stroke-width="2.2"/><path d="M262 116 H296" stroke="${IC.red}" stroke-width="2" marker-end="url(#ao)"/>`+svgT(280,134,'Icc',{a:'middle',s:11,w:700,c:IC.red});
+  s+=svgT(70,104,'primário',{a:'middle',s:9})+svgT(250,104,'secundário',{a:'middle',s:9});
+  return wrapSvg(s,150);
+}
+function svgOhm(){
+  let s=`<rect x="60" y="30" width="220" height="110" rx="4" fill="none" stroke="${IC.cu}" stroke-width="2.4"/>`;
+  s+=`<rect x="44" y="64" width="32" height="42" fill="#fff" stroke="none"/><line x1="46" y1="70" x2="74" y2="70" stroke="${IC.navy}" stroke-width="3"/><line x1="52" y1="80" x2="68" y2="80" stroke="${IC.navy}" stroke-width="3"/><line x1="46" y1="90" x2="74" y2="90" stroke="${IC.navy}" stroke-width="3"/><line x1="52" y1="100" x2="68" y2="100" stroke="${IC.navy}" stroke-width="3"/>`+tag(24,86,'V');
+  s+=`<rect x="250" y="58" width="60" height="54" fill="#fff" stroke="none"/><path d="M280 58 l10 5 l-20 8 l20 8 l-20 8 l20 8 l-20 8 l10 5" fill="none" stroke="${IC.navy}" stroke-width="2.4"/>`+tag(318,86,'R');
+  s+=`<path d="M140 30 H200" stroke="${IC.cyan}" stroke-width="2.4" marker-end="url(#af)"/>`+tag(170,16,'I',IC.cyan)+tag(170,140,'P',IC.or);
+  return wrapSvg(s,160);
+}
+
+// ---------- Corrente do motor ----------
+function runMot(){
+  const P=N('mt-p'), u=parseFloat(V('mt-pu')), k=V('mt-sis')==='3'?R3:1, Vv=N('mt-v'), ef=N('mt-ef')/100, fp=N('mt-fp'), ipin=N('mt-ipin');
+  const Pw=P*u, Pel=Pw/ef, I=Pel/(k*Vv*fp), S=Pel/fp/1000, Ip=I*ipin;
+  const un=$('mt-pu').selectedOptions[0].textContent;
+  $('mt-res').innerHTML=stat(F(I,2)+' A','corrente nominal')+stat(F(Ip,1)+' A','partida direta')+stat(F(Pel/1000,2)+' kW','absorvida da rede');
+  setIll('mt-ill',svgMotor(F(P)+' '+un,F(I,2)+' A',F(Vv,0)+' V'));
+  const kt=k===R3?'√3 × ':'';
+  $('mt-steps').textContent=`P eixo = ${F(P)} ${un} × ${F(u,1)} W = ${F(Pw/1000,3)} kW
+P absorvida = P eixo / η = ${F(Pw/1000,3)} / ${F(ef,3)} = ${F(Pel/1000,3)} kW
+I = P / (${kt}V × FP) = ${F(Pel,0)} / (${kt}${F(Vv,0)} × ${F(fp,3)}) = ${F(I,2)} A
+S = P / FP = ${F(S,2)} kVA
+Ip = ${F(ipin,2)} × ${F(I,2)} = ${F(Ip,1)} A (partida direta)
+Ip em estrela-triângulo ≈ Ip / 3 = ${F(Ip/3,1)} A`;
+  const w=[]; if(!(ef>0&&ef<=1)) w.push('Rendimento deve estar entre 0 e 100%.'); if(!(fp>0&&fp<=1)) w.push('Fator de potência deve estar entre 0 e 1.');
+  w.push('Ajuste do relé térmico: corrente nominal da placa (ou In × FS, conforme o procedimento). Cabo do motor: Iz ≥ In × FS.');
+  warn('mt-warn',w);
+}
+// ---------- Rotação / V/f ----------
+function runRot(){
+  const p=N('rt-pol'), n=N('rt-n'), fn=N('rt-fn'), Vn=N('rt-vn'), f=N('rt-f'), nd=N('rt-nd');
+  const Ns=120*fn/p, sr=Ns-n, s=sr/Ns, Nsf=120*f/p, nf=Math.max(0,Nsf-sr), Vf=f<=fn?Vn*f/fn:Vn, Tf=f<=fn?100:100*fn/f, fd=(nd+sr)*p/120;
+  $('rt-res').innerHTML=stat(F(nf,0)+' rpm','≈ em '+F(f)+' Hz')+stat(F(Vf,0)+' V','tensão em '+F(f)+' Hz')+stat(F(fd,2)+' Hz','p/ '+F(nd,0)+' rpm');
+  $('rt-res2').innerHTML=stat(F(Ns,0)+' rpm','síncrona em fn')+stat(F(s*100,2)+'%','escorregamento')+stat(F(Tf,0)+'%','conjugado disp.');
+  setIll('rt-ill',svgVf(fn,Vn,f));
+  $('rt-steps').textContent=`Ns = 120 × f / p = 120 × ${F(fn)} / ${F(p,0)} = ${F(Ns,1)} rpm
+s = (Ns − n) / Ns = (${F(Ns,1)} − ${F(n,0)}) / ${F(Ns,1)} = ${F(s*100,2)}%  (${F(sr,1)} rpm)
+Em ${F(f)} Hz: Ns = ${F(Nsf,1)} rpm → n ≈ ${F(Nsf,1)} − ${F(sr,1)} = ${F(nf,0)} rpm (carga nominal)
+V/f = ${F(Vn,0)} / ${F(fn)} = ${F(Vn/fn,3)} V/Hz → V = ${F(Vf,1)} V
+Para ${F(nd,0)} rpm: f = (n + escorreg.) × p / 120 = (${F(nd,0)} + ${F(sr,1)}) × ${F(p,0)} / 120 = ${F(fd,2)} Hz`;
+  const fr=[0.25,0.5,0.75,1,1.1,1.25,1.5].map(x=>x*fn);
+  $('rt-tab').innerHTML=table(['f (Hz)','Ns (rpm)','n ≈ (rpm)','V (V)','T disp.'],fr.map(x=>[F(x,1),F(120*x/p,0),F(Math.max(0,120*x/p-sr),0),F(x<=fn?Vn*x/fn:Vn,0),F(x<=fn?100:100*fn/x,0)+'%']));
+  const w=[]; if(n>=Ns) w.push('A rotação nominal deve ser menor que a síncrona (confira polos e frequência).');
+  if(f>fn) w.push(`Acima de ${F(fn)} Hz o motor entra em enfraquecimento de campo: o conjugado disponível cai para ≈ ${F(Tf,0)}% e a velocidade máxima mecânica do motor e da carga deve ser respeitada.`);
+  if(f<fn*0.4) w.push('Em baixa rotação a ventilação própria do motor diminui: em conjugado constante, verifique a necessidade de ventilação forçada.');
+  warn('rt-warn',w);
+}
+// ---------- Estrela-triângulo ----------
+function runYD(){
+  const In=N('yd-in'), r=N('yd-ipin'), Vv=N('yd-v'), tp=N('yd-tp');
+  const k12=In/R3, k3=In/3, Ip=In*r;
+  $('yd-res').innerHTML=stat(F(k12,1)+' A','K1 e K2 (0,58·In)')+stat(F(k3,1)+' A','K3 (0,33·In)')+stat(F(Ip/3,1)+' A','partida em Y');
+  setIll('yd-ill',svgYD());
+  $('yd-tab').innerHTML=table(['Item','Corrente','Observação'],[
+    ['K1 (rede)',F(k12,1)+' A','AC-3, corrente de fase'],['K2 (triângulo)',F(k12,1)+' A','AC-3, corrente de fase'],['K3 (estrela)',F(k3,1)+' A','AC-3'],
+    ['Relé térmico',F(k12,1)+' A','na linha de K1'],['Ip direta',F(Ip,1)+' A',F(r,1)+' × In'],['Ip em Y',F(Ip/3,1)+' A','≈ 1/3 da direta']]);
+  $('yd-steps').textContent=`K1 = K2 = In / √3 = ${F(In,2)} / 1,732 = ${F(k12,2)} A
+K3 = In / 3 = ${F(k3,2)} A
+Relé = In / √3 = ${F(k12,2)} A (instalado depois de K1, dentro do triângulo)
+Ip direta = ${F(r,2)} × ${F(In,2)} = ${F(Ip,1)} A → em estrela ≈ ${F(Ip/3,1)} A
+Conjugado de partida em Y ≈ ${F(tp,0)}% / 3 = ${F(tp/3,0)}% de Tn`;
+  const placa=Vv<=240?'220/380 V':Vv<=400?'380/660 V':'440/760 V';
+  const w=[`Em rede de ${F(Vv,0)} V o motor precisa de 6 terminais e placa ${placa} (triângulo = tensão da rede).`];
+  if(tp/3<100) w.push(`Conjugado de partida em estrela (≈ ${F(tp/3,0)}% de Tn): adequado para partida em vazio ou carga leve. Confira a curva de conjugado da carga.`);
+  warn('yd-warn',w);
+}
+// ---------- Cabo (NBR 5410 Tabela 36, Cu/PVC) ----------
+const SEC=[1.5,2.5,4,6,10,16,25,35,50,70,95];
+const IZ={A1_2:[15.5,19.5,26,34,46,61,80,99,119,151,182],A1_3:[13.5,18,24,31,42,56,73,89,108,136,164],
+  A2_2:[15.5,18.5,25,32,43,57,75,92,110,139,167],A2_3:[13,17.5,23,29,39,52,68,83,99,125,150],
+  B1_2:[17.5,24,32,41,57,76,101,125,151,192,232],B1_3:[15.5,21,28,36,50,68,89,110,134,171,207],
+  B2_2:[16.5,23,30,38,52,69,90,111,133,168,201],B2_3:[15,20,27,34,46,62,80,99,118,149,179]};
+const DJ=[2,4,6,10,13,16,20,25,32,40,50,63,70,80,100,125,160,200,250];
+function runCabo(){
+  const Ib=N('cb-ib'), smin=parseFloat(V('cb-tipo')), key=V('cb-met')+'_'+V('cb-nc'), fct=parseFloat(V('cb-temp')), fca=parseFloat(V('cb-ag')), f=fct*fca;
+  const iz=IZ[key].map(v=>v*f), In=DJ.find(d=>d>=Ib);
+  let i=SEC.findIndex((s,j)=>s>=smin&&iz[j]>=In); const iIb=SEC.findIndex((s,j)=>s>=smin&&iz[j]>=Ib);
+  const ok=i>=0;
+  $('cb-res').innerHTML=stat(ok?F(SEC[i])+' mm²':'> 95 mm²','seção (cobre)')+stat(In?In+' A':'–','disjuntor In')+stat(ok?F(iz[i],1)+' A':'–',"Iz' corrigida");
+  setIll('cb-ill',svgCabo(Ib,In,ok?iz[i]:NaN));
+  $('cb-tab').innerHTML=table(['Seção','Iz tabela','Iz corrigida','Situação'],SEC.map((s,j)=>[F(s)+' mm²',F(IZ[key][j])+' A',F(iz[j],1)+' A',s<smin?'abaixo do mínimo':iz[j]>=In?'atende':iz[j]>=Ib?'só Ib':'—']),ok?i:-1);
+  $('cb-steps').textContent=`Fator total = FCT × FCA = ${F(fct,2)} × ${F(fca,2)} = ${F(f,3)}
+I' = Ib / fator = ${F(Ib,2)} / ${F(f,3)} = ${F(Ib/f,2)} A
+Disjuntor: menor In ≥ Ib → ${In||'–'} A
+Cabo: menor seção com Iz × ${F(f,3)} ≥ In e ≥ ${F(smin)} mm²
+${ok?`→ ${F(SEC[i])} mm²: ${F(IZ[key][i])} × ${F(f,3)} = ${F(iz[i],1)} A ≥ ${In} A`:'→ nenhuma seção até 95 mm² atende'}
+Verificação: Ib ${F(Ib,1)} ≤ In ${In||'–'} ≤ Iz' ${ok?F(iz[i],1):'–'}  ${ok?'✓':'✗'}`;
+  const w=[]; if(!ok) w.push('Acima de 95 mm²: use a Tabela 36 completa, cabos em paralelo ou outro método de instalação.');
+  if(ok&&iIb>=0&&iIb<i) w.push(`Pela corrente de projeto bastaria ${F(SEC[iIb])} mm², mas não existe disjuntor padrão entre ${F(Ib,1)} A e ${F(iz[iIb],1)} A. Por isso o cabo sobe para ${F(SEC[i])} mm².`);
+  if(!In) w.push('Corrente acima de 250 A: escolha o disjuntor no catálogo do fabricante.');
+  w.push('Para motor, use Ib = In × FS (fator de serviço). Curva C ou D para não disparar na partida.');
+  warn('cb-warn',w);
+}
+// ---------- Queda de tensão ----------
+const QS=[1.5,2.5,4,6,10,16,25,35,50,70,95,120,150,185,240];
+const MAT={cu:[0.017241,0.00393,'cobre'],al:[0.028264,0.00403,'alumínio']};
+function runQt(){
+  const k=parseFloat(V('qt-sis')), Vv=N('qt-v'), I=N('qt-i'), L=N('qt-l'), S=parseFloat(V('qt-s')), [r20,a,mn]=MAT[V('qt-mat')], th=parseFloat(V('qt-t')), lim=N('qt-lim');
+  const rho=r20*(1+a*(th-20)), dV=k*rho*L*I/S, pct=dV/Vv*100, Smin=k*rho*L*I/(lim/100*Vv), Ss=QS.find(x=>x>=Smin-1e-9);
+  $('qt-res').innerHTML=stat(F(dV,2)+' V','queda ΔV')+stat(F(pct,2)+'%','da tensão')+stat(Ss?F(Ss)+' mm²':'> 240','seção mín. p/ '+F(lim)+'%');
+  setIll('qt-ill',svgQt(pct,lim,F(S)));
+  $('qt-steps').textContent=`ρ(${F(th,0)} °C) = ${F(r20,6)} × [1 + ${F(a,5)} × (${F(th,0)} − 20)] = ${F(rho,5)} Ω·mm²/m (${mn})
+ΔV = k × ρ × L × I / S = ${F(k,3)} × ${F(rho,5)} × ${F(L)} × ${F(I)} / ${F(S)} = ${F(dV,2)} V
+ΔV% = ${F(dV,2)} / ${F(Vv,0)} × 100 = ${F(pct,2)}%
+Tensão na carga ≈ ${F(Vv-dV,1)} V
+Seção mínima para ${F(lim)}% = ${F(Smin,2)} mm² → comercial ${Ss?F(Ss)+' mm²':'acima de 240 mm²'}`;
+  const w=[]; if(pct>lim) w.push(`Queda acima do limite de ${F(lim)}%. Aumente a seção para ${Ss?F(Ss)+' mm²':'uma seção maior'} ou reduza o comprimento.`);
+  warn('qt-warn',w);
+}
+// ---------- Triângulo de potências ----------
+function runPot(){
+  const m=V('pt-mode'), k=V('pt-sis')==='3'?R3:1, Vv=N('pt-v');
+  document.querySelectorAll('.pt-vi').forEach(e=>e.classList.toggle('hidden',m!=='vi'));
+  document.querySelectorAll('.pt-fp').forEach(e=>e.classList.toggle('hidden',m==='pq'));
+  document.querySelectorAll('.pt-p').forEach(e=>e.classList.toggle('hidden',m==='vi'));
+  document.querySelectorAll('.pt-q').forEach(e=>e.classList.toggle('hidden',m!=='pq'));
+  let S,P,Q,fp,I,st;
+  const kt=k===R3?'√3 × ':'';
+  if(m==='vi'){ I=N('pt-i'); fp=N('pt-fp'); S=k*Vv*I/1000; P=S*fp; Q=S*Math.sqrt(Math.max(0,1-fp*fp));
+    st=`S = ${kt}V × I = ${kt}${F(Vv,0)} × ${F(I)} = ${F(S,3)} kVA\nP = S × FP = ${F(S,3)} × ${F(fp,3)} = ${F(P,3)} kW`; }
+  else if(m==='pf'){ P=N('pt-p'); fp=N('pt-fp'); S=P/fp; Q=S*Math.sqrt(Math.max(0,1-fp*fp)); I=S*1000/(k*Vv);
+    st=`S = P / FP = ${F(P)} / ${F(fp,3)} = ${F(S,3)} kVA\nI = S / (${kt}V) = ${F(S*1000,0)} / (${kt}${F(Vv,0)}) = ${F(I,2)} A`; }
+  else { P=N('pt-p'); Q=N('pt-q'); S=Math.hypot(P,Q); fp=P/S; I=S*1000/(k*Vv);
+    st=`S = √(P² + Q²) = √(${F(P)}² + ${F(Q)}²) = ${F(S,3)} kVA\nFP = P / S = ${F(fp,4)}\nI = S / (${kt}V) = ${F(I,2)} A`; }
+  const phi=Math.acos(Math.min(1,Math.max(0,fp)));
+  st+=`\nQ = √(S² − P²) = ${F(Q,3)} kvar\nφ = arccos(${F(fp,3)}) = ${F(phi*180/Math.PI,2)}°  ·  tan φ = ${F(Math.tan(phi),4)}`;
+  $('pt-res').innerHTML=stat(F(S,2)+' kVA','S aparente')+stat(F(P,2)+' kW','P ativa')+stat(F(Q,2)+' kvar','Q reativa');
+  $('pt-res2').innerHTML=stat(F(fp,3),'FP (cos φ)')+stat(F(phi*180/Math.PI,1)+'°','ângulo φ')+stat(F(I,2)+' A','corrente');
+  setIll('pt-ill',svgPot(P,Q,S,phi,'FP = '+F(fp,3)));
+  $('pt-steps').textContent=st;
+}
+// ---------- Correção do FP ----------
+const BANK=[1,2,2.5,5,7.5,10,12.5,15,20,25,30,40,50,60,75,100];
+function runFp(){
+  const P=N('fc-p'), Vv=N('fc-v'), f1=N('fc-fp1'), f2=N('fc-fp2'), fr=N('fc-f'), lig=V('fc-lig');
+  const t1=Math.tan(Math.acos(f1)), t2=Math.tan(Math.acos(f2)), Qc=P*(t1-t2), w=2*Math.PI*fr;
+  const C= lig==='d'? Qc*1000/(3*w*Vv*Vv) : Qc*1000/(w*Vv*Vv), I1=P*1000/(R3*Vv*f1), I2=P*1000/(R3*Vv*f2), Ic=Qc*1000/(R3*Vv);
+  const bk=BANK.find(b=>b>=Qc-1e-9);
+  $('fc-res').innerHTML=stat(F(Qc,2)+' kvar','banco Qc')+stat(F(C*1e6,1)+' µF','por fase ('+(lig==='d'?'Δ':'Y')+')')+stat('−'+F((1-I2/I1)*100,1)+'%','na corrente');
+  setIll('fc-ill',svgFP(P,P*t1,P*t2));
+  $('fc-steps').textContent=`tan φ₁ = tan(arccos ${F(f1,3)}) = ${F(t1,4)}
+tan φ₂ = tan(arccos ${F(f2,3)}) = ${F(t2,4)}
+Qc = P × (tan φ₁ − tan φ₂) = ${F(P)} × ${F(t1-t2,4)} = ${F(Qc,2)} kvar
+${lig==='d'?`C = Qc / (3 × 2πf × V²) = ${F(Qc*1000,0)} / (3 × ${F(w,2)} × ${F(Vv,0)}²)`:`C = Qc / (2πf × V²) = ${F(Qc*1000,0)} / (${F(w,2)} × ${F(Vv,0)}²)`} = ${F(C*1e6,2)} µF por fase
+Corrente do banco = Qc / (√3 × V) = ${F(Ic,2)} A
+Corrente da carga: ${F(I1,2)} A → ${F(I2,2)} A
+S: ${F(P/f1,2)} kVA → ${F(P/f2,2)} kVA
+Banco comercial sugerido: ${bk?F(bk)+' kvar':'combinar módulos'} (confira o FP resultante)`;
+  const ws=[]; if(!(f2>f1)) ws.push('O FP desejado deve ser maior que o atual.'); if(f2>0.99) ws.push('Corrigir muito perto de 1,00 aumenta o risco de ficar capacitivo em carga leve. 0,95 costuma ser uma meta segura.');
+  ws.push('Com inversores e outras cargas não lineares, verifique as harmônicas: capacitores podem entrar em ressonância. Nesse caso, use banco com reator de dessintonia.');
+  warn('fc-warn',ws);
+}
+// ---------- Transformador ----------
+function runTrafo(){
+  const S=N('tr-s'), k=V('tr-sis')==='3'?R3:1, V1=N('tr-v1'), V2=N('tr-v2'), z=N('tr-z');
+  const I1=S*1000/(k*V1), I2=S*1000/(k*V2), Icc=I2*100/z, Scc=S*100/z/1000;
+  $('tr-res').innerHTML=stat(F(I2,1)+' A','In secundário')+stat(F(Icc/1000,2)+' kA','Icc secundário')+stat(F(I1,2)+' A','In primário');
+  setIll('tr-ill',svgTrafo());
+  const kt=k===R3?'√3 × ':'';
+  $('tr-steps').textContent=`In₂ = S / (${kt}V₂) = ${F(S*1000,0)} / (${kt}${F(V2,0)}) = ${F(I2,2)} A
+In₁ = S / (${kt}V₁) = ${F(S*1000,0)} / (${kt}${F(V1,0)}) = ${F(I1,3)} A
+Icc = In₂ × 100 / Z% = ${F(I2,2)} × 100 / ${F(z,2)} = ${F(Icc,0)} A = ${F(Icc/1000,2)} kA
+Scc = S × 100 / Z% = ${F(Scc,2)} MVA
+Relação de transformação a = V₁ / V₂ = ${F(V1/V2,2)}`;
+}
+// ---------- Ohm ----------
+const OH={VI:['Tensão V (V)','Corrente I (A)'],VR:['Tensão V (V)','Resistência R (Ω)'],IR:['Corrente I (A)','Resistência R (Ω)'],PV:['Potência P (W)','Tensão V (V)'],PI:['Potência P (W)','Corrente I (A)'],PR:['Potência P (W)','Resistência R (Ω)']};
+const OHD={VI:['220','10'],VR:['220','22'],IR:['10','22'],PV:['2200','220'],PI:['2200','10'],PR:['2200','22']};
+function runOhm(){
+  const m=V('oh-mode'), a=N('oh-a'), b=N('oh-b'); const [la,lb]=OH[m];
+  const sy=t=>`<span class="sym">${t.match(/ ([VIRP]) /)[1]}</span>`;
+  $('oh-la').innerHTML=sy(la)+la; $('oh-lb').innerHTML=sy(lb)+lb;
+  let Vv,I,R,P;
+  if(m==='VI'){Vv=a;I=b;R=Vv/I;P=Vv*I;} else if(m==='VR'){Vv=a;R=b;I=Vv/R;P=Vv*I;} else if(m==='IR'){I=a;R=b;Vv=I*R;P=Vv*I;}
+  else if(m==='PV'){P=a;Vv=b;I=P/Vv;R=Vv/I;} else if(m==='PI'){P=a;I=b;Vv=P/I;R=Vv/I;} else {P=a;R=b;I=Math.sqrt(P/R);Vv=I*R;}
+  $('oh-res').innerHTML=stat(F(Vv,2),'V (volts)')+stat(F(I,3),'I (A)')+stat(F(R,3),'R (Ω)')+stat(F(P,2),'P (W)');
+  setIll('oh-ill',svgOhm());
+  $('oh-steps').textContent=`V = R × I     I = V / R     R = V / I
+P = V × I = R × I² = V² / R
+→ V = ${F(Vv,3)} V · I = ${F(I,4)} A · R = ${F(R,4)} Ω · P = ${F(P,3)} W`;
+}
+$('oh-mode').addEventListener('change',()=>{ const d=OHD[V('oh-mode')]; $('oh-a').value=d[0]; $('oh-b').value=d[1]; });
+$('qt-s').innerHTML=QS.map(s=>`<option value="${s}"${s===6?' selected':''}>${F(s)} mm²</option>`).join('');
+$('rt-pol').innerHTML=[2,4,6,8,10,12].map(p=>`<option value="${p}"${p===4?' selected':''}>${p} polos (${120*60/p} rpm em 60 Hz)</option>`).join('');
+
+const RUN={mot:runMot,rot:runRot,yd:runYD,cabo:runCabo,qt:runQt,pot:runPot,fp:runFp,trafo:runTrafo,ohm:runOhm};
+const PRE={mot:'mt-',rot:'rt-',yd:'yd-',cabo:'cb-',qt:'qt-',pot:'pt-',fp:'fc-',trafo:'tr-',ohm:'oh-'};
+const OUTS={mot:'mt-res',rot:'rt-res',yd:'yd-res',cabo:'cb-res',qt:'qt-res',pot:'pt-res',fp:'fc-res',trafo:'tr-res',ohm:'oh-res'};
+Object.entries(PRE).forEach(([k,px])=>{ const h=()=>{ RUN[k](); flash(OUTS[k]); };
+  document.querySelectorAll(`#p-${k} input[id^="${px}"], #p-${k} select[id^="${px}"]`).forEach(e=>{ e.addEventListener('input',h); e.addEventListener('change',h); }); });
+
+// ---------- Menus no lugar das listas nativas ----------
+const CHEV='<svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>';
+function splitTxt(t){ const m=t.match(/^(.*?)\s*\(([^()]*)\)\s*$/); return m?[m[1],m[2]]:[t,'']; }
+function lblFor(sel){ if(sel.dataset.title) return sel.dataset.title; const par=sel.parentElement; const l=par&&par.querySelector(':scope > label.lbl'); if(l){ const c=l.cloneNode(true); c.querySelectorAll('.sym').forEach(x=>x.remove()); return c.textContent.trim(); } return 'Selecione'; }
+function syncPick(sel){ if(!sel._btn) return; const o=sel.selectedOptions[0]; if(!o) return; const [a,b]=splitTxt(o.textContent); sel._btn.querySelector('.pv').innerHTML=a+(b&&!sel._compact?`<small>${b}</small>`:''); }
+function enhance(sel){ if(sel._btn||sel.id==='') return; const b=document.createElement('button'); b.type='button'; b.className='psel'; b.innerHTML='<span class="pv"></span>'+CHEV;
+  sel._compact = sel.style.width==='auto'; sel.style.display='none'; sel.after(b); sel._btn=b; syncPick(sel);
+  b.addEventListener('click',()=>openPick(sel)); sel.addEventListener('change',()=>syncPick(sel)); }
+let PICK=null;
+function openPick(sel){ PICK=sel; $('pick-title').textContent=lblFor(sel).replace(/\s*\(.*\)$/,'')||'Selecione';
+  $('pick-list').innerHTML=[...sel.options].map(o=>{ const [a,b]=splitTxt(o.textContent); return `<button type="button" class="opt-it${o.value===sel.value?' on':''}" data-v="${o.value.replace(/"/g,'&quot;')}"><span class="ot"><b>${a}</b>${b?`<small>${b}</small>`:''}</span><span class="ck"></span></button>`; }).join('');
+  $('pick-sheet').classList.remove('hidden'); document.body.style.overflow='hidden';
+  const on=$('pick-list').querySelector('.on'); if(on) on.scrollIntoView({block:'center'}); }
+$('pick-sheet').addEventListener('click',e=>{ const it=e.target.closest('.opt-it'); if(it&&PICK){ PICK.value=it.dataset.v; PICK.dispatchEvent(new Event('input',{bubbles:true})); PICK.dispatchEvent(new Event('change',{bubbles:true})); syncPick(PICK); }
+  if(it||e.target.closest('[data-close]')){ $('pick-sheet').classList.add('hidden'); document.body.style.overflow=''; } });
+function enhanceAll(){ document.querySelectorAll('main select').forEach(enhance); document.querySelectorAll('main select').forEach(syncPick); }
+window.calcRun=()=>{ RUN[CUR]&&RUN[CUR](); };
+
+try{const k=localStorage.getItem('elet-calc'); showPanel(k&&findCalc(k)?k:'mot'); }catch(e){ showPanel('mot'); }
+})();
+
+</script>
+</body>
+</html>
